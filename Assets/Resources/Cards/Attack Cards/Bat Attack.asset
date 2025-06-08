@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
+  m_Name: Bat Attack
+  m_EditorClassIdentifier: 
+  resourcePath: Cards/Attack Cards/Bat Attack
+  cardName: Bat Attack
+  cardDescription: Deal {damage} damage to an enemy
+  cardType: 0
+  cardSprite: {fileID: -5292249155271154335, guid: c7401d0d1cba6164ea7f170073aedc5c, type: 3}
+  energyCost: 1
+  cardTypeSprite: {fileID: -1730254177, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
+  effects:
+  - rid: 8812507693837714227
+  targetType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 8812507693837714227
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        damageAmount: 10

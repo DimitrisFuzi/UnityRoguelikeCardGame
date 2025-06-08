@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-//Test comment
 /// <summary>
 /// Base class for any character that has health, armor, and can take damage or perform attacks.
 /// </summary>

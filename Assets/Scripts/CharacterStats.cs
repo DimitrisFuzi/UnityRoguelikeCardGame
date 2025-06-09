@@ -49,7 +49,7 @@ public abstract class CharacterStats : MonoBehaviour
         CurrentHealth = maxHealth;
         Armor = startingArmor;
 
-        Logger.Log($"{gameObject.name} initialized with {MaxHealth} HP and {Armor} Armor.", this);
+        //Logger.Log($"{gameObject.name} initialized with {MaxHealth} HP and {Armor} Armor.", this);
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         OnArmorChanged?.Invoke(Armor);
     }

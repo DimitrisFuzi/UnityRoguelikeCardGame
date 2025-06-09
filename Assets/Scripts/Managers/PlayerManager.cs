@@ -1,89 +1,91 @@
 ﻿using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
 using MyProjectF.Assets.Scripts.Player;
-using System.Linq;
 using System.Collections.Generic;
-using MyProjectF.Assets.Scripts.Effects; // ✅ Προσθέτουμε το σωστό namespace για τα effects
+using System.Linq;
+using MyProjectF.Assets.Scripts.Effects;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance { get; private set; }
-    private PlayerStats playerStats;
-    [SerializeField] private GameObject playerPrefab;
 
+    [SerializeField] private GameObject playerPrefab;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
+            Logger.LogWarning("Duplicate PlayerManager detected. Destroying duplicate.", this);
             Destroy(gameObject);
         }
     }
 
-    void Start()
-    {
-        playerStats = PlayerStats.Instance;
-    }
-
     public void InitializePlayer()
     {
-
-
         if (playerPrefab == null)
         {
-            Debug.LogError("❌ Το playerPrefab είναι NULL! Ρύθμισέ το στο Inspector.");
+            Logger.LogError("PlayerManager: playerPrefab is null! Please assign it in the Inspector.", this);
             return;
         }
 
-        //Debug.Log("📌 Προσπάθεια δημιουργίας του PlayerPrefab...");
-        GameObject playerObject = Instantiate(playerPrefab, GameObject.Find("PlayerCanvas").transform, false);
-        
+        GameObject playerCanvas = GameObject.Find("PlayerCanvas");
+        if (playerCanvas == null)
+        {
+            Logger.LogError("PlayerCanvas GameObject not found in scene!", this);
+            return;
+        }
+
+        GameObject playerObject = Instantiate(playerPrefab, playerCanvas.transform, false);
+
         if (playerObject == null)
         {
-            Debug.LogError("❌ Αποτυχία δημιουργίας του PlayerPrefab!");
+            Logger.LogError("PlayerManager: Failed to instantiate playerPrefab!", this);
             return;
         }
-        //Debug.Log("✅ PlayerStats βρέθηκε επιτυχώς!");
 
-        playerStats = playerObject.GetComponent<PlayerStats>();
+        PlayerStats playerStats = playerObject.GetComponent<PlayerStats>();
         if (playerStats == null)
         {
-            Debug.LogError("❌ Το PlayerPrefab δεν έχει PlayerStats component! Ελέγξτε το Prefab.");
-            Debug.LogError($"🔍 Object Name: {playerObject.name}, Components: {string.Join(", ", playerObject.GetComponents<Component>().Select(c => c.GetType().Name))}");
-
+            Logger.LogError("PlayerManager: playerPrefab does not have a PlayerStats component.", this);
             return;
         }
 
-        playerStats.ResetArmor();
         playerStats.ResetEnergy();
+        playerStats.ResetArmor();
+
+        Logger.Log("PlayerManager: Player initialized successfully.", this);
     }
+
 
     public bool CanPlayCard(Card card)
     {
-        return playerStats.energy >= card.energyCost;
+        bool canPlay = PlayerStats.Instance.energy >= card.energyCost;
+        Logger.Log($"CanPlayCard check: card '{card.cardName}' costs {card.energyCost} energy. Player has {PlayerStats.Instance.energy}. Can play: {canPlay}", this);
+        return canPlay;
     }
 
     public void UseCard(Card card)
     {
         if (!CanPlayCard(card))
         {
-            Debug.Log("❌ Δεν έχεις αρκετό energy για να παίξεις αυτή την κάρτα!");
+            Logger.LogWarning("Not enough energy to play this card.", this);
             return;
         }
 
-        playerStats.UseEnergy(card.energyCost);
-        Debug.Log($"🃏 Ο παίκτης έπαιξε την κάρτα {card.cardName}");
+        PlayerStats.Instance.UseEnergy(card.energyCost);
+        Logger.Log($"Played card '{card.cardName}'.", this);
     }
 
     public void ApplyCardEffect(Enemy targetEnemy, EffectData effect, Card card)
     {
         if (effect == null)
         {
-            Debug.LogError("❌ Το effect είναι NULL! Βεβαιώσου ότι η κάρτα έχει συνδεδεμένο effect.");
+            Logger.LogError("EffectData is null.", this);
             return;
         }
 
@@ -92,30 +94,38 @@ public class PlayerManager : MonoBehaviour
             case Card.TargetType.SingleEnemy:
                 if (targetEnemy != null)
                 {
-                    effect.ApplyEffect(playerStats, targetEnemy);
+                    effect.ApplyEffect(PlayerStats.Instance, targetEnemy);
+                    Logger.Log($"Applied effect of '{card.cardName}' to single enemy '{targetEnemy.name}'.", this);
                 }
                 else
                 {
-                    Debug.LogError("❌ Η κάρτα απαιτεί στόχο αλλά δεν βρέθηκε εχθρός!");
+                    Logger.LogError("Card requires an enemy target, but none was provided.", this);
                 }
                 break;
 
             case Card.TargetType.AllEnemies:
                 foreach (Enemy enemy in EnemyManager.Instance.GetActiveEnemies())
                 {
-                    effect.ApplyEffect(playerStats, enemy);
+                    effect.ApplyEffect(PlayerStats.Instance, enemy);
                 }
+                Logger.Log($"Applied effect of '{card.cardName}' to all enemies.", this);
                 break;
 
             case Card.TargetType.Self:
-                effect.ApplyEffect(playerStats, playerStats);
+                effect.ApplyEffect(PlayerStats.Instance, PlayerStats.Instance);
+                Logger.Log($"Applied effect of '{card.cardName}' to self.", this);
                 break;
 
             case Card.TargetType.AllAllies:
-                foreach (PlayerStats ally in PlayerManager.Instance.GetAllies())
+                foreach (PlayerStats ally in GetAllies())
                 {
-                    effect.ApplyEffect(playerStats, ally);
+                    effect.ApplyEffect(PlayerStats.Instance, ally);
                 }
+                Logger.Log($"Applied effect of '{card.cardName}' to all allies.", this);
+                break;
+
+            default:
+                Logger.LogWarning("Unknown card target type.", this);
                 break;
         }
     }
@@ -124,15 +134,13 @@ public class PlayerManager : MonoBehaviour
     {
         List<PlayerStats> allies = new List<PlayerStats>();
 
-        // Προσθήκη του κύριου παίκτη
-        if (playerStats != null)
+        if (PlayerStats.Instance != null)
         {
-            allies.Add(playerStats);
+            allies.Add(PlayerStats.Instance);
         }
 
-        // ✅ Αν υπάρχουν άλλοι σύμμαχοι (π.χ. σε co-op mode, summoned units), προσθέστε τους εδώ
+        // Add other allies if applicable
 
         return allies;
     }
-
 }

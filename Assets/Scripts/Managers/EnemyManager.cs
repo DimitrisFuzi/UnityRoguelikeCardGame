@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Manages enemy spawning, tracking, and behavior during battle.

@@ -57,7 +57,7 @@ public class DeckManager : MonoBehaviour
             ReshuffleDiscardPile();
         }
 
-        if (drawPile.Count > 0 && HandManager.Instance.currentHandSize < HandManager.Instance.maxHandSize)
+        if (drawPile.Count > 0 && HandManager.Instance.CurrentHandSize < HandManager.Instance.MaxHandSize)
         {
             Card drawnCard = drawPile[0];
             drawPile.RemoveAt(0);

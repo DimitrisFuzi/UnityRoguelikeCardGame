@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Central controller for core game systems and persistent data.
+/// Implements Singleton pattern to persist across scenes.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
-    
     public static GameManager Instance { get; private set; }
-
-    private int playerHealth;
 
     public OptionsManager OptionsManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
@@ -20,70 +19,60 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeManagers();
+            Logger.Log("✅ GameManager initialized.", this);
         }
         else if (Instance != this)
         {
+            Logger.LogWarning("⚠️ Duplicate GameManager found. Destroying extra instance.", this);
             Destroy(gameObject);
         }
     }
-    
+
+    /// <summary>
+    /// Initializes all core managers (Options, Audio, Deck).
+    /// Tries to find them as children, or instantiate prefabs if missing.
+    /// </summary>
     private void InitializeManagers()
     {
-        OptionsManager = GetComponentInChildren<OptionsManager>();
-        AudioManager = GetComponentInChildren<AudioManager>();
-        DeckManager = GetComponentInChildren<DeckManager>();
-
-        if (OptionsManager == null)
-        {
-            GameObject prefab = Resources.Load<GameObject>("Prefabs/OptionsManager");
-
-            if (prefab == null)
-            {
-                Debug.Log($"OptionsManager prefab not found");
-
-            }
-            else
-            {
-                Instantiate(prefab, transform.position, Quaternion.identity, transform);
-                OptionsManager = GetComponentInChildren<OptionsManager>();
-            }
-        }
-
-        if (AudioManager == null)
-        {
-            GameObject prefab = Resources.Load<GameObject>("Prefabs/AudioManager");
-            if (prefab == null)
-            {
-                Debug.Log($"AudioManager prefab not found");
-
-            }
-            else
-            {
-                Instantiate(prefab, transform.position, Quaternion.identity, transform);
-                AudioManager = GetComponentInChildren<AudioManager>();
-            }
-        }
-
-
-
-        if (DeckManager == null)
-        {
-            GameObject prefab = Resources.Load<GameObject>("Prefabs/DeckManager");
-            if (prefab == null)
-            {
-                Debug.Log($"DeckManager prefab not found");
-
-            }
-            else
-            {
-                Instantiate(prefab, transform.position, Quaternion.identity, transform);
-                DeckManager = GetComponentInChildren<DeckManager>();
-            }
-        }
+        OptionsManager = LoadOrInstantiateManager<OptionsManager>("Prefabs/OptionsManager");
+        AudioManager = LoadOrInstantiateManager<AudioManager>("Prefabs/AudioManager");
+        DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/DeckManager");
     }
-    public int PlayerHealth
+
+    /// <summary>
+    /// Generic helper for loading or instantiating manager prefabs.
+    /// </summary>
+    /// <typeparam name="T">Type of the manager (must be a Component).</typeparam>
+    /// <param name="prefabPath">Resources path to the manager prefab.</param>
+    /// <returns>The found or newly instantiated manager component.</returns>
+    private T LoadOrInstantiateManager<T>(string prefabPath) where T : Component
     {
-        get { return playerHealth; }
-        set { playerHealth = value; }
+        T manager = GetComponentInChildren<T>();
+        if (manager != null)
+        {
+            Logger.Log($"✅ Found {typeof(T).Name} in children.", this);
+            return manager;
+        }
+
+        GameObject prefab = Resources.Load<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            Logger.LogError($"❌ {typeof(T).Name} prefab not found at: {prefabPath}", this);
+            return null;
+        }
+
+        GameObject instance = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        manager = instance.GetComponent<T>();
+
+        if (manager == null)
+        {
+            Logger.LogError($"❌ Instantiated prefab does not contain component: {typeof(T).Name}", this);
+        }
+        else
+        {
+            Logger.Log($"✅ Instantiated {typeof(T).Name} from prefab.", this);
+        }
+
+        return manager;
     }
 }

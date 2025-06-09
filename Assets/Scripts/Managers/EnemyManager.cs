@@ -1,97 +1,125 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages enemy spawning, tracking, and behavior during battle.
+/// Implements singleton pattern for global access.
+/// </summary>
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance { get; private set; }
 
-    private List<Enemy> enemies = new List<Enemy>();
+    private readonly List<Enemy> activeEnemies = new();
+
+    [Header("Enemy Setup")]
     [SerializeField] private GameObject enemyPrefab;
-
-    public List<Enemy> GetActiveEnemies()
-    {
-        return new List<Enemy>(enemies);
-    }
-
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            Logger.Log("✅ EnemyManager initialized.", this);
         }
         else
         {
+            Logger.LogWarning("⚠️ Duplicate EnemyManager detected. Destroying new instance.", this);
             Destroy(gameObject);
         }
     }
 
+    /// <summary>
+    /// Loads enemies from Resources and spawns them into the scene.
+    /// </summary>
     public void InitializeEnemies()
     {
-        //Debug.Log("👿 Στήσιμο εχθρών...");
         EnemyData forestBeast = Resources.Load<EnemyData>("Enemies/Forest Beast");
         EnemyData spider = Resources.Load<EnemyData>("Enemies/Spider");
+
         SpawnEnemy(forestBeast);
         SpawnEnemy(spider);
-
     }
 
+    /// <summary>
+    /// Spawns a single enemy and adds it to the active list.
+    /// </summary>
+    /// <param name="enemyData">The enemy data to initialize the enemy with.</param>
     private void SpawnEnemy(EnemyData enemyData)
     {
         if (enemyPrefab == null)
         {
-            Debug.LogError("❌ Το enemyPrefab είναι NULL! Ρύθμισέ το στο Inspector.");
+            Logger.LogError("❌ Enemy prefab is NULL. Assign it in the inspector.", this);
             return;
         }
-        GameObject enemyObject = Instantiate(enemyPrefab);
-        enemyObject.transform.SetParent(GameObject.Find("EnemyCanvas").transform, false);
-        Enemy enemyScript = enemyObject.GetComponent<Enemy>();
-        EnemyDisplay enemyDisplay = enemyObject.GetComponent<EnemyDisplay>(); // ✅ Βρίσκουμε το EnemyDisplay
 
-        if (enemyScript != null && enemyDisplay != null)
+        GameObject enemyObject = Instantiate(enemyPrefab, GameObject.Find("EnemyCanvas").transform, false);
+
+        if (enemyObject.TryGetComponent(out Enemy enemyScript) && enemyObject.TryGetComponent(out EnemyDisplay enemyDisplay))
         {
-            enemyScript.InitializeEnemy(enemyData, enemyDisplay); // ✅ Περνάμε και το display
-            enemies.Add(enemyScript);
+            enemyScript.InitializeEnemy(enemyData, enemyDisplay);
+            activeEnemies.Add(enemyScript);
+            Logger.Log($"👾 Spawned enemy: {enemyData.enemyName}", this);
         }
         else
         {
-            Debug.LogError("❌ Το enemyPrefab δεν έχει τα Enemy.cs ή EnemyDisplay.cs!");
+            Logger.LogError("❌ Enemy prefab must contain both Enemy and EnemyDisplay components!", enemyObject);
+            Destroy(enemyObject);
         }
     }
 
+    /// <summary>
+    /// Returns a copy of the current active enemies list.
+    /// </summary>
+    public List<Enemy> GetActiveEnemies()
+    {
+        return new List<Enemy>(activeEnemies);
+    }
+
+    /// <summary>
+    /// Calls each enemy to perform their battle action.
+    /// </summary>
     public void PerformEnemyActions()
     {
-        foreach (var enemy in enemies)
+        foreach (var enemy in activeEnemies)
         {
             enemy.PerformAction();
         }
     }
 
-    // ✅ Προσθέτουμε αυτή τη μέθοδο για να αφαιρεί τους νεκρούς εχθρούς
+    /// <summary>
+    /// Removes a defeated enemy from the list and destroys its GameObject.
+    /// </summary>
+    /// <param name="enemy">The enemy to remove.</param>
     public void RemoveEnemy(Enemy enemy)
     {
-        if (enemies.Contains(enemy))
-        {
-            enemies.Remove(enemy);
-            Destroy(enemy.gameObject);
-            Debug.Log($"☠️ Ο {enemy.enemyName} πέθανε και αφαιρέθηκε από τη μάχη.");
-        }
+        if (!activeEnemies.Contains(enemy)) return;
 
-        // ✅ Αν όλοι οι εχθροί έχουν πεθάνει, ειδοποιούμε το BattleManager
-        if (enemies.Count == 0)
+        activeEnemies.Remove(enemy);
+        Destroy(enemy.gameObject);
+
+        Logger.Log($"☠️ {enemy.enemyName} has been defeated and removed.", this);
+
+        if (activeEnemies.Count == 0)
         {
+            Logger.Log("🎉 All enemies defeated! Battle won!", this);
             BattleManager.Instance.SetBattleState(BattleManager.BattleState.WON);
-            Debug.Log("🎉 Νίκησες τη μάχη!");
         }
     }
 
+    /// <summary>
+    /// Applies damage directly to a specific enemy.
+    /// </summary>
+    /// <param name="targetEnemy">The enemy to damage.</param>
+    /// <param name="damage">Amount of damage.</param>
     public void ApplyDamageToEnemy(Enemy targetEnemy, int damage)
     {
-        if (targetEnemy != null)
+        if (targetEnemy == null)
         {
-            targetEnemy.TakeDamage(damage);
-            Debug.Log($"💥 Ο {targetEnemy.enemyName} δέχτηκε {damage} damage!");
+            Logger.LogWarning("⚠️ Tried to apply damage to a null enemy.", this);
+            return;
         }
-    }
 
+        targetEnemy.TakeDamage(damage);
+        Logger.Log($"💥 {targetEnemy.enemyName} took {damage} damage.", this);
+    }
 }

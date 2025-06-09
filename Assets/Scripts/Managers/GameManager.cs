@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private int playerHealth;
-    private int playerXP;
-    private int difficulty = 5;
 
     public OptionsManager OptionsManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
@@ -87,17 +85,5 @@ public class GameManager : MonoBehaviour
     {
         get { return playerHealth; }
         set { playerHealth = value; }
-    }
-
-    public int PlayerXP
-    {
-        get { return playerXP; }
-        set { playerXP = value; }
-    }
-
-    public int Difficulty
-    {
-        get { return difficulty; }
-        set { difficulty = value; }
     }
 }

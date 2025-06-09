@@ -27,7 +27,6 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         playerStats = PlayerStats.Instance;
-       //energy = 3;
     }
 
     public void InitializePlayer()

@@ -1,18 +1,29 @@
-﻿using UnityEngine;
-using System;
-using MyProjectF.Assets.Scripts.Effects;
+﻿using System;
+using UnityEngine;
 
-[Serializable] // ✅ Επιτρέπει την αποθήκευση μέσα στην κάρτα!
-public class ArmorEffect : EffectData
+namespace MyProjectF.Assets.Scripts.Effects
 {
-    public int armorAmount = 5; // ✅ Ορίζεται απευθείας μέσα στην κάρτα
-
-    public override void ApplyEffect(CharacterStats source, CharacterStats target)
+    /// <summary>
+    /// Effect that adds armor to the target.
+    /// </summary>
+    [Serializable]
+    public class ArmorEffect : EffectData
     {
-        if (target != null)
+        /// <summary>
+        /// Amount of armor to add.
+        /// </summary>
+        public int armorAmount = 5;
+
+        /// <summary>
+        /// Applies the armor effect by adding armor to the target.
+        /// </summary>
+        public override void ApplyEffect(CharacterStats source, CharacterStats target)
         {
-            target.AddArmor(armorAmount);
-            Debug.Log($"🛡️ {source.gameObject.name} πρόσθεσε {armorAmount} armor στον {target.gameObject.name}!");
+            if (target != null)
+            {
+                target.AddArmor(armorAmount);
+                Debug.Log($"🛡️ {source.gameObject.name} added {armorAmount} armor to {target.gameObject.name}.");
+            }
         }
     }
 }

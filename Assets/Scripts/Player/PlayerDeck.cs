@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
+
+/// <summary>
+/// Singleton responsible for storing and managing the player's deck.
+/// Loads all available cards and initializes a starting deck.
+/// </summary>
 public class PlayerDeck : MonoBehaviour
 {
     public static PlayerDeck Instance { get; private set; }
 
     [SerializeField] private List<Card> playerDeck = new List<Card>();
-    private Dictionary<string, Card> allCardsDictionary = new Dictionary<string, Card>();
+    private Dictionary<string, Card> allCardsDictionary = new();
 
     private void Awake()
     {
@@ -17,16 +22,20 @@ public class PlayerDeck : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
-        LoadAllCards(); // ✅ Φορτώνουμε όλες τις κάρτες μία φορά
-    }
 
+        LoadAllCards();
+    }
 
     private void Start()
     {
         InitializeStartingDeck();
     }
 
+    /// <summary>
+    /// Loads all card assets from the Resources/Cards folder into a dictionary for fast lookup.
+    /// </summary>
     private void LoadAllCards()
     {
         allCardsDictionary.Clear();
@@ -40,23 +49,21 @@ public class PlayerDeck : MonoBehaviour
             }
         }
 
+        Logger.Log($"📚 Loaded {allCardsDictionary.Count} cards from Resources.", this);
     }
 
+    /// <summary>
+    /// Initializes the player's starting deck with a predefined list of card names.
+    /// </summary>
     public void InitializeStartingDeck()
     {
         playerDeck.Clear();
 
-        string[] selectedCards = new string[]
+        string[] selectedCards =
         {
-            "Bat Attack",
-            "Bat Attack",
-            "Punch Attack",
-            "Punch Attack",
-            "Punch Attack",
-            "Arm Block",
-            "Arm Block",
-            "Arm Block",
-            "Arm Block",
+            "Bat Attack", "Bat Attack",
+            "Punch Attack", "Punch Attack", "Punch Attack",
+            "Arm Block", "Arm Block", "Arm Block", "Arm Block",
             "Flash Bomb"
         };
 
@@ -65,32 +72,38 @@ public class PlayerDeck : MonoBehaviour
             if (allCardsDictionary.TryGetValue(cardName, out Card card))
             {
                 playerDeck.Add(card);
-                
             }
             else
             {
-                Debug.LogError($"❌ Η κάρτα '{cardName}' δεν βρέθηκε στο Dictionary!");
+                Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
             }
         }
 
-        Debug.Log($"📜 Συνολικές κάρτες στο αρχικό deck: {playerDeck.Count}");
+        Logger.Log($"📜 Initialized starting deck with {playerDeck.Count} cards.", this);
     }
 
+    /// <summary>
+    /// Returns a new copy of the player's current deck.
+    /// </summary>
     public List<Card> GetDeck()
     {
         return new List<Card>(playerDeck);
     }
 
+    /// <summary>
+    /// Adds a card to the player's deck by name.
+    /// </summary>
+    /// <param name="cardName">The name of the card to add.</param>
     public void AddCardToDeck(string cardName)
     {
         if (allCardsDictionary.TryGetValue(cardName, out Card card))
         {
             playerDeck.Add(card);
-            Debug.Log($"➕ Προστέθηκε η κάρτα {card.cardName} στο Deck!");
+            Logger.Log($"➕ Card '{card.cardName}' added to deck.", this);
         }
         else
         {
-            Debug.LogError($"❌ Η κάρτα '{cardName}' δεν βρέθηκε στο Dictionary!");
+            Logger.LogError($"❌ Card '{cardName}' not found in card dictionary.", this);
         }
     }
 }

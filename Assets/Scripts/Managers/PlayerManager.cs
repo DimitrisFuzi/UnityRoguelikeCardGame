@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using MyProjectF.Assets.Scripts.Cards;
 using MyProjectF.Assets.Scripts.Player;
-using System.Collections.Generic;
-using System.Linq;
 using MyProjectF.Assets.Scripts.Effects;
 
+/// <summary>
+/// Manages player initialization, energy usage, and application of card effects.
+/// Singleton for handling player-related actions in the game.
+/// </summary>
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance { get; private set; }
@@ -25,6 +28,9 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes the player by instantiating the playerPrefab under PlayerCanvas.
+    /// </summary>
     public void InitializePlayer()
     {
         if (playerPrefab == null)
@@ -41,61 +47,72 @@ public class PlayerManager : MonoBehaviour
         }
 
         GameObject playerObject = Instantiate(playerPrefab, playerCanvas.transform, false);
-
         if (playerObject == null)
         {
-            Logger.LogError("PlayerManager: Failed to instantiate playerPrefab!", this);
+            Logger.LogError("Failed to instantiate playerPrefab!", this);
             return;
         }
 
         PlayerStats playerStats = playerObject.GetComponent<PlayerStats>();
         if (playerStats == null)
         {
-            Logger.LogError("PlayerManager: playerPrefab does not have a PlayerStats component.", this);
+            Logger.LogError("playerPrefab does not have a PlayerStats component.", this);
             return;
         }
 
         playerStats.ResetEnergy();
         playerStats.ResetArmor();
 
-        Logger.Log("PlayerManager: Player initialized successfully.", this);
+        Logger.Log("✅ Player initialized successfully.", this);
     }
 
-
+    /// <summary>
+    /// Checks if the player has enough energy to play the specified card.
+    /// </summary>
     public bool CanPlayCard(Card card)
     {
-        bool canPlay = PlayerStats.Instance.energy >= card.energyCost;
-        Logger.Log($"CanPlayCard check: card '{card.cardName}' costs {card.energyCost} energy. Player has {PlayerStats.Instance.energy}. Can play: {canPlay}", this);
+        int playerEnergy = PlayerStats.Instance.energy;
+        bool canPlay = playerEnergy >= card.energyCost;
+
+        Logger.Log($"🔋 CanPlayCard: '{card.cardName}' costs {card.energyCost}, Player has {playerEnergy}. Result: {canPlay}", this);
         return canPlay;
     }
 
+    /// <summary>
+    /// Uses energy when a card is played.
+    /// </summary>
     public void UseCard(Card card)
     {
         if (!CanPlayCard(card))
         {
-            Logger.LogWarning("Not enough energy to play this card.", this);
+            Logger.LogWarning("⚠️ Not enough energy to play this card.", this);
             return;
         }
 
         PlayerStats.Instance.UseEnergy(card.energyCost);
-        Logger.Log($"Played card '{card.cardName}'.", this);
+        Logger.Log($"🃏 Played card '{card.cardName}'.", this);
     }
 
+    /// <summary>
+    /// Applies the effect of a card to a target (enemy, self, or allies).
+    /// </summary>
     public void ApplyCardEffect(Enemy targetEnemy, EffectData effect, Card card)
     {
         if (effect == null)
         {
-            Logger.LogError("EffectData is null.", this);
+            Logger.LogError("❌ EffectData is null.", this);
             return;
         }
+
+        var caster = PlayerStats.Instance;
 
         switch (card.targetType)
         {
             case Card.TargetType.SingleEnemy:
                 if (targetEnemy != null)
                 {
-                    effect.ApplyEffect(PlayerStats.Instance, targetEnemy);
-                    Logger.Log($"Applied effect of '{card.cardName}' to single enemy '{targetEnemy.name}'.", this);
+                    effect.ApplyEffect(caster, targetEnemy);
+                    Logger.Log($"🎯 Applied '{card.cardName}' to enemy '{targetEnemy.name}'.", this);
                 }
                 else
                 {
@@ -106,40 +123,43 @@ public class PlayerManager : MonoBehaviour
             case Card.TargetType.AllEnemies:
                 foreach (Enemy enemy in EnemyManager.Instance.GetActiveEnemies())
                 {
-                    effect.ApplyEffect(PlayerStats.Instance, enemy);
+                    effect.ApplyEffect(caster, enemy);
                 }
-                Logger.Log($"Applied effect of '{card.cardName}' to all enemies.", this);
+                Logger.Log($"🌪️ Applied '{card.cardName}' to all enemies.", this);
                 break;
 
             case Card.TargetType.Self:
-                effect.ApplyEffect(PlayerStats.Instance, PlayerStats.Instance);
-                Logger.Log($"Applied effect of '{card.cardName}' to self.", this);
+                effect.ApplyEffect(caster, caster);
+                Logger.Log($"🧘 Applied '{card.cardName}' to self.", this);
                 break;
 
             case Card.TargetType.AllAllies:
                 foreach (PlayerStats ally in GetAllies())
                 {
-                    effect.ApplyEffect(PlayerStats.Instance, ally);
+                    effect.ApplyEffect(caster, ally);
                 }
-                Logger.Log($"Applied effect of '{card.cardName}' to all allies.", this);
+                Logger.Log($"🤝 Applied '{card.cardName}' to all allies.", this);
                 break;
 
             default:
-                Logger.LogWarning("Unknown card target type.", this);
+                Logger.LogWarning("❓ Unknown card target type.", this);
                 break;
         }
     }
 
+    /// <summary>
+    /// Returns a list of all ally PlayerStats. Currently includes only the main player.
+    /// </summary>
     public List<PlayerStats> GetAllies()
     {
-        List<PlayerStats> allies = new List<PlayerStats>();
+        List<PlayerStats> allies = new();
 
         if (PlayerStats.Instance != null)
         {
             allies.Add(PlayerStats.Instance);
         }
 
-        // Add other allies if applicable
+        // Add more allies here if applicable in the future
 
         return allies;
     }

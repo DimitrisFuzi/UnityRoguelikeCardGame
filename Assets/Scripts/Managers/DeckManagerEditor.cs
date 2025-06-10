@@ -1,39 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-
+/// <summary>
+/// Custom editor for the DeckManager class.
+/// Adds a button in the inspector to draw a card for debugging purposes.
+/// </summary>
 [CustomEditor(typeof(DeckManager))]
 public class DeckManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        // Draw the default inspector
+        // Draw the default DeckManager inspector
         DrawDefaultInspector();
 
-        // Get the target DeckManager instance
         DeckManager deckManager = (DeckManager)target;
 
-        // Add a button to draw the next card
-        if (GUILayout.Button("Draw Next Card"))
+        GUILayout.Space(10);
+        EditorGUILayout.LabelField("Debug Tools", EditorStyles.boldLabel);
+
+        if (GUILayout.Button("🃏 Draw Next Card"))
         {
-            // Find the HandManager instance in the scene
             HandManager handManager = Object.FindFirstObjectByType<HandManager>();
 
-            // Check if the HandManager instance is found
             if (handManager != null)
             {
-                // Draw a card using the DeckManager
                 deckManager.DrawCard();
+                Debug.Log("✅ Card drawn via inspector.");
             }
             else
             {
-                // Display an error message if HandManager is not found
-                EditorGUILayout.HelpBox("HandManager not found in the scene.", MessageType.Error);
+                EditorGUILayout.HelpBox("❌ HandManager not found in the scene.", MessageType.Error);
+                Debug.LogError("DeckManagerEditor: HandManager not found in the scene.");
             }
         }
     }
 }
-#endif

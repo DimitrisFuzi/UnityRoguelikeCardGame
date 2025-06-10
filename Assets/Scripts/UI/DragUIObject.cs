@@ -1,38 +1,72 @@
-using UnityEngine;
-using UnityEngine.EventSystems; //This allows us to use Unity's event system to detect our mouse inputs
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class DragUIObject : MonoBehaviour, IDragHandler, IPointerDownHandler //These classes hold the methods required to handle UI interactions that we need
+/// <summary>
+/// Handles dragging of a UI element within a canvas using Unity's event system.
+/// </summary>
+[RequireComponent(typeof(RectTransform))]
+public class DragUIObject : MonoBehaviour, IDragHandler, IPointerDownHandler
 {
+    [Tooltip("Controls how fast or slow the UI element moves during drag.")]
+    [SerializeField] private float movementSensitivity = 1.0f;
+
     private RectTransform rectTransform;
     private Canvas canvas;
     private Vector2 originalLocalPointerPosition;
     private Vector3 originalPanelLocalPosition;
-    public float movementSensitivity = 1.0f; // Adjustable sensitivity if needed
 
-    void Awake()
+    /// <summary>
+    /// Cache necessary components.
+    /// </summary>
+    private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>(); //Get the RectTransform component of the attached GameObject
-        canvas = GetComponentInParent<Canvas>(); //Get the Canvas component of the attached GameObject
+        rectTransform = GetComponent<RectTransform>();
+        canvas = GetComponentInParent<Canvas>();
+
+        if (canvas == null)
+        {
+            Logger.LogError("DragUIObject: No Canvas found in parent hierarchy.", this);
+        }
     }
 
-    public void OnPointerDown(PointerEventData eventData) //This is inherited from the IPointerDownHandler class referenced above
+    /// <summary>
+    /// Stores the initial position of the UI element and the pointer when clicked.
+    /// </summary>
+    /// <param name="eventData">Pointer event data provided by Unity.</param>
+    public void OnPointerDown(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.GetComponent<RectTransform>(), eventData.position, eventData.pressEventCamera, out originalLocalPointerPosition); //Using the event system to detect what is clicked on
+        if (canvas == null) return;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.GetComponent<RectTransform>(),
+            eventData.position,
+            eventData.pressEventCamera,
+            out originalLocalPointerPosition
+        );
+
         originalPanelLocalPosition = rectTransform.localPosition;
     }
 
-    public void OnDrag(PointerEventData eventData) //This is inherited from the IDragHandler class referenced above
+    /// <summary>
+    /// Moves the UI element based on the drag movement of the mouse or finger.
+    /// </summary>
+    /// <param name="eventData">Pointer event data provided by Unity.</param>
+    public void OnDrag(PointerEventData eventData)
     {
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.GetComponent<RectTransform>(), eventData.position, eventData.pressEventCamera, out Vector2 localPointerPosition))
+        if (canvas == null) return;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.GetComponent<RectTransform>(),
+            eventData.position,
+            eventData.pressEventCamera,
+            out Vector2 localPointerPosition))
         {
             localPointerPosition /= canvas.scaleFactor;
 
-            // Adjusting the movement based on sensitivity
             Vector3 offsetToOriginal = (localPointerPosition - originalLocalPointerPosition) * movementSensitivity;
             rectTransform.localPosition = originalPanelLocalPosition + offsetToOriginal;
 
-            // Debug output
-            Debug.Log($"Drag - LocalPointerPosition: {localPointerPosition}, Offset: {offsetToOriginal}, New Position: {rectTransform.localPosition}"); //Comment out this line if not debugging an issue, otherwise it will flood the console unnecessarily
+            Logger.Log($"📦 UI Drag: New local position = {rectTransform.localPosition}", this);
         }
     }
 }

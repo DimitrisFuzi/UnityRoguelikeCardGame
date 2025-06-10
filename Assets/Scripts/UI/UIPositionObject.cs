@@ -1,22 +1,40 @@
 using UnityEngine;
 
+/// <summary>
+/// Dynamically positions a UI object (RectTransform) within its parent canvas based on configurable grid-based anchor ratios.
+/// </summary>
 public class UIObjectPositioner : MonoBehaviour
 {
-    public RectTransform objectToPosition;
+    [Tooltip("The RectTransform of the UI object to position.")]
+    [SerializeField] private RectTransform objectToPosition;
 
-    public int widthDivider = 2;
-    public int heightDivider = 2;
-    public float widthMultiplier = 1f;
-    public float heightMultiplier = 1f;
+    [Tooltip("How many horizontal divisions to make across the screen width.")]
+    [SerializeField] private int widthDivider = 2;
 
-    public bool updatePosition = false;
+    [Tooltip("How many vertical divisions to make across the screen height.")]
+    [SerializeField] private int heightDivider = 2;
 
-    void Start()
+    [Tooltip("Column multiplier to determine the object's anchor X position.")]
+    [SerializeField] private float widthMultiplier = 1f;
+
+    [Tooltip("Row multiplier to determine the object's anchor Y position.")]
+    [SerializeField] private float heightMultiplier = 1f;
+
+    [Tooltip("If enabled, updates the object's position every frame.")]
+    [SerializeField] private bool updatePosition = false;
+
+    /// <summary>
+    /// Sets the initial position of the UI object.
+    /// </summary>
+    private void Start()
     {
         SetUIObjectPosition();
     }
 
-    void Update()
+    /// <summary>
+    /// Updates the position each frame if enabled.
+    /// </summary>
+    private void Update()
     {
         if (updatePosition)
         {
@@ -24,21 +42,31 @@ public class UIObjectPositioner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Positions the UI object by adjusting its anchors and position based on configured grid multipliers.
+    /// </summary>
     public void SetUIObjectPosition()
     {
-        if (objectToPosition != null && widthDivider != 0 && heightDivider != 0)
+        if (objectToPosition == null)
         {
-            // Calculate the anchor position
-            float anchorX = widthMultiplier / widthDivider;
-            float anchorY = heightMultiplier / heightDivider;
-
-            // Set the anchor and pivot
-            objectToPosition.anchorMin = new Vector2(anchorX, anchorY);
-            objectToPosition.anchorMax = new Vector2(anchorX, anchorY);
-            objectToPosition.pivot = new Vector2(0.5f, 0.5f);
-
-            // Set the local position to zero to align with the anchor point
-            objectToPosition.anchoredPosition = Vector2.zero;
+            Logger.LogWarning("UIObjectPositioner: objectToPosition is not assigned.", this);
+            return;
         }
+
+        if (widthDivider == 0 || heightDivider == 0)
+        {
+            Logger.LogError("UIObjectPositioner: widthDivider and heightDivider must not be zero.", this);
+            return;
+        }
+
+        float anchorX = widthMultiplier / widthDivider;
+        float anchorY = heightMultiplier / heightDivider;
+
+        objectToPosition.anchorMin = new Vector2(anchorX, anchorY);
+        objectToPosition.anchorMax = new Vector2(anchorX, anchorY);
+        objectToPosition.pivot = new Vector2(0.5f, 0.5f);
+        objectToPosition.anchoredPosition = Vector2.zero;
+
+        Logger.Log($"UIObjectPositioner: UI object positioned at anchor ({anchorX}, {anchorY}).", this);
     }
 }

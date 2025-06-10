@@ -3,37 +3,91 @@ using UnityEngine;
 
 public class ArcRenderer : MonoBehaviour
 {
-    public GameObject arrowPrefab;
-    public GameObject dotPrefab;
-    public int poolSize = 50;
+
+    [Header("Prefabs")]
+    [SerializeField]
+    [Tooltip("Prefab used for the arrow at the end of the arc.")]
+    private GameObject arrowPrefab;
+
+    [SerializeField]
+    [Tooltip("Prefab used for the dots forming the arc.")]
+    private GameObject dotPrefab;
+
+    [Header("Settings")]
+    [SerializeField]
+    [Tooltip("Number of dots to pre-instantiate for the arc.")]
+    private int poolSize = 50;
+
+    [SerializeField]
+    [Tooltip("Reference screen width for scaling spacing.")]
+    private float baseScreenWidth = 1920f;
+
+    [SerializeField]
+    [Tooltip("Spacing between dots before scaling.")]
+    private float spacing = 50f;
+
+    [SerializeField]
+    [Tooltip("Angle adjustment applied to the arrow's rotation.")]
+    private float arrowAngleAdjustment = 0f;
+
+    [SerializeField]
+    [Tooltip("Number of dots to skip at the end for arrow placement.")]
+    private int dotsToSkip = 1;
+
     private List<GameObject> dotPool = new List<GameObject>();
     private GameObject arrowInstance;
-
-    public float spacing = 50;
-    public float arrowAngleAdjustment = 0;
-    public int dotsToSkip = 1;
     private Vector3 arrowDirection;
-    public float baseScreenWidth = 1920f;
-    [SerializeField] private float spacingScale;
-    
-    void Start()
+    private float spacingScale;
+
+
+    /// <summary>
+    /// Ensures required prefabs are assigned; disables script otherwise.
+    /// </summary>
+    private void Awake()
+    {
+        if (arrowPrefab == null)
+        {
+            Logger.LogError("ArcRenderer: arrowPrefab is not assigned in the Inspector!", this);
+            enabled = false;
+            return;
+        }
+
+        if (dotPrefab == null)
+        {
+            Logger.LogError("ArcRenderer: dotPrefab is not assigned in the Inspector!", this);
+            enabled = false;
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Initializes the arrow instance and the dot pool, sets spacing scale.
+    /// </summary>
+    private void Start()
     {
         arrowInstance = Instantiate(arrowPrefab, transform);
-        arrowInstance.transform.localPosition = Vector3.zero; // Vector3.zero is the same as new Vector3 (0,0,0). This also works for Vector2
+        arrowInstance.transform.localPosition = Vector3.zero;
+
         InitializeDotPool(poolSize);
+        UpdateSpacingScale();
 
-        spacingScale = Screen.width / baseScreenWidth; // Scales our dot spacing based on the current width of the screen
+        Logger.Log($"ArcRenderer initialized with pool size {poolSize} and spacing scale {spacingScale:F2}.", this);
     }
 
-    void OnEnable()
+    /// <summary>
+    /// Updates spacing scale on enable.
+    /// </summary>
+    private void OnEnable()
     {
-        spacingScale = Screen.width / baseScreenWidth;
+        UpdateSpacingScale();
     }
 
-    void Update()
+    /// <summary>
+    /// Updates the arc position and arrow orientation every frame based on mouse position.
+    /// </summary>
+    private void Update()
     {
         Vector3 mousePos = Input.mousePosition;
-
         mousePos.z = 0;
 
         Vector3 startPos = transform.position;
@@ -43,15 +97,21 @@ public class ArcRenderer : MonoBehaviour
         PositionAndRotateArrow(mousePos);
     }
 
-    void UpdateArc(Vector3 start, Vector3 mid, Vector3 end)
+    /// <summary>
+    /// Updates the positions of dots along the quadratic bezier curve between start, mid, and end points.
+    /// Also updates which dots are active.
+    /// </summary>
+    /// <param name="start">Start point of the arc.</param>
+    /// <param name="mid">Control point (midpoint with height offset).</param>
+    /// <param name="end">End point of the arc.</param>
+    private void UpdateArc(Vector3 start, Vector3 mid, Vector3 end)
     {
         int numDots = Mathf.CeilToInt(Vector3.Distance(start, end) / (spacing * spacingScale));
+        numDots = Mathf.Min(numDots, dotPool.Count);
 
-        for (int i = 0; i < numDots && i < dotPool.Count; i++)
+        for (int i = 0; i < numDots; i++)
         {
-            float t = i / (float)numDots;
-            t = Mathf.Clamp(t, 0f, 1f); // Ensure t stays within the range [0, 1]
-
+            float t = Mathf.Clamp01(i / (float)numDots);
             Vector3 position = QuadraticBezierPoint(start, mid, end, t);
 
             if (i != numDots - dotsToSkip)
@@ -59,59 +119,91 @@ public class ArcRenderer : MonoBehaviour
                 dotPool[i].transform.position = position;
                 dotPool[i].SetActive(true);
             }
+
             if (i == numDots - (dotsToSkip + 1) && i - dotsToSkip + 1 >= 0)
             {
                 arrowDirection = dotPool[i].transform.position;
             }
-
         }
 
         // Deactivate unused dots
         for (int i = numDots - dotsToSkip; i < dotPool.Count; i++)
         {
-            if (i > 0)
+            if (i >= 0)
             {
                 dotPool[i].SetActive(false);
             }
         }
     }
 
-    void PositionAndRotateArrow(Vector3 position)
+    /// <summary>
+    /// Positions the arrow GameObject at the specified position and rotates it to point along the arc direction.
+    /// </summary>
+    /// <param name="position">The position to place the arrow.</param>
+    private void PositionAndRotateArrow(Vector3 position)
     {
         arrowInstance.transform.position = position;
+
         Vector3 direction = arrowDirection - position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        angle += arrowAngleAdjustment;
-        arrowInstance.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // The same as (0,0,1)
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + arrowAngleAdjustment;
+
+        arrowInstance.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
-    Vector3 CalculateMidPoint(Vector3 start, Vector3 end)
+    /// <summary>
+    /// Calculates the midpoint between start and end positions with an added vertical arc height.
+    /// </summary>
+    /// <param name="start">Start position of the arc.</param>
+    /// <param name="end">End position of the arc.</param>
+    /// <returns>Calculated midpoint with vertical offset.</returns>
+    private Vector3 CalculateMidPoint(Vector3 start, Vector3 end)
     {
-        Vector3 midpoint = (start + end) / 2;
+        Vector3 midpoint = (start + end) * 0.5f;
         float arcHeight = Vector3.Distance(start, end) / 3f;
         midpoint.y += arcHeight;
         return midpoint;
     }
 
-    Vector3 QuadraticBezierPoint(Vector3 start, Vector3 control, Vector3 end, float t)
+    /// <summary>
+    /// Calculates a point on a quadratic bezier curve at parameter t.
+    /// </summary>
+    /// <param name="start">Start point.</param>
+    /// <param name="control">Control (mid) point.</param>
+    /// <param name="end">End point.</param>
+    /// <param name="t">Interpolation parameter (0 to 1).</param>
+    /// <returns>Point on the bezier curve.</returns>
+    private Vector3 QuadraticBezierPoint(Vector3 start, Vector3 control, Vector3 end, float t)
     {
         float u = 1 - t;
         float tt = t * t;
         float uu = u * u;
 
-        Vector3 point = uu * start;
-        point += 2 * u * t * control;
-        point += tt * end;
-        return point;
+        return uu * start + 2 * u * t * control + tt * end;
     }
 
-    void InitializeDotPool(int count)
+    /// <summary>
+    /// Instantiates the dot pool GameObjects and disables them initially.
+    /// </summary>
+    /// <param name="count">Number of dots to instantiate.</param>
+    private void InitializeDotPool(int count)
     {
+        dotPool.Clear();
+
         for (int i = 0; i < count; i++)
         {
             GameObject dot = Instantiate(dotPrefab, Vector3.zero, Quaternion.identity, transform);
             dot.SetActive(false);
             dotPool.Add(dot);
         }
+
+        Logger.Log($"ArcRenderer: Initialized dot pool with {count} dots.", this);
+    }
+
+    /// <summary>
+    /// Updates the spacing scale based on current screen width relative to baseScreenWidth.
+    /// </summary>
+    private void UpdateSpacingScale()
+    {
+        spacingScale = Screen.width / baseScreenWidth;
     }
 }

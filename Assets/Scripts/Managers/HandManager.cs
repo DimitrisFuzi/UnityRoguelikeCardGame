@@ -112,9 +112,10 @@ public class HandManager : MonoBehaviour
         if (cardObject != null)
         {
             cardsInHand.Remove(cardObject);
-            DeckManager.Instance?.DiscardCard(card);
-            Destroy(cardObject);
             UpdateHandLayout();
+            DeckManager.Instance?.DiscardCard(card);
+            Destroy(cardObject, 0.01f);
+            
         }
         else
         {

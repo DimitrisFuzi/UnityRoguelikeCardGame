@@ -64,7 +64,8 @@ namespace MyProjectF.Assets.Scripts.Cards
             SingleEnemy,   // Targets a single enemy unit
             AllEnemies,    // Targets all enemy units
             Self,          // Targets the player (self-buff, heal, etc.)
-            AllAllies      // (Future use) Targets all allies
+            AllAllies,
+            None// (Future use) Targets all allies
         }
     }
 }

@@ -20,12 +20,12 @@ MonoBehaviour:
   energyCost: 1
   cardTypeSprite: {fileID: -2081245629, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
   effects:
-  - rid: 8812507693837714229
-  targetType: 0
+  - rid: 5422838935976411204
+  targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 8812507693837714229
-      type: {class: ArmorEffect, ns: , asm: Assembly-CSharp}
+    - rid: 5422838935976411204
+      type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
       data:
         armorAmount: 5

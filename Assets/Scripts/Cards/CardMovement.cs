@@ -119,13 +119,31 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (currentState == 2 && Input.mousePosition.y > cardPlay.y)
+            if (currentState == 2)
             {
-                currentState = 3;
-                playArrow.SetActive(true);
-                rectTransform.localPosition = Vector3.Lerp(rectTransform.position, playPosition, lerpFactor);
+                if (cardData.targetType == Card.TargetType.SingleEnemy)
+                {
+                    if (Input.mousePosition.y > cardPlay.y)
+                    {
+                        currentState = 3;
+                        playArrow.SetActive(true);
+                        rectTransform.localPosition = Vector3.Lerp(rectTransform.position, playPosition, lerpFactor);
+                    }
+                    else
+                    {
+                        HandleDragState();
+                    }
+                }
+                else
+                {
+                    // Self: no arc, just drag
+                    HandleDragState();
+                }
             }
         }
+
+
+
 
         public void OnEndDrag(PointerEventData eventData)
         {
@@ -134,25 +152,37 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (cardData == null)
             {
                 Logger.LogError("CardMovement: Card data is NULL.", this);
+                TransitionToIdle();
                 return;
             }
 
             if (!PlayerManager.Instance.CanPlayCard(cardData))
             {
                 Logger.Log("CardMovement: Not enough energy to play this card.", this);
+                TransitionToIdle();
                 return;
             }
 
-            Enemy targetEnemy = GetEnemyUnderCursor();
-            CharacterStats target = ResolveTarget(targetEnemy);
+            CharacterStats target = null;
 
-            if (target == null)
+            if (cardData.targetType == Card.TargetType.SingleEnemy)
             {
-                Logger.LogWarning("CardMovement: Card requires a target, but none was found.", this);
-                return;
+                Enemy targetEnemy = GetEnemyUnderCursor();
+                target = ResolveTarget(targetEnemy);
+
+                if (target == null)
+                {
+                    Logger.LogWarning("CardMovement: Card requires a target but none found.", this);
+                    TransitionToIdle();
+                    return;
+                }
+            }
+            else if (cardData.targetType == Card.TargetType.Self)
+            {
+                target = PlayerStats.Instance;
             }
 
-            // Apply all effects from the card to the resolved target
+            // ✅ Apply each effect
             foreach (EffectData effect in cardData.GetCardEffects())
             {
                 effect.ApplyEffect(PlayerStats.Instance, target);
@@ -160,7 +190,12 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             PlayerManager.Instance.UseCard(cardData);
             HandManager.Instance.RemoveCardFromHand(cardData);
+
+            TransitionToIdle();
         }
+
+
+
 
         /// <summary>
         /// Visual feedback when hovering.
@@ -266,12 +301,18 @@ namespace MyProjectF.Assets.Scripts.Cards
                 case Card.TargetType.SingleEnemy:
                     return enemy;
                 case Card.TargetType.AllEnemies:
+                    // Return null → τα effects πρέπει να το χειριστούν, πχ AoE loop
+                    return null;
                 case Card.TargetType.Self:
-                case Card.TargetType.AllAllies:
                     return PlayerStats.Instance;
+                case Card.TargetType.AllAllies:
+                    // Future use
+                    return null;
                 default:
                     return null;
             }
         }
+
+
     }
 }

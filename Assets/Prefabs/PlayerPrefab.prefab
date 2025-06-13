@@ -301,8 +301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86606e38029157c4a963f97c1e862b3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialEnergy: 5
-  energy: 3
+  initialEnergy: 10
+  energy: 10
 --- !u!114 &1798116372734490168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,7 +315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bae8bc040c73c2445b8ca3fa2d85b625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 0}
   healthText: {fileID: 456235583612931308}
   armorText: {fileID: 755013243027631916}
   energyText: {fileID: 2153755495170963877}

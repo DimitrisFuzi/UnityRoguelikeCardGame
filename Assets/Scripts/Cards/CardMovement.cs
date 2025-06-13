@@ -18,6 +18,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         private Vector3 originalScale;
         private Quaternion originalRotation;
         private Vector3 originalPosition;
+        private int originalSiblingIndex;
+
 
         private int currentState = 0; // 0: Idle, 1: Hover, 2: Drag, 3: Play
 
@@ -90,6 +92,8 @@ namespace MyProjectF.Assets.Scripts.Cards
             rectTransform.localPosition = originalPosition;
             glowEffect.SetActive(false);
             playArrow.SetActive(false);
+            transform.SetSiblingIndex(originalSiblingIndex);
+
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -98,8 +102,13 @@ namespace MyProjectF.Assets.Scripts.Cards
             {
                 SaveOriginalTransform();
                 currentState = 1;
+
+                originalSiblingIndex = transform.GetSiblingIndex();
+                // bring to front
+                transform.SetAsLastSibling();
             }
         }
+
 
         public void OnPointerExit(PointerEventData eventData)
         {

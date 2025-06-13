@@ -20,7 +20,6 @@ public class EnemyManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            Logger.Log("✅ EnemyManager initialized.", this);
         }
         else
         {

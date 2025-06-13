@@ -22,7 +22,6 @@ namespace MyProjectF.Assets.Scripts.Effects
             if (target != null)
             {
                 target.AddArmor(armorAmount);
-                Debug.Log($"🛡️ {source.gameObject.name} added {armorAmount} armor to {target.gameObject.name}.");
             }
         }
     }

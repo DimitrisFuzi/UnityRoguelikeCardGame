@@ -63,7 +63,6 @@ public class PlayerManager : MonoBehaviour
         playerStats.ResetEnergy();
         playerStats.ResetArmor();
 
-        Logger.Log("✅ Player initialized successfully.", this);
     }
 
     /// <summary>
@@ -74,7 +73,6 @@ public class PlayerManager : MonoBehaviour
         int playerEnergy = PlayerStats.Instance.energy;
         bool canPlay = playerEnergy >= card.energyCost;
 
-        Logger.Log($"🔋 CanPlayCard: '{card.cardName}' costs {card.energyCost}, Player has {playerEnergy}. Result: {canPlay}", this);
         return canPlay;
     }
 
@@ -89,8 +87,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-        PlayerStats.Instance.UseEnergy(card.energyCost);
-        Logger.Log($"🃏 Played card '{card.cardName}'.", this);
+        PlayerStats.Instance.UseEnergy(card.energyCost);;
     }
 
     /// <summary>

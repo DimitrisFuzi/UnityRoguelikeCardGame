@@ -66,8 +66,6 @@ public abstract class CharacterStats : MonoBehaviour
         int damageToHealth = damage - damageToArmor;
         CurrentHealth -= damageToHealth;
 
-        Logger.Log($"{gameObject.name} took {damage} damage! HP: {CurrentHealth}/{MaxHealth}, Armor: {Armor}", this);
-
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         OnArmorChanged?.Invoke(Armor);
 

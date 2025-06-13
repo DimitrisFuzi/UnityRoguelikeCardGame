@@ -20,7 +20,6 @@ public class PlayerDisplay : MonoBehaviour
         if (playerStats == null)
         {
             playerStats = PlayerStats.Instance;
-            Logger.Log($"PlayerDisplay assigned playerStats = {playerStats}", this);
         }
         else
         {
@@ -46,11 +45,9 @@ public class PlayerDisplay : MonoBehaviour
     {
         if (playerStats == null)
         {
-            Logger.LogWarning("❗ PlayerStats is null in UpdatePlayerUI!", this);
             SetFallbackDisplay();
             return;
         }
-        Logger.Log($"Updating Player UI: HP={playerStats.CurrentHealth}/{playerStats.MaxHealth}, Armor={playerStats.Armor}, Energy={playerStats.energy}", this);
         healthText.text = $"{playerStats.CurrentHealth} / {playerStats.MaxHealth}";
         armorText.text = $"{playerStats.Armor}";
         energyText.text = $"{playerStats.energy}";

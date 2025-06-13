@@ -22,7 +22,6 @@ public class DamageEffect : EffectData
         if (target != null)
         {
             target.TakeDamage(damageAmount);
-            Debug.Log($"🔥 {source.gameObject.name} dealt {damageAmount} damage to {target.gameObject.name}.");
         }
     }
 }

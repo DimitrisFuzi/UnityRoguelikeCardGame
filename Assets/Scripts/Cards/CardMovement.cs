@@ -292,7 +292,6 @@ namespace MyProjectF.Assets.Scripts.Cards
                 Enemy enemy = result.gameObject.GetComponentInParent<Enemy>();
                 if (enemy != null)
                 {
-                    Logger.Log($"CardMovement: Enemy found: {enemy.enemyName}", this);
                     return enemy;
                 }
             }

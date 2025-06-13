@@ -50,7 +50,6 @@ public class GameManager : MonoBehaviour
         T manager = GetComponentInChildren<T>();
         if (manager != null)
         {
-            Logger.Log($"✅ Found {typeof(T).Name} in children.", this);
             return manager;
         }
 

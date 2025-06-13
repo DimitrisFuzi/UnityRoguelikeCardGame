@@ -26,7 +26,6 @@ namespace MyProjectF.Assets.Scripts.Player
             {
                 Instance = this;
                 InitializeStats(100); // Example starting health
-                Logger.Log($"PlayerStats Awake. Instance ID: {GetInstanceID()}", this);
 
                 energy = initialEnergy;
                 NotifyUI();
@@ -79,7 +78,6 @@ namespace MyProjectF.Assets.Scripts.Player
             if (energy < 0) energy = 0;
 
             NotifyUI();
-            Logger.Log($"⚡ Used {amount} energy. Remaining: {energy}", this);
         }
 
         /// <summary>

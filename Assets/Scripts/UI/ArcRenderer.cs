@@ -71,7 +71,6 @@ public class ArcRenderer : MonoBehaviour
         InitializeDotPool(poolSize);
         UpdateSpacingScale();
 
-        Logger.Log($"ArcRenderer initialized with pool size {poolSize} and spacing scale {spacingScale:F2}.", this);
     }
 
     /// <summary>
@@ -196,7 +195,6 @@ public class ArcRenderer : MonoBehaviour
             dotPool.Add(dot);
         }
 
-        Logger.Log($"ArcRenderer: Initialized dot pool with {count} dots.", this);
     }
 
     /// <summary>

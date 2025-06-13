@@ -107,7 +107,6 @@ public class DeckManager : MonoBehaviour
     {
         discardPile.Add(card);
         NotifyDiscardPileUI();
-        Logger.Log($"🗑️ Card '{card.cardName}' moved to Discard Pile.", this);
     }
 
     /// <summary>

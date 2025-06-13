@@ -32,13 +32,13 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn()
     {
-        Debug.Log("🎮 Γύρος του παίκτη!");
+        Debug.Log("🎮 Player Turn!");
         OnPlayerTurnStart?.Invoke();
     }
 
     public void EndPlayerTurn()
     {
-        Debug.Log("👿 Γύρος του εχθρού!");
+        Debug.Log("👿 Enemies Turn!");
         OnEnemyTurnStart?.Invoke();
         StartCoroutine(EnemyTurn());
     }

@@ -49,7 +49,6 @@ public class PlayerDeck : MonoBehaviour
             }
         }
 
-        Logger.Log($"📚 Loaded {allCardsDictionary.Count} cards from Resources.", this);
     }
 
     /// <summary>
@@ -79,7 +78,6 @@ public class PlayerDeck : MonoBehaviour
             }
         }
 
-        Logger.Log($"📜 Initialized starting deck with {playerDeck.Count} cards.", this);
     }
 
     /// <summary>

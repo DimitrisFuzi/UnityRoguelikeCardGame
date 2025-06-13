@@ -49,7 +49,6 @@ public class UIObjectPositioner : MonoBehaviour
     {
         if (objectToPosition == null)
         {
-            Logger.LogWarning("UIObjectPositioner: objectToPosition is not assigned.", this);
             return;
         }
 

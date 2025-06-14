@@ -8,7 +8,7 @@ using MyProjectF.Assets.Scripts.Player;
 namespace MyProjectF.Assets.Scripts.Cards
 {
     /// <summary>
-    /// Handles user interactions with the card, including hover, drag, and play mechanics.
+    /// Handles card hover, drag, play mechanics.
     /// </summary>
     public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler, IEndDragHandler
     {
@@ -20,18 +20,21 @@ namespace MyProjectF.Assets.Scripts.Cards
         private Vector3 originalPosition;
         private int originalSiblingIndex;
 
-
         private int currentState = 0; // 0: Idle, 1: Hover, 2: Drag, 3: Play
 
+        [Header("Hand State")]
+        [Tooltip("Is the card currently in hand.")]
+        public bool isInHand = true;
+
         [Header("Card Visual Feedback")]
-        [SerializeField] private float selectScale = 1.1f; // Scale factor when hovered
-        [SerializeField] private GameObject glowEffect;    // Glow effect on hover
-        [SerializeField] private GameObject playArrow;     // Arrow shown when card is in play state
+        [SerializeField] private float selectScale = 1.1f;
+        [SerializeField] private GameObject glowEffect;
+        [SerializeField] private GameObject playArrow;
 
         [Header("Card Play Mechanics")]
-        [SerializeField] private Vector2 cardPlay;         // Position threshold to enter play state
-        [SerializeField] private Vector3 playPosition;     // Target position during play
-        [SerializeField] private float lerpFactor = 0.1f;  // Lerp smoothing factor
+        [SerializeField] private Vector2 cardPlay;
+        [SerializeField] private Vector3 playPosition;
+        [SerializeField] private float lerpFactor = 0.1f;
 
         [Header("Position Calculations")]
         [SerializeField] private int cardPlayDivider = 4;
@@ -81,9 +84,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
         }
 
-        /// <summary>
-        /// Resets card to original position and appearance.
-        /// </summary>
         private void TransitionToIdle()
         {
             currentState = 0;
@@ -93,21 +93,25 @@ namespace MyProjectF.Assets.Scripts.Cards
             glowEffect.SetActive(false);
             playArrow.SetActive(false);
             transform.SetSiblingIndex(originalSiblingIndex);
-
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!isInHand || !enabled)
+            {
+                Debug.Log($"{gameObject.name} | Enter IGNORED because not in hand or disabled");
+                return;
+            }
+
             if (currentState == 0)
             {
                 SaveOriginalTransform();
                 currentState = 1;
-
                 originalSiblingIndex = transform.GetSiblingIndex();
-                // bring to front
                 transform.SetAsLastSibling();
             }
         }
+
 
 
         public void OnPointerExit(PointerEventData eventData)
@@ -145,18 +149,14 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
                 else
                 {
-                    // Self: no arc, just drag
                     HandleDragState();
                 }
             }
         }
 
-
-
-
         public void OnEndDrag(PointerEventData eventData)
         {
-            canvasRectTransform?.SetAsLastSibling();
+            Debug.Log("OnEndDrag CALLED");
 
             if (cardData == null)
             {
@@ -171,6 +171,8 @@ namespace MyProjectF.Assets.Scripts.Cards
                 TransitionToIdle();
                 return;
             }
+
+            Debug.Log("Playing card...");
 
             CharacterStats target = null;
 
@@ -191,42 +193,30 @@ namespace MyProjectF.Assets.Scripts.Cards
                 target = PlayerStats.Instance;
             }
 
-            // ✅ Apply each effect
             foreach (EffectData effect in cardData.GetCardEffects())
             {
                 effect.ApplyEffect(PlayerStats.Instance, target);
             }
 
             PlayerManager.Instance.UseCard(cardData);
-            HandManager.Instance.RemoveCardFromHand(cardData);
+            HandManager.Instance.RemoveCardFromHand(this.gameObject);
 
             TransitionToIdle();
         }
 
 
-
-
-        /// <summary>
-        /// Visual feedback when hovering.
-        /// </summary>
         private void HandleHoverState()
         {
             glowEffect.SetActive(true);
             rectTransform.localScale = originalScale * selectScale;
         }
 
-        /// <summary>
-        /// Updates card position while dragging.
-        /// </summary>
         private void HandleDragState()
         {
             rectTransform.localRotation = Quaternion.identity;
             rectTransform.position = Vector3.Lerp(rectTransform.position, Input.mousePosition, lerpFactor);
         }
 
-        /// <summary>
-        /// Positions card in play state.
-        /// </summary>
         private void HandlePlayState()
         {
             rectTransform.localPosition = playPosition;
@@ -239,9 +229,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
         }
 
-        /// <summary>
-        /// Stores current transform as the original.
-        /// </summary>
         private void SaveOriginalTransform()
         {
             originalPosition = rectTransform.localPosition;
@@ -249,9 +236,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             originalScale = rectTransform.localScale;
         }
 
-        /// <summary>
-        /// Calculates Y threshold for entering play state.
-        /// </summary>
         private void UpdateCardPlayPosition()
         {
             if (canvasRectTransform != null && cardPlayDivider != 0)
@@ -261,9 +245,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
         }
 
-        /// <summary>
-        /// Calculates target position for card during play state.
-        /// </summary>
         private void UpdatePlayPosition()
         {
             if (canvasRectTransform != null && playPositionXDivider != 0 && playPositionYDivider != 0)
@@ -274,9 +255,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
         }
 
-        /// <summary>
-        /// Uses raycasting to find enemy under the cursor.
-        /// </summary>
         private Enemy GetEnemyUnderCursor()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current)
@@ -299,9 +277,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             return null;
         }
 
-        /// <summary>
-        /// Resolves the correct target for the card based on its target type.
-        /// </summary>
         private CharacterStats ResolveTarget(Enemy enemy)
         {
             switch (cardData.targetType)
@@ -309,18 +284,12 @@ namespace MyProjectF.Assets.Scripts.Cards
                 case Card.TargetType.SingleEnemy:
                     return enemy;
                 case Card.TargetType.AllEnemies:
-                    // Return null → τα effects πρέπει να το χειριστούν, πχ AoE loop
-                    return null;
+                    return null; // AoE handled in effect loop
                 case Card.TargetType.Self:
                     return PlayerStats.Instance;
-                case Card.TargetType.AllAllies:
-                    // Future use
-                    return null;
                 default:
                     return null;
             }
         }
-
-
     }
 }

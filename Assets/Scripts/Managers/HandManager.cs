@@ -3,8 +3,8 @@ using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
 
 /// <summary>
-/// Manages the player's hand, including drawing, adding, removing, and arranging cards.
-/// Implements singleton pattern for global access.
+/// Manages the player's hand: draw, add, remove, arrange.
+/// Singleton for global access.
 /// </summary>
 public class HandManager : MonoBehaviour
 {
@@ -22,12 +22,12 @@ public class HandManager : MonoBehaviour
     [Header("Hand Size Settings")]
     [SerializeField] private int maxHandSize = 10;
     [SerializeField] private int startingHandSize = 5;
+
     public int MaxHandSize => maxHandSize;
     public int StartingHandSize => startingHandSize;
-
-    private List<GameObject> cardsInHand = new();
-
     public int CurrentHandSize => cardsInHand.Count;
+
+    private readonly List<GameObject> cardsInHand = new();
 
     private void Awake()
     {
@@ -43,7 +43,7 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Draws the starting number of cards for the turn.
+    /// Draw starting cards for a new turn.
     /// </summary>
     public void DrawCardsForTurn()
     {
@@ -60,9 +60,8 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a card GameObject to the hand and updates the hand layout.
+    /// Adds a new card GameObject to the hand and rearranges.
     /// </summary>
-    /// <param name="cardObject">Card GameObject to add.</param>
     public void AddCardToHand(GameObject cardObject)
     {
         if (CurrentHandSize >= maxHandSize)
@@ -76,7 +75,7 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the visual layout of cards in the hand using fan arrangement.
+    /// Updates the hand fan layout and flags each card as in hand.
     /// </summary>
     private void UpdateHandLayout()
     {
@@ -86,11 +85,19 @@ public class HandManager : MonoBehaviour
         {
             cardsInHand[0].transform.localRotation = Quaternion.identity;
             cardsInHand[0].transform.localPosition = Vector3.zero;
+
+            // Mark as in hand
+            var cm = cardsInHand[0].GetComponent<CardMovement>();
+            if (cm) cm.isInHand = true;
+
             return;
         }
 
         for (int i = 0; i < cardCount; i++)
         {
+            var cm = cardsInHand[i].GetComponent<CardMovement>();
+            if (cm) cm.isInHand = true;
+
             float angle = fanSpread * (i - (cardCount - 1) / 2f);
             float xOffset = cardSpacing * (i - (cardCount - 1) / 2f);
             float normalized = (2f * i / (cardCount - 1)) - 1f;
@@ -102,24 +109,37 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Removes a card from the hand, discards it, and destroys the GameObject.
+    /// Removes a card GameObject from the hand, discards it, and destroys the GameObject.
     /// </summary>
-    /// <param name="card">The card data to remove.</param>
-    public void RemoveCardFromHand(Card card)
+    /// <param name="cardObject">The card GameObject to remove.</param>
+    public void RemoveCardFromHand(GameObject cardObject)
     {
-        GameObject cardObject = cardsInHand.Find(c => c.GetComponent<CardDisplay>().cardData == card);
-
-        if (cardObject != null)
+        if (cardObject != null && cardsInHand.Contains(cardObject))
         {
             cardsInHand.Remove(cardObject);
+
+            // Disable CardMovement to prevent hover/drag during destroy delay
+            var cm = cardObject.GetComponent<CardMovement>();
+            if (cm != null) cm.enabled = false;
+
+            // Discard the card data
+            var cd = cardObject.GetComponent<CardDisplay>();
+            if (cd != null)
+                DeckManager.Instance?.DiscardCard(cd.cardData);
+
+            // Update hand layout
             UpdateHandLayout();
-            DeckManager.Instance?.DiscardCard(card);
+
+            // Destroy the GameObject after a tiny delay
             Destroy(cardObject, 0.01f);
-            
         }
         else
         {
-            Logger.LogWarning($"Tried to remove card not found in hand: {card.cardName}", this);
+            Logger.LogWarning("Tried to remove null or not found card", this);
         }
     }
+
+
+
+
 }

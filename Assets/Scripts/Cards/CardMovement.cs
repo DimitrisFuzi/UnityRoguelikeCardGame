@@ -190,7 +190,6 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// <param name="eventData">Pointer event data.</param>
         public void OnEndDrag(PointerEventData eventData)
         {
-            Debug.Log("OnEndDrag CALLED");
 
             if (cardData == null)
             {

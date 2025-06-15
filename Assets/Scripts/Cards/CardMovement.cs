@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Player;
+using MyProjectF.Assets.Scripts.Managers;
+
 
 namespace MyProjectF.Assets.Scripts.Cards
 {
@@ -117,9 +119,9 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// <param name="eventData">Pointer event data.</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!isInHand || !enabled)
+            if (!isInHand || !enabled || BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn)
             {
-                Debug.Log($"{gameObject.name} | Enter IGNORED because not in hand or disabled");
+                // Ignore if input is locked or not player's turn or card not interactable
                 return;
             }
 
@@ -131,6 +133,7 @@ namespace MyProjectF.Assets.Scripts.Cards
                 transform.SetAsLastSibling();
             }
         }
+
 
         /// <summary>
         /// Called when the pointer exits the card area; cancels hover state.
@@ -150,6 +153,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// <param name="eventData">Pointer event data.</param>
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
+
             if (currentState == 1)
             {
                 currentState = 2;
@@ -162,6 +167,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// <param name="eventData">Pointer event data.</param>
         public void OnDrag(PointerEventData eventData)
         {
+            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
+
             if (currentState == 2)
             {
                 if (cardData.targetType == Card.TargetType.SingleEnemy)
@@ -190,6 +197,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// <param name="eventData">Pointer event data.</param>
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
 
             if (cardData == null)
             {

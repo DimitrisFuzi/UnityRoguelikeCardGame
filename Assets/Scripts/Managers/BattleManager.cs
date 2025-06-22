@@ -18,15 +18,19 @@ namespace MyProjectF.Assets.Scripts.Managers
         private EnemyManager enemyManager;
         private PlayerManager playerManager;
 
+        /// <summary>
+        /// Flag to control whether player input is locked (disabled).
+        /// </summary>
+        public bool IsPlayerInputLocked { get; private set; } = false;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
-                Logger.LogWarning("Duplicate BattleManager found. Destroying...", this);
+                Debug.LogWarning("Duplicate BattleManager found. Destroying...");
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
         }
 
@@ -74,7 +78,25 @@ namespace MyProjectF.Assets.Scripts.Managers
         public void SetBattleState(BattleState newState)
         {
             State = newState;
-            Logger.Log($"⚔️ Battle state changed to: {newState}", this);
+            Debug.Log($"⚔️ Battle state changed to: {newState}");
+        }
+
+        /// <summary>
+        /// Locks player input to prevent interactions.
+        /// </summary>
+        public void LockPlayerInput()
+        {
+            IsPlayerInputLocked = true;
+            Debug.Log("🔒 Player Input LOCKED");
+        }
+
+        /// <summary>
+        /// Unlocks player input to allow interactions.
+        /// </summary>
+        public void UnlockPlayerInput()
+        {
+            IsPlayerInputLocked = false;
+            Debug.Log("🔓 Player Input UNLOCKED");
         }
     }
 }

@@ -1,0 +1,20 @@
+{
+    "asset": "9425d086fae43de4cb2db26a1c7782c0",
+    "fileName": "0197b27b-0dda-7c7b-80fd-b23052298959.jpg",
+    "prompt": "stylized battle scene background in a dark enchanted forest at night, open flat stone ground covering the lower half of the image, clean unobstructed ground with no objects or trees, dense dark forest and misty atmosphere only in the upper background, hand-painted style, semi-realistic, inspired by Slay the Spire, no characters, full HD, 16:9",
+    "negativePrompt": "no characters, no trees or objects on the ground, no rocks or obstacles in the lower half, no bright areas, no UI, no futuristic elements",
+    "model": "4474eebb-015a-4f8e-a2db-79c73b6b5b00",
+    "modelName": "Bold Lines Illustrations",
+    "customSeed": -1,
+    "w3CTraceId": "abaf814d1b3c8c0c034be2aca4aca28a",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

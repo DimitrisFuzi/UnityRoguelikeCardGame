@@ -1,0 +1,20 @@
+{
+    "asset": "ae510e0a02803c84f9d0fe945fd4856d",
+    "fileName": "0197b25a-44b3-7b61-8e79-f95696aa563e.png",
+    "prompt": "stylized battle scene background in a dark enchanted forest at night, open flat stone ground covering the lower half of the image, clean unobstructed ground with no objects or trees, dense dark forest and misty atmosphere only in the upper background, hand-painted style, semi-realistic, inspired by Slay the Spire, no characters, full HD, 16:9",
+    "negativePrompt": "no characters, no trees or objects on the ground, no rocks or obstacles in the lower half, no bright areas, no UI, no futuristic elements",
+    "model": "16bed882-01e7-4746-b232-15ae97eb1d62",
+    "modelName": "Fantasy RPG",
+    "customSeed": -1,
+    "w3CTraceId": "c31dc3d782149d70918ea91cabfed09e",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

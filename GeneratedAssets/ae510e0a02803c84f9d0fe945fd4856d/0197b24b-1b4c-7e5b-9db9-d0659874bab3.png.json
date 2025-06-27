@@ -1,0 +1,20 @@
+{
+    "asset": "ae510e0a02803c84f9d0fe945fd4856d",
+    "fileName": "0197b24b-1b4c-7e5b-9db9-d0659874bab3.png",
+    "prompt": "battlefield in a dark enchanted forest at night, wide open flat ground covering the lower half of the image, made of stone or dirt, clean and unobstructed, deep dense trees and misty atmosphere in the background, stylized digital painting, semi-realistic, concept art for a fantasy card game, slay the spire inspired, full HD, no characters",
+    "negativePrompt": "no characters, no objects, no UI, no creatures, no lights, no clutter, no futuristic elements, no sky",
+    "model": "48889f10-63e9-4608-8eea-a668ac2aff3e",
+    "modelName": "Casual Environments",
+    "customSeed": -1,
+    "w3CTraceId": "301adc8dc190a0a394bbe69eff7adad3",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -1,0 +1,20 @@
+{
+    "asset": "4394e1069ddc76345b4d31bdff952474",
+    "fileName": "0197b26e-2896-7d04-9159-08f414cb6c77.png",
+    "prompt": "stylized battle scene background in a dark enchanted forest at night, open flat stone ground covering the lower half of the image, clean unobstructed ground with no objects or trees, dense dark forest and misty atmosphere only in the upper background, hand-painted style, semi-realistic, inspired by Slay the Spire, no characters, full HD, 16:9",
+    "negativePrompt": "no characters, no trees or objects on the ground, no rocks or obstacles in the lower half, no bright areas, no UI, no futuristic elements",
+    "model": "9b847f98-16fe-455c-b321-1d137222e436",
+    "modelName": "Manga",
+    "customSeed": -1,
+    "w3CTraceId": "e7a9a8611b5f52896caa0029041cf48e",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

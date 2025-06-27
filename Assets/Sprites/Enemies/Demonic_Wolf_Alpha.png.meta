@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Demonic_Wolf_Alpha_0: -7182203434520209011
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

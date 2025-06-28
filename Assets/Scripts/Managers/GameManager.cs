@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
             InitializeManagers();
             Logger.Log("✅ GameManager initialized.", this);
         }
@@ -34,10 +34,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void InitializeManagers()
     {
-        OptionsManager = LoadOrInstantiateManager<OptionsManager>("Prefabs/OptionsManager");
-        AudioManager = LoadOrInstantiateManager<AudioManager>("Prefabs/AudioManager");
-        DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/DeckManager");
+        OptionsManager = LoadOrInstantiateManager<OptionsManager>("Prefabs/Managers/OptionsManager");
+        AudioManager = LoadOrInstantiateManager<AudioManager>("Prefabs/Managers/AudioManager");
+        DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/Managers/DeckManager");
     }
+
 
     /// <summary>
     /// Generic helper for loading or instantiating manager prefabs.

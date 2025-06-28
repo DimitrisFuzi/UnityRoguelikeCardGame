@@ -1,0 +1,20 @@
+{
+    "asset": "9425d086fae43de4cb2db26a1c7782c0",
+    "fileName": "0197b5d5-89b1-7100-b3ed-d3fe28966434.png",
+    "prompt": "stylized dark forest battle background, nighttime atmosphere, wide open flat terrain covering the entire bottom of the image from left to right, no trees or objects in the ground area, forest starts only in the upper half, mysterious glowing mist in the background, semi-realistic, hand-painted style, Slay the Spire inspired, 16:9 ratio, full HD",
+    "negativePrompt": "no trees or rocks on ground, no clutter in the lower half, no characters, no bright colors, no sci-fi, no perspective distortion",
+    "model": "1907338b-7f00-4b98-83ff-53f103cd1f7d",
+    "modelName": "Comic",
+    "customSeed": -1,
+    "w3CTraceId": "3598b6df7c8b357342e9cf3dc7d23dd5",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

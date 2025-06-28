@@ -1,0 +1,20 @@
+{
+    "asset": "3639f3182e96b1546b9bc4f50a6a22e9",
+    "fileName": "0197b608-228d-71f0-8a48-0ebaa4a49879.png",
+    "prompt": "epic dark forest boss arena, large flat forest ground on the bottom half, no vegetation or objects, the background has giant twisted ancient trees, glowing magical roots, bioluminescent fog, faint magical light filtering through, mystical and foreboding mood, semi-realistic hand-painted style, Slay the Spire environment style, fantasy forest guardian battle setting, moody shadows, 16:9, digital painting, no characters, no UI\r\n",
+    "negativePrompt": "no characters, no creatures, no weapons, no UI, no text, no bright lighting, no modern objects, no sci-fi elements, no uneven terrain\r\n",
+    "model": "1907338b-7f00-4b98-83ff-53f103cd1f7d",
+    "modelName": "Comic",
+    "customSeed": -1,
+    "w3CTraceId": "5ed67faff4d632fdddee3ce4ba719939",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

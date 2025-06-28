@@ -1,0 +1,20 @@
+{
+    "asset": "9425d086fae43de4cb2db26a1c7782c0",
+    "fileName": "0197b5d0-d582-7e17-9e86-d7fb4bf135a2.png",
+    "prompt": "stylized battle scene background in a dark enchanted forest at night, open flat stone ground covering the lower half of the image, clean unobstructed ground with no objects or trees, dense dark forest and misty atmosphere only in the upper background, hand-painted style, semi-realistic, inspired by Slay the Spire, no characters, full HD, 16:9",
+    "negativePrompt": "no characters, no trees or objects on the ground, no rocks or obstacles in the lower half, no bright areas, no UI, no futuristic elements",
+    "model": "1907338b-7f00-4b98-83ff-53f103cd1f7d",
+    "modelName": "Comic",
+    "customSeed": -1,
+    "w3CTraceId": "e7f8385b7800f333e8d88e598cdbf3dc",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -1,0 +1,20 @@
+{
+    "asset": "3639f3182e96b1546b9bc4f50a6a22e9",
+    "fileName": "0197b605-09fc-74c1-aa2b-674bdce4161f.png",
+    "prompt": "stylized dark forest boss battle arena, mysterious sacred clearing deep in the forest, massive ancient trees with twisted roots forming natural archways, subtle glowing runes on bark, faint magical light filtering from above, flat open ground covering the entire bottom half of the image with no vegetation or rocks, empty stage-like clearing, dramatic atmosphere, dark blue and green color palette, semi-realistic hand-painted style, game environment concept art, Slay the Spire inspired, fantasy forest guardian theme, 16:9 aspect ratio, full HD\r\n",
+    "negativePrompt": "no characters, no creatures, no weapons, no UI, no text, no bright lighting, no modern objects, no sci-fi elements, no uneven terrain\r\n",
+    "model": "1907338b-7f00-4b98-83ff-53f103cd1f7d",
+    "modelName": "Comic",
+    "customSeed": -1,
+    "w3CTraceId": "9d254d4bc6c502236f3018d18558dea4",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

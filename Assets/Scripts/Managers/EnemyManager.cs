@@ -33,11 +33,15 @@ public class EnemyManager : MonoBehaviour
     /// </summary>
     public void InitializeEnemies()
     {
-        EnemyData forestBeast = Resources.Load<EnemyData>("Enemies/Forest Beast");
-        EnemyData spider = Resources.Load<EnemyData>("Enemies/Spider");
+        //EnemyData forestBeast = Resources.Load<EnemyData>("Enemies/Forest Beast");
+        //EnemyData spider = Resources.Load<EnemyData>("Enemies/Spider");
+        EnemyData wolf1 = Resources.Load<EnemyData>("Enemies/Wolf1");
+        EnemyData wolf2 = Resources.Load<EnemyData>("Enemies/Wolf2");
 
-        SpawnEnemy(forestBeast);
-        SpawnEnemy(spider);
+        //SpawnEnemy(forestBeast);
+        //SpawnEnemy(spider);
+        SpawnEnemy(wolf1);
+        SpawnEnemy(wolf2);
     }
 
     /// <summary>

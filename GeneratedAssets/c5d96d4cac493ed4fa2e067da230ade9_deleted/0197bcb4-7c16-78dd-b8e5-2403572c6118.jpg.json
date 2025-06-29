@@ -1,0 +1,20 @@
+{
+    "asset": "c5d96d4cac493ed4fa2e067da230ade9",
+    "fileName": "0197bcb4-7c16-78dd-b8e5-2403572c6118.jpg",
+    "prompt": "Stylized glowing energy orb icon for a card game, magical blue light, semi-realistic hand-painted look, circular shape, centered, transparent background, clean UI style, fantasy theme, no text",
+    "negativePrompt": "",
+    "model": "a6dd7487-c9ba-4a8a-8e68-2c94b715b076",
+    "modelName": "Human Interface",
+    "customSeed": -1,
+    "w3CTraceId": "0e740060bd3d45be2a2f72792f0b28e6",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

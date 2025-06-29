@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1916cf9ab1f89db4aad7d8154aec988f
+guid: 01e7020ab86c3624bb9875f322976e3c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4933807580141378988
-    second: DrawPileSprite_0
+      213: -8535914239303230452
+    second: DrawpileFinal_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DrawPileSprite_0
+      name: DrawpileFinal_0
       rect:
         serializedVersion: 2
-        x: 12
+        x: 0
         y: 0
-        width: 446
-        height: 496
+        width: 775
+        height: 656
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cadd47c8ad7687440800000000000000
-      internalID: 4933807580141378988
+      spriteID: c0cd12d79375a8980800000000000000
+      internalID: -8535914239303230452
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DrawPileSprite_0: 4933807580141378988
+      DrawpileFinal_0: -8535914239303230452
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

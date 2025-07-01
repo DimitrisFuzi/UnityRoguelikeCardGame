@@ -6,7 +6,15 @@ public class EnergyImageAnimation : MonoBehaviour
 
     void Start()
     {
-        animator = GetComponent<Animator>();
-        animator.Play("EnergyOrb_Animation");
+        animator = GetComponent<Animator>(); // Αφαίρεση του "Animator" πριν από τη μεταβλητή
+        if (animator != null)
+        {
+            Debug.Log("Animator found and active.");
+            //animator.Play("EnergySpriteAnimation1");
+        }
+        else
+        {
+            Debug.LogError("Animator not found on this object!");
+        }
     }
 }

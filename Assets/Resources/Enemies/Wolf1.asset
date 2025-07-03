@@ -15,5 +15,5 @@ MonoBehaviour:
   enemyName: Wolf1
   health: 30
   enemySprite: {fileID: -7182203434520209011, guid: fda09dbcb3f912d46b4176509c07651d, type: 3}
-  position: {x: -400, y: 0}
+  position: {x: -600, y: -60}
   size: {x: 100, y: 100}

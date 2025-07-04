@@ -75,6 +75,15 @@ namespace MyProjectF.Assets.Scripts.Cards
             {
                 cardData = GetComponent<CardDisplay>()?.cardData;
             }
+            SaveOriginalTransform(); // ✅ Store transform after layout
+        }
+
+        /// <summary>
+        /// destroys the card GameObject and cleans up DOTween tweens.
+        /// </summary>  
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
         }
 
         void Update()
@@ -84,9 +93,15 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             switch (currentState)
             {
-                case 1: HandleHoverState(); break;
-                case 2: HandleDragState(); if (!Input.GetMouseButton(0)) TransitionToIdle(); break;
-                case 3: HandlePlayState(); if (!Input.GetMouseButton(0)) TransitionToIdle(); break;
+                case 2:
+                    HandleDragState();
+                    if (!Input.GetMouseButton(0)) TransitionToIdle();
+                    break;
+
+                case 3:
+                    HandlePlayState();
+                    if (!Input.GetMouseButton(0)) TransitionToIdle();
+                    break;
             }
         }
 
@@ -99,7 +114,8 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             glowEffect.SetActive(false);
             playArrow.SetActive(false);
-            rectTransform.DOKill(); // stop active tweens
+            //rectTransform.DOKill(); // stop active tweens
+            DOTween.Kill(gameObject, complete: true);
 
             rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
             rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
@@ -118,10 +134,12 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             if (currentState == 0)
             {
-                SaveOriginalTransform();
+               
                 currentState = 1;
                 originalSiblingIndex = transform.GetSiblingIndex();
                 transform.SetAsLastSibling(); // bring to front
+
+                HandleHoverState(); // ✅ play hover animation ONCE
             }
         }
 
@@ -224,9 +242,10 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
 
             PlayerManager.Instance.UseCard(cardData);
+            TransitionToIdle();
             HandManager.Instance.RemoveCardFromHand(this.gameObject);
 
-            TransitionToIdle();
+           
         }
 
         /// <summary>
@@ -234,12 +253,44 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// </summary>
         private void HandleHoverState()
         {
+
+            if (rectTransform == null || this == null || !gameObject.activeInHierarchy)
+                return;
+
             glowEffect.SetActive(true);
             transform.SetAsLastSibling();
 
-            rectTransform.DOScale(originalScale * selectScale, 0.2f).SetEase(Ease.OutQuad);
-            rectTransform.DOLocalMoveY(originalPosition.y + 30f, 0.2f).SetEase(Ease.OutQuad);
+            //rectTransform.DOKill();
+            DOTween.Kill(gameObject, complete: true);
+
+
+            Vector3 targetScale = originalScale * selectScale;
+            Quaternion targetRotation = Quaternion.identity;
+
+            //Calculate new position to ensure bottom edge is at 0
+
+            float cardHeight = rectTransform.rect.height * rectTransform.lossyScale.y;
+
+            Vector3 worldPos = rectTransform.position;
+
+            // we want the bottom edge to be at 0, so we need to adjust the Y position
+            float newY = cardHeight / 2f; // since the pivot is at the center, we need to move it up by half the height
+
+            Vector3 targetWorldPos = new Vector3(worldPos.x, newY, worldPos.z);
+
+            // convert to local position relative to parent
+            Vector3 targetLocalPos = rectTransform.parent.InverseTransformPoint(targetWorldPos);
+
+                rectTransform.DOScale(targetScale, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalMove(targetLocalPos, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalRotateQuaternion(targetRotation, 0.2f).SetEase(Ease.OutQuad);
+
+            
         }
+
+
+
+
 
         /// <summary>
         /// Handles card movement while dragging.
@@ -266,14 +317,15 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Stores original transform for restoring on hover exit.
+        /// Stores the original transform properties for restoring after hover.
         /// </summary>
-        private void SaveOriginalTransform()
+        public void SaveOriginalTransform()
         {
             originalPosition = rectTransform.localPosition;
             originalRotation = rectTransform.localRotation;
             originalScale = rectTransform.localScale;
         }
+
 
         /// <summary>
         /// Updates Y threshold for detecting play zone on drag.
@@ -342,5 +394,6 @@ namespace MyProjectF.Assets.Scripts.Cards
                     return null;
             }
         }
+     
     }
 }

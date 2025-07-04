@@ -289,9 +289,6 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
 
-
-
-
         /// <summary>
         /// Handles card movement while dragging.
         /// </summary>

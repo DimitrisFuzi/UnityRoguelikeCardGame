@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
+using DG.Tweening;
 
 /// <summary>
 /// Manages the player's hand: draw, add, remove, arrange.
@@ -105,6 +106,8 @@ public class HandManager : MonoBehaviour
 
             cardsInHand[i].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
             cardsInHand[i].transform.localPosition = new Vector3(xOffset, yOffset, 0f);
+
+            cm?.SaveOriginalTransform(); // ✅ save after layout
         }
     }
 
@@ -127,6 +130,13 @@ public class HandManager : MonoBehaviour
             if (cd != null)
                 DeckManager.Instance?.DiscardCard(cd.cardData);
 
+            // ✅ Kill all active DOTween tweens (position, scale, etc.)
+            var rect = cardObject.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.DOKill(); // Stop all tweens targeting this RectTransform
+            }
+
             // Update hand layout
             UpdateHandLayout();
 
@@ -138,6 +148,7 @@ public class HandManager : MonoBehaviour
             Logger.LogWarning("Tried to remove null or not found card", this);
         }
     }
+
 
 
 

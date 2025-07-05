@@ -2,16 +2,16 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using DG.Tweening;
 using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Managers;
 
-
 namespace MyProjectF.Assets.Scripts.Cards
 {
     /// <summary>
-    /// Handles card hover, drag, and play interactions in the player's hand.
-    /// Manages visual feedback and interaction states.
+    /// Handles hover, drag, and play interactions of cards in the player's hand.
+    /// Includes smooth visual transitions using DOTween.
     /// </summary>
     public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler, IEndDragHandler
     {
@@ -26,7 +26,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         private int currentState = 0; // 0: Idle, 1: Hover, 2: Drag, 3: Play
 
         [Header("Hand State")]
-        [Tooltip("Is the card currently in the player's hand.")]
+        [Tooltip("Indicates if the card is currently in the player's hand.")]
         public bool isInHand = true;
 
         [Header("Card Visual Feedback")]
@@ -51,13 +51,10 @@ namespace MyProjectF.Assets.Scripts.Cards
         [SerializeField] private bool needUpdatePlayPosition = false;
 
         /// <summary>
-        /// The data representation of this card.
+        /// Reference to the data object for this card.
         /// </summary>
         public Card cardData;
 
-        /// <summary>
-        /// Initializes card transform references and calculates initial play positions.
-        /// </summary>
         void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
@@ -72,20 +69,23 @@ namespace MyProjectF.Assets.Scripts.Cards
             UpdatePlayPosition();
         }
 
-        /// <summary>
-        /// Ensures the card data is set from the CardDisplay component.
-        /// </summary>
         void Start()
         {
             if (cardData == null)
             {
                 cardData = GetComponent<CardDisplay>()?.cardData;
             }
+            SaveOriginalTransform(); // ✅ Store transform after layout
         }
 
         /// <summary>
-        /// Updates play position calculations and handles the current interaction state.
-        /// </summary>
+        /// destroys the card GameObject and cleans up DOTween tweens.
+        /// </summary>  
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
+        }
+
         void Update()
         {
             if (needUpdateCardPlayPosition) UpdateCardPlayPosition();
@@ -93,52 +93,59 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             switch (currentState)
             {
-                case 1: HandleHoverState(); break;
-                case 2: HandleDragState(); if (!Input.GetMouseButton(0)) TransitionToIdle(); break;
-                case 3: HandlePlayState(); if (!Input.GetMouseButton(0)) TransitionToIdle(); break;
+                case 2:
+                    HandleDragState();
+                    if (!Input.GetMouseButton(0)) TransitionToIdle();
+                    break;
+
+                case 3:
+                    HandlePlayState();
+                    if (!Input.GetMouseButton(0)) TransitionToIdle();
+                    break;
             }
         }
 
         /// <summary>
-        /// Resets the card to its original transform and disables visual effects.
+        /// Returns the card to its original state and disables all visual effects.
         /// </summary>
         private void TransitionToIdle()
         {
             currentState = 0;
-            rectTransform.localScale = originalScale;
-            rectTransform.localRotation = originalRotation;
-            rectTransform.localPosition = originalPosition;
+
             glowEffect.SetActive(false);
             playArrow.SetActive(false);
+            //rectTransform.DOKill(); // stop active tweens
+            DOTween.Kill(gameObject, complete: true);
+
+            rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
+            rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
+            rectTransform.DOLocalRotateQuaternion(originalRotation, 0.2f).SetEase(Ease.OutQuad);
+
             transform.SetSiblingIndex(originalSiblingIndex);
         }
 
         /// <summary>
-        /// Called when the pointer enters the card area; triggers hover state.
+        /// Triggered when pointer enters card; enters hover state.
         /// </summary>
-        /// <param name="eventData">Pointer event data.</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (!isInHand || !enabled || BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn)
-            {
-                // Ignore if input is locked or not player's turn or card not interactable
                 return;
-            }
 
             if (currentState == 0)
             {
-                SaveOriginalTransform();
+               
                 currentState = 1;
                 originalSiblingIndex = transform.GetSiblingIndex();
-                transform.SetAsLastSibling();
+                transform.SetAsLastSibling(); // bring to front
+
+                HandleHoverState(); // ✅ play hover animation ONCE
             }
         }
 
-
         /// <summary>
-        /// Called when the pointer exits the card area; cancels hover state.
+        /// Triggered when pointer exits card; returns to idle.
         /// </summary>
-        /// <param name="eventData">Pointer event data.</param>
         public void OnPointerExit(PointerEventData eventData)
         {
             if (currentState == 1)
@@ -148,9 +155,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Called when the pointer clicks the card; initiates drag state.
+        /// Called when clicking down on the card; enters drag mode if hovering.
         /// </summary>
-        /// <param name="eventData">Pointer event data.</param>
         public void OnPointerDown(PointerEventData eventData)
         {
             if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
@@ -162,9 +168,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Called while dragging the card; handles drag or play positioning.
+        /// Called during dragging; handles movement or play indication.
         /// </summary>
-        /// <param name="eventData">Pointer event data.</param>
         public void OnDrag(PointerEventData eventData)
         {
             if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
@@ -192,9 +197,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Called when dragging ends; checks play conditions and applies card effects.
+        /// Finalizes card play and applies effects after drag ends.
         /// </summary>
-        /// <param name="eventData">Pointer event data.</param>
         public void OnEndDrag(PointerEventData eventData)
         {
             if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
@@ -238,22 +242,55 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
 
             PlayerManager.Instance.UseCard(cardData);
+            TransitionToIdle();
             HandManager.Instance.RemoveCardFromHand(this.gameObject);
 
-            TransitionToIdle();
+           
         }
 
         /// <summary>
-        /// Handles scaling and glow when hovering.
+        /// Handles scale and position lift while in hover state using DOTween.
         /// </summary>
         private void HandleHoverState()
         {
+
+            if (rectTransform == null || this == null || !gameObject.activeInHierarchy)
+                return;
+
             glowEffect.SetActive(true);
-            rectTransform.localScale = originalScale * selectScale;
+            transform.SetAsLastSibling();
+
+            //rectTransform.DOKill();
+            DOTween.Kill(gameObject, complete: true);
+
+
+            Vector3 targetScale = originalScale * selectScale;
+            Quaternion targetRotation = Quaternion.identity;
+
+            //Calculate new position to ensure bottom edge is at 0
+
+            float cardHeight = rectTransform.rect.height * rectTransform.lossyScale.y;
+
+            Vector3 worldPos = rectTransform.position;
+
+            // we want the bottom edge to be at 0, so we need to adjust the Y position
+            float newY = cardHeight / 2f; // since the pivot is at the center, we need to move it up by half the height
+
+            Vector3 targetWorldPos = new Vector3(worldPos.x, newY, worldPos.z);
+
+            // convert to local position relative to parent
+            Vector3 targetLocalPos = rectTransform.parent.InverseTransformPoint(targetWorldPos);
+
+                rectTransform.DOScale(targetScale, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalMove(targetLocalPos, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalRotateQuaternion(targetRotation, 0.2f).SetEase(Ease.OutQuad);
+
+            
         }
 
+
         /// <summary>
-        /// Handles card position update while dragging.
+        /// Handles card movement while dragging.
         /// </summary>
         private void HandleDragState()
         {
@@ -262,7 +299,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Handles positioning when card is in play state for targeting.
+        /// Handles positioning and targeting during play state.
         /// </summary>
         private void HandlePlayState()
         {
@@ -277,17 +314,18 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Saves the original transform properties for restoring later.
+        /// Stores the original transform properties for restoring after hover.
         /// </summary>
-        private void SaveOriginalTransform()
+        public void SaveOriginalTransform()
         {
             originalPosition = rectTransform.localPosition;
             originalRotation = rectTransform.localRotation;
             originalScale = rectTransform.localScale;
         }
 
+
         /// <summary>
-        /// Updates the Y position threshold for detecting when to play a card.
+        /// Updates Y threshold for detecting play zone on drag.
         /// </summary>
         private void UpdateCardPlayPosition()
         {
@@ -299,7 +337,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Updates the target play position on the canvas.
+        /// Updates absolute canvas-space play position.
         /// </summary>
         private void UpdatePlayPosition()
         {
@@ -312,9 +350,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Returns the enemy GameObject currently under the cursor, if any.
+        /// Finds the enemy GameObject currently under the cursor.
         /// </summary>
-        /// <returns>The enemy under the cursor, or null if none.</returns>
         private Enemy GetEnemyUnderCursor()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current)
@@ -338,10 +375,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         }
 
         /// <summary>
-        /// Resolves the final target for the card based on its target type and selection.
+        /// Resolves the target CharacterStats based on card target type.
         /// </summary>
-        /// <param name="enemy">The selected enemy.</param>
-        /// <returns>The resolved target stats.</returns>
         private CharacterStats ResolveTarget(Enemy enemy)
         {
             switch (cardData.targetType)
@@ -349,12 +384,13 @@ namespace MyProjectF.Assets.Scripts.Cards
                 case Card.TargetType.SingleEnemy:
                     return enemy;
                 case Card.TargetType.AllEnemies:
-                    return null; // AoE handled in effect loop
+                    return null;
                 case Card.TargetType.Self:
                     return PlayerStats.Instance;
                 default:
                     return null;
             }
         }
+     
     }
 }

@@ -81,7 +81,7 @@ public abstract class CharacterStats : MonoBehaviour
     /// <param name="target">The character receiving the attack.</param>
     public virtual void PerformAttack(CharacterStats target)
     {
-        int attackDamage = 10; // This can later come from EnemyData or WeaponData
+        int attackDamage=10; // This can later come from EnemyData or WeaponData
         target.TakeDamage(attackDamage);
 
         Logger.Log($"⚔️ {gameObject.name} attacks {target.gameObject.name} for {attackDamage} damage!", this);

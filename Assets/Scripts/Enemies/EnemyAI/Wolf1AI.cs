@@ -6,7 +6,7 @@ using MyProjectF.Assets.Scripts.Effects;
 /// </summary>
 public class Wolf1AI : MonoBehaviour, IEnemyAI
 {
-    private EnemyStats stats;
+    private Enemy stats;
     private int currentTurn = 1;
     private EnemyIntent nextIntent;
 
@@ -14,19 +14,18 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     [SerializeField] private Sprite buffIcon;
 
     [SerializeField] private int damageAmount = 8;
-    [SerializeField] private int armorAmount = 10;
 
     // Reference to the player stats, set externally (e.g., TurnManager)
     private CharacterStats playerStats;
 
     private void Awake()
     {
-        stats = GetComponent<EnemyStats>();
+        stats = GetComponent<Enemy>();
         PredictNextIntent(); // Predict first turn's intent
     }
 
     /// <summary>
-    /// Sets the player stats reference so the AI ξέρει ποιον θα επιτεθεί.
+    /// Sets the player stats reference so the AI knows whom to attack.
     /// </summary>
     public void SetPlayerStats(CharacterStats player)
     {
@@ -40,19 +39,24 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     {
         if (currentTurn == 2)
         {
-            var buff = new ArmorEffect() { armorAmount = armorAmount };
-            buff.ApplyEffect(stats, stats);
+            // Εφαρμογή RageEffect αντί για ArmorEffect
+            var rage = new RageEffect();
+            rage.ApplyEffect(stats, stats);
         }
         else
         {
-            var damage = new DamageEffect() { damageAmount = damageAmount };
+            int finalDamage = damageAmount;
+            if (stats != null && stats.IsEnraged)
+                finalDamage *= 2;
+
+            var damage = new DamageEffect() { damageAmount = finalDamage };
             if (playerStats != null)
             {
                 damage.ApplyEffect(stats, playerStats);
             }
             else
             {
-                Debug.LogWarning("PlayerStats reference is missing in WolfAI.");
+                Debug.LogWarning("PlayerStats reference is missing in Wolf1AI.");
             }
         }
 
@@ -67,11 +71,14 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     {
         if (currentTurn == 2)
         {
-            nextIntent = new EnemyIntent("Gain " + armorAmount + " Armor", buffIcon);
+            nextIntent = new EnemyIntent("Enrage (double damage)", buffIcon);
         }
         else
         {
-            nextIntent = new EnemyIntent("Attack for " + damageAmount, attackIcon);
+            int previewDamage = damageAmount;
+            if (stats != null && stats.IsEnraged)
+                previewDamage *= 2;
+            nextIntent = new EnemyIntent("Attack for " + previewDamage, attackIcon);
         }
 
         return nextIntent;

@@ -5,6 +5,7 @@ using MyProjectF.Assets.Scripts.Player;
 public class Enemy : CharacterStats
 {
     public string enemyName;
+    public bool IsEnraged = false;
 
     private EnemyDisplay enemyDisplay; // Reference to the UI component
     public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
@@ -38,12 +39,6 @@ public class Enemy : CharacterStats
         this.enemyDisplay = enemyDisplay;
         if (enemyDisplay != null)
             enemyDisplay.Setup(this, enemyData);
-
-        // Apply layout and visuals
-        //transform.position = new Vector3(enemyData.position.x, enemyData.position.y, 0f);
-
-        //float pixelsPerUnit = enemyData.enemySprite != null ? enemyData.enemySprite.pixelsPerUnit : 100f; // fallback
-        //transform.localScale = new Vector3(enemyData.size.x / pixelsPerUnit, enemyData.size.y / pixelsPerUnit, 1f);
 
         // Attach AI
         AttachAI(enemyData.enemyAIType);

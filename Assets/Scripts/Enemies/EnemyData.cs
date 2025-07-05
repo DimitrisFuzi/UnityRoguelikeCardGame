@@ -25,4 +25,18 @@ public class EnemyData : ScriptableObject
 
     [Tooltip("Visual size of the enemy in the scene.")]
     public Vector2 size;
+
+    [Header("AI Behavior")]
+    [Tooltip("What kind of AI this enemy should use.")]
+    public EnemyAIType enemyAIType;
+}
+
+/// <summary>
+/// Enum to choose which AI script to attach to an enemy dynamically.
+/// </summary>
+public enum EnemyAIType
+{
+    None,
+    Wolf1,
+    Wolf2
 }

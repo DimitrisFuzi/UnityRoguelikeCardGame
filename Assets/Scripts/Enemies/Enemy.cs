@@ -1,68 +1,95 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Player;
 
 public class Enemy : CharacterStats
 {
     public string enemyName;
+
     private EnemyDisplay enemyDisplay; // Reference to the UI component
+    public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
 
     /// <summary>
-    /// Performs an action, in this case attacking the player.
+    /// Performs the enemy's AI-defined action.
     /// </summary>
     public void PerformAction()
     {
-        if (PlayerStats.Instance != null)
+        if (EnemyAI != null)
         {
-            PerformAttack(PlayerStats.Instance); // Attack the player
+            EnemyAI.ExecuteTurn();
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ {enemyName} has no AI component attached!", this);
+            if (PlayerStats.Instance != null)
+                PerformAttack(PlayerStats.Instance);
         }
     }
 
     /// <summary>
-    /// Initializes enemy stats and connects UI.
+    /// Initializes enemy stats and connects UI + AI.
     /// </summary>
-    /// <param name="enemyData">Data container with enemy info</param>
-    /// <param name="enemyDisplay">UI display to update</param>
     public void InitializeEnemy(EnemyData enemyData, EnemyDisplay enemyDisplay)
     {
         enemyName = enemyData.enemyName;
 
-        // Initialize health and armor via base method
         InitializeStats(enemyData.health);
 
-        this.enemyDisplay = enemyDisplay; // Store UI reference
-
+        this.enemyDisplay = enemyDisplay;
         if (enemyDisplay != null)
-        {
             enemyDisplay.Setup(this, enemyData);
-        }
 
+        // Apply layout and visuals
+        //transform.position = new Vector3(enemyData.position.x, enemyData.position.y, 0f);
+
+        //float pixelsPerUnit = enemyData.enemySprite != null ? enemyData.enemySprite.pixelsPerUnit : 100f; // fallback
+        //transform.localScale = new Vector3(enemyData.size.x / pixelsPerUnit, enemyData.size.y / pixelsPerUnit, 1f);
+
+        // Attach AI
+        AttachAI(enemyData.enemyAIType);
     }
 
+
     /// <summary>
-    /// Called when the enemy takes damage.
-    /// Updates UI accordingly.
+    /// Dynamically attaches AI component based on EnemyData enum value.
     /// </summary>
-    /// <param name="amount">Amount of damage taken</param>
+    private void AttachAI(EnemyAIType aiType)
+    {
+        switch (aiType)
+        {
+            case EnemyAIType.Wolf1:
+                EnemyAI = gameObject.AddComponent<Wolf1AI>();
+                break;
+            case EnemyAIType.Wolf2:
+                EnemyAI = gameObject.AddComponent<Wolf2AI>();
+                break;
+            case EnemyAIType.None:
+            default:
+                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Default AI will be used.");
+                break;
+        }
+
+        // If assigned, pass PlayerStats reference
+        if (EnemyAI != null)
+        {
+            EnemyAI.SetPlayerStats(PlayerStats.Instance);
+        }
+    }
+
     public override void TakeDamage(int amount)
     {
-        base.TakeDamage(amount); // Apply damage logic from base class
+        base.TakeDamage(amount);
 
         if (enemyDisplay != null)
-        {
-            enemyDisplay.UpdateDisplay(CurrentHealth, MaxHealth); // Update health UI
-        }
+            enemyDisplay.UpdateDisplay(CurrentHealth, MaxHealth);
 
         Logger.Log($"🔥 {enemyName} took {amount} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
     }
 
-    /// <summary>
-    /// Handles death behavior.
-    /// </summary>
     protected override void Die()
     {
         Logger.Log($"☠️ {enemyName} died!", this);
+        EnemyManager.Instance.RemoveEnemy(this);
         Destroy(gameObject);
     }
 }

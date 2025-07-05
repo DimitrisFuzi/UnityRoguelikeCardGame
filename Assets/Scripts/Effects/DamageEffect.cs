@@ -10,7 +10,15 @@ using MyProjectF.Assets.Scripts.Effects;
 public class DamageEffect : EffectData
 {
     [Tooltip("Amount of damage to deal to the target.")]
-    public int damageAmount = 10;
+    public int damageAmount;
+
+    /// <summary>
+    /// Sets the amount of damage this effect will deal.
+    /// </summary>
+    public void SetDamageAmount(int amount)
+    {
+        damageAmount = amount;
+    }
 
     /// <summary>
     /// Applies the damage effect to the target character.

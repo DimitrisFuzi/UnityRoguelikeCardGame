@@ -5,7 +5,7 @@ namespace MyProjectF.Assets.Scripts.Effects
 {
     
 
-    [Serializable] // ✅ Επιτρέπει την αποθήκευση μέσα στο ScriptableObject
+    [Serializable] // Attribute to allow serialization in Unity
     public abstract class EffectData
     {
         public abstract void ApplyEffect(CharacterStats source, CharacterStats target);

@@ -12,7 +12,12 @@ namespace MyProjectF.Assets.Scripts.Effects
         /// <summary>
         /// Amount of armor to add.
         /// </summary>
-        public int armorAmount = 5;
+        public int armorAmount;
+
+        public void SetAmount(int amount)
+        {
+            armorAmount = amount;
+        }
 
         /// <summary>
         /// Applies the armor effect by adding armor to the target.

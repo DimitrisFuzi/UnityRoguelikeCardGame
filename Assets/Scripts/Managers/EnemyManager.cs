@@ -11,7 +11,7 @@ public class EnemyManager : MonoBehaviour
     public static EnemyManager Instance { get; private set; }
 
     private readonly List<Enemy> activeEnemies = new();
-
+    
     [Header("Enemy Setup")]
     [SerializeField] private GameObject enemyPrefab;
 
@@ -126,4 +126,6 @@ public class EnemyManager : MonoBehaviour
         targetEnemy.TakeDamage(damage);
         Logger.Log($"💥 {targetEnemy.enemyName} took {damage} damage.", this);
     }
+
+    public List<Enemy> Enemies => activeEnemies;
 }

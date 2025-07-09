@@ -2,30 +2,38 @@ using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
-/// Enemy AI logic specific to the Wolf enemy.
+/// Enemy AI logic specific to the Wolf1 enemy.
+/// Pattern: Attack -> Enrage -> Attack with double damage -> Attack with double damage...
 /// </summary>
 public class Wolf1AI : MonoBehaviour, IEnemyAI
 {
-    private Enemy stats;
+    private Enemy enemyStats;
     private int currentTurn = 1;
     private EnemyIntent nextIntent;
 
-    [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite buffIcon;
+    [Header("Combat Stats")]
+    [SerializeField] private int baseDamageAmount = 8;
 
-    [SerializeField] private int damageAmount = 8;
-
-    // Reference to the player stats, set externally (e.g., TurnManager)
+    // Reference to the player stats
     private CharacterStats playerStats;
 
     private void Awake()
     {
-        stats = GetComponent<Enemy>();
-        PredictNextIntent(); // Predict first turn's intent
+        enemyStats = GetComponent<Enemy>();
+        if (enemyStats == null)
+        {
+            Debug.LogError("Wolf1AI requires an Enemy component!");
+        }
+    }
+
+    private void Start()
+    {
+        // Predict initial intent
+        PredictNextIntent();
     }
 
     /// <summary>
-    /// Sets the player stats reference so the AI knows whom to attack.
+    /// Sets the player stats reference for targeting.
     /// </summary>
     public void SetPlayerStats(CharacterStats player)
     {
@@ -33,57 +41,84 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     }
 
     /// <summary>
-    /// Executes the enemy's behavior depending on the current turn logic.
+    /// Executes the enemy's turn action.
     /// </summary>
     public void ExecuteTurn()
     {
         if (currentTurn == 2)
         {
-            // Εφαρμογή RageEffect αντί για ArmorEffect
-            var rage = new RageEffect();
-            rage.ApplyEffect(stats, stats);
+            // Second turn: Apply rage effect
+            var rageEffect = new RageEffect();
+            rageEffect.ApplyEffect(enemyStats, enemyStats);
+
+            Debug.Log($"{enemyStats.enemyName} becomes enraged!");
         }
         else
         {
-            int finalDamage = damageAmount;
-            if (stats != null && stats.IsEnraged)
-                finalDamage *= 2;
-
-            var damage = new DamageEffect() { damageAmount = finalDamage };
-            if (playerStats != null)
-            {
-                damage.ApplyEffect(stats, playerStats);
-            }
-            else
-            {
-                Debug.LogWarning("PlayerStats reference is missing in Wolf1AI.");
-            }
+            // All other turns: Attack
+            PerformAttack();
         }
 
         currentTurn++;
-        PredictNextIntent(); // Update intent for next turn
+        PredictNextIntent();
     }
 
     /// <summary>
-    /// Predicts the enemy's next action and stores it.
+    /// Performs an attack on the player.
+    /// </summary>
+    private void PerformAttack()
+    {
+        if (playerStats == null)
+        {
+            Debug.LogWarning("PlayerStats reference is missing in Wolf1AI!");
+            return;
+        }
+
+        int finalDamage = CalculateDamage();
+        var damageEffect = new DamageEffect { damageAmount = finalDamage };
+        damageEffect.ApplyEffect(enemyStats, playerStats);
+
+        Debug.Log($"{enemyStats.enemyName} attacks for {finalDamage} damage!");
+    }
+
+    /// <summary>
+    /// Calculates damage based on current state.
+    /// </summary>
+    private int CalculateDamage()
+    {
+        int damage = baseDamageAmount;
+
+        if (enemyStats != null && enemyStats.IsEnraged)
+        {
+            damage *= 2;
+        }
+
+        return damage;
+    }
+
+    /// <summary>
+    /// Predicts what the enemy will do next turn.
     /// </summary>
     public EnemyIntent PredictNextIntent()
     {
         if (currentTurn == 2)
         {
-            nextIntent = new EnemyIntent("Enrage (double damage)", buffIcon);
+            // Next turn will be enrage (buff)
+            nextIntent = EnemyIntent.CreateBuffIntent("Enrage");
         }
         else
         {
-            int previewDamage = damageAmount;
-            if (stats != null && stats.IsEnraged)
-                previewDamage *= 2;
-            nextIntent = new EnemyIntent("Attack for " + previewDamage, attackIcon);
+            // Next turn will be attack
+            int previewDamage = CalculateDamage();
+            nextIntent = EnemyIntent.CreateAttackIntent(previewDamage);
         }
 
         return nextIntent;
     }
 
+    /// <summary>
+    /// Gets the current predicted intent.
+    /// </summary>
     public EnemyIntent GetCurrentIntent()
     {
         return nextIntent;

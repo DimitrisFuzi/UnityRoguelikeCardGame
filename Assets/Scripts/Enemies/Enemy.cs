@@ -42,6 +42,13 @@ public class Enemy : CharacterStats
 
         // Attach AI
         AttachAI(enemyData.enemyAIType);
+
+        // After attaching AI, predict and display initial intent
+        if (EnemyAI != null) // Add this block
+        {
+            EnemyIntent initialIntent = EnemyAI.PredictNextIntent();
+            this.enemyDisplay.SetIntent(initialIntent);
+        }
     }
 
 
@@ -85,6 +92,11 @@ public class Enemy : CharacterStats
     {
         Logger.Log($"☠️ {enemyName} died!", this);
         EnemyManager.Instance.RemoveEnemy(this);
+        // Clear intent display when enemy dies
+        if (enemyDisplay != null)
+        {
+            enemyDisplay.ClearIntentDisplay();
+        }
         Destroy(gameObject);
     }
 }

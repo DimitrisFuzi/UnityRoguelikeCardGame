@@ -7,6 +7,7 @@ public class EnemyDisplay : MonoBehaviour
     [Header("UI Components")]
     public Image enemyImage; // Enemy sprite image
     public TextMeshProUGUI healthText; // Text component to display health
+    [SerializeField] private IntentDisplay intentDisplay; // Add this line
 
     private RectTransform enemyRect;
 
@@ -41,6 +42,12 @@ public class EnemyDisplay : MonoBehaviour
 
         // Initialize health display to full health
         UpdateDisplay(enemy.CurrentHealth, enemy.MaxHealth);
+
+        // Call to display initial intent
+        if (enemy.EnemyAI != null)
+        {
+            SetIntent(enemy.EnemyAI.PredictNextIntent());
+        }
     }
 
     /// <summary>
@@ -57,5 +64,23 @@ public class EnemyDisplay : MonoBehaviour
         }
 
         healthText.text = $"{currentHealth} / {maxHealth}";
+    }
+
+    // New method to set the intent display
+    public void SetIntent(EnemyIntent intent) // Add this method
+    {
+        if (intentDisplay != null)
+        {
+            intentDisplay.SetIntent(intent);
+        }
+    }
+
+    // New method to clear the intent display
+    public void ClearIntentDisplay() // Add this method
+    {
+        if (intentDisplay != null)
+        {
+            intentDisplay.ClearIntent();
+        }
     }
 }

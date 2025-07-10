@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
@@ -16,6 +16,8 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
 
     // Reference to the player stats
     private CharacterStats playerStats;
+
+    private EnemyDisplay enemyDisplay; // This reference is correct
 
     private void Awake()
     {
@@ -41,10 +43,21 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     }
 
     /// <summary>
+    /// Sets the EnemyDisplay reference for visual updates.
+    /// </summary>
+    /// <param name="display">The EnemyDisplay component.</param>
+    public void SetEnemyDisplay(EnemyDisplay display)
+    {
+        enemyDisplay = display;
+    }
+
+    /// <summary>
     /// Executes the enemy's turn action.
     /// </summary>
     public void ExecuteTurn()
     {
+        Debug.Log($"🐺 Wolf1AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}."); // Debug log added for verification
+
         if (currentTurn == 2)
         {
             // Second turn: Apply rage effect
@@ -52,6 +65,18 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
             rageEffect.ApplyEffect(enemyStats, enemyStats);
 
             Debug.Log($"{enemyStats.enemyName} becomes enraged!");
+
+            // *** ADD THIS BLOCK HERE ***
+            if (enemyDisplay != null)
+            {
+                enemyDisplay.SetEnragedVisual(true);
+                Debug.Log($"🎨 Called SetEnragedVisual(true) for {enemyStats.enemyName}."); // Debug log for verification
+            }
+            else
+            {
+                Debug.LogWarning("EnemyDisplay reference is null in Wolf1AI. Cannot set enraged visual."); // Debug log if reference is missing
+            }
+            // ***************************
         }
         else
         {

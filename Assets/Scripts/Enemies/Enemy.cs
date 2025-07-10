@@ -75,6 +75,15 @@ public class Enemy : CharacterStats
         if (EnemyAI != null)
         {
             EnemyAI.SetPlayerStats(PlayerStats.Instance);
+
+            if (EnemyAI is Wolf1AI wolf1AI)
+            {
+                wolf1AI.SetEnemyDisplay(enemyDisplay);
+            }
+            else if (EnemyAI is Wolf2AI wolf2AI)
+            {
+                wolf2AI.SetEnemyDisplay(enemyDisplay);
+            }
         }
     }
 
@@ -96,6 +105,7 @@ public class Enemy : CharacterStats
         if (enemyDisplay != null)
         {
             enemyDisplay.ClearIntentDisplay();
+            enemyDisplay.SetEnragedVisual(false); // NEW: Reset color on death
         }
         Destroy(gameObject);
     }

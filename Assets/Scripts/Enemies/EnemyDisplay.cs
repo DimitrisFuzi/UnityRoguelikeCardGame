@@ -48,6 +48,9 @@ public class EnemyDisplay : MonoBehaviour
         {
             SetIntent(enemy.EnemyAI.PredictNextIntent());
         }
+
+        // Ensure enemy starts with normal color
+        SetEnragedVisual(false); // NEW: Set initial color to normal
     }
 
     /// <summary>
@@ -81,6 +84,27 @@ public class EnemyDisplay : MonoBehaviour
         if (intentDisplay != null)
         {
             intentDisplay.ClearIntent();
+        }
+    }
+
+    /// <summary>
+    /// Changes the enemy sprite's color to visually indicate enraged state.
+    /// </summary>
+    /// <param name="isEnraged">True to set enraged color, false to reset to normal.</param>
+    public void SetEnragedVisual(bool isEnraged)
+    {
+        if (enemyImage == null) return;
+
+        if (isEnraged)
+        {
+           
+            // FF2F3B in hex is R=255, G=47, B=59
+            // Divide by 255 for Unity's Color (0-1f) format
+            enemyImage.color = new Color(255f / 255f, 47f / 255f, 59f / 255f, 1f);
+        }
+        else
+        {
+            enemyImage.color = Color.white; // Reset to original (white means no tint)
         }
     }
 }

@@ -1,8 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
-/// Enemy AI logic specific to the Wolf enemy.
+/// Enemy AI logic specific to the Wolf2 enemy.
+/// Pattern: Attack -> Enrage -> Attack with double damage -> Attack with double damage...
 /// </summary>
 public class Wolf2AI : MonoBehaviour, IEnemyAI
 {
@@ -16,12 +17,14 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     // Reference to the player stats
     private CharacterStats playerStats;
 
+    private EnemyDisplay enemyDisplay; // This reference is correct
+
     private void Awake()
     {
         enemyStats = GetComponent<Enemy>();
         if (enemyStats == null)
         {
-            Debug.LogError("Wolf1AI requires an Enemy component!");
+            Debug.LogError("Wolf2AI requires an Enemy component!");
         }
     }
 
@@ -40,10 +43,21 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     }
 
     /// <summary>
+    /// Sets the EnemyDisplay reference for visual updates.
+    /// </summary>
+    /// <param name="display">The EnemyDisplay component.</param>
+    public void SetEnemyDisplay(EnemyDisplay display)
+    {
+        enemyDisplay = display;
+    }
+
+    /// <summary>
     /// Executes the enemy's turn action.
     /// </summary>
     public void ExecuteTurn()
     {
+        Debug.Log($"🐺 Wolf2AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}."); // Debug log added for verification
+
         if (currentTurn == 4)
         {
             // Second turn: Apply rage effect
@@ -51,6 +65,18 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
             rageEffect.ApplyEffect(enemyStats, enemyStats);
 
             Debug.Log($"{enemyStats.enemyName} becomes enraged!");
+
+            // *** ADD THIS BLOCK HERE ***
+            if (enemyDisplay != null)
+            {
+                enemyDisplay.SetEnragedVisual(true);
+                Debug.Log($"🎨 Called SetEnragedVisual(true) for {enemyStats.enemyName}."); // Debug log for verification
+            }
+            else
+            {
+                Debug.LogWarning("EnemyDisplay reference is null in Wolf2AI. Cannot set enraged visual."); // Debug log if reference is missing
+            }
+            // ***************************
         }
         else
         {
@@ -69,7 +95,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     {
         if (playerStats == null)
         {
-            Debug.LogWarning("PlayerStats reference is missing in WolfAI!");
+            Debug.LogWarning("PlayerStats reference is missing in Wolf2AI!");
             return;
         }
 

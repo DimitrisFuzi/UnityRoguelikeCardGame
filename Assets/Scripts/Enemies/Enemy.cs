@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿// Enemy.cs
+using System.Collections;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Player;
 
@@ -18,6 +19,9 @@ public class Enemy : CharacterStats
         if (EnemyAI != null)
         {
             EnemyAI.ExecuteTurn();
+            // After executing the turn, the AI has predicted its NEXT intent.
+            // So, update the display.
+            UpdateIntentDisplay();
         }
         else
         {
@@ -30,6 +34,8 @@ public class Enemy : CharacterStats
     /// <summary>
     /// Initializes enemy stats and connects UI + AI.
     /// </summary>
+    /// <param name="enemyData">The ScriptableObject containing enemy data.</param>
+    /// <param name="enemyDisplay">The EnemyDisplay component for UI updates.</param>
     public void InitializeEnemy(EnemyData enemyData, EnemyDisplay enemyDisplay)
     {
         enemyName = enemyData.enemyName;
@@ -39,23 +45,24 @@ public class Enemy : CharacterStats
         this.enemyDisplay = enemyDisplay;
         if (enemyDisplay != null)
             enemyDisplay.Setup(this, enemyData);
+        else
+            Debug.LogError($"[Enemy.InitializeEnemy] enemyDisplay is NULL for {enemyName}!", this);
+
 
         // Attach AI
-        AttachAI(enemyData.enemyAIType);
+        AttachAI(enemyData.enemyAIType, enemyData, this.enemyDisplay);
 
-        // After attaching AI, predict and display initial intent
-        if (EnemyAI != null) // Add this block
-        {
-            EnemyIntent initialIntent = EnemyAI.PredictNextIntent();
-            this.enemyDisplay.SetIntent(initialIntent);
-        }
+        UpdateIntentDisplay();
     }
 
 
     /// <summary>
     /// Dynamically attaches AI component based on EnemyData enum value.
     /// </summary>
-    private void AttachAI(EnemyAIType aiType)
+    /// <param name="aiType">The type of AI to attach.</param>
+    /// <param name="enemyData">The EnemyData containing intent icons.</param>
+    /// <param name="display">The EnemyDisplay component associated with this enemy.</param>
+    private void AttachAI(EnemyAIType aiType, EnemyData enemyData, EnemyDisplay display)
     {
         switch (aiType)
         {
@@ -71,21 +78,41 @@ public class Enemy : CharacterStats
                 break;
         }
 
-        // If assigned, pass PlayerStats reference
         if (EnemyAI != null)
         {
             EnemyAI.SetPlayerStats(PlayerStats.Instance);
+            EnemyAI.SetIntentIcons(enemyData.attackIntentIcon, enemyData.buffIntentIcon);
+            EnemyAI.InitializeAI(); // This call will cause the AI to predict its first intent.
 
-            if (EnemyAI is Wolf1AI wolf1AI)
-            {
-                wolf1AI.SetEnemyDisplay(enemyDisplay);
-            }
-            else if (EnemyAI is Wolf2AI wolf2AI)
-            {
-                wolf2AI.SetEnemyDisplay(enemyDisplay);
-            }
+            // NEW: Pass the EnemyDisplay reference to the AI, now that IEnemyAI has this method
+            EnemyAI.SetEnemyDisplay(display); // MODIFIED: Simplified this call
         }
     }
+
+    /// <summary>
+    /// Retrieves the current predicted intent from the AI and passes it to EnemyDisplay.
+    /// </summary>
+    public void UpdateIntentDisplay()
+    {
+        if (EnemyAI != null && enemyDisplay != null)
+        {
+            EnemyIntent currentIntent = EnemyAI.GetCurrentIntent();
+            if (currentIntent != null)
+            {
+                enemyDisplay.SetIntent(currentIntent);
+            }
+            else
+            {
+                enemyDisplay.ClearIntentDisplay();
+                Debug.LogWarning($"⚠️ No current intent available for {enemyName}. Clearing intent display.", this);
+            }
+        }
+        else if (enemyDisplay != null)
+        {
+            enemyDisplay.ClearIntentDisplay();
+        }
+    }
+
 
     public override void TakeDamage(int amount)
     {
@@ -99,14 +126,10 @@ public class Enemy : CharacterStats
 
     protected override void Die()
     {
-        Logger.Log($"☠️ {enemyName} died!", this);
-        EnemyManager.Instance.RemoveEnemy(this);
-        // Clear intent display when enemy dies
+        base.Die();
         if (enemyDisplay != null)
         {
-            enemyDisplay.ClearIntentDisplay();
-            enemyDisplay.SetEnragedVisual(false); // NEW: Reset color on death
+            enemyDisplay.gameObject.SetActive(false);
         }
-        Destroy(gameObject);
     }
 }

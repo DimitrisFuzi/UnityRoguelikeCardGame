@@ -1,149 +1,116 @@
-﻿using UnityEngine;
+﻿// Wolf1AI.cs
+using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
-/// Enemy AI logic specific to the Wolf1 enemy.
-/// Pattern: Attack -> Enrage -> Attack with double damage -> Attack with double damage...
+/// Enemy AI logic specific to the Wolf enemy.
 /// </summary>
 public class Wolf1AI : MonoBehaviour, IEnemyAI
 {
-    private Enemy enemyStats;
+    private Enemy stats;
     private int currentTurn = 1;
     private EnemyIntent nextIntent;
 
-    [Header("Combat Stats")]
-    [SerializeField] private int baseDamageAmount = 8;
+    private Sprite attackIcon;
+    private Sprite buffIcon;
 
-    // Reference to the player stats
+    [SerializeField] private int damageAmount = 8;
+
     private CharacterStats playerStats;
-
-    private EnemyDisplay enemyDisplay; // This reference is correct
+    private EnemyDisplay enemyDisplay; // NEW: Reference to the EnemyDisplay
 
     private void Awake()
     {
-        enemyStats = GetComponent<Enemy>();
-        if (enemyStats == null)
-        {
-            Debug.LogError("Wolf1AI requires an Enemy component!");
-        }
+        stats = GetComponent<Enemy>();
     }
 
-    private void Start()
+    public void InitializeAI()
     {
-        // Predict initial intent
         PredictNextIntent();
     }
 
-    /// <summary>
-    /// Sets the player stats reference for targeting.
-    /// </summary>
     public void SetPlayerStats(CharacterStats player)
     {
         playerStats = player;
     }
 
-    /// <summary>
-    /// Sets the EnemyDisplay reference for visual updates.
-    /// </summary>
-    /// <param name="display">The EnemyDisplay component.</param>
+    public void SetIntentIcons(UnityEngine.Sprite attack, UnityEngine.Sprite buff)
+    {
+        attackIcon = attack;
+        buffIcon = buff;
+    }
+
+    // NEW: Implement SetEnemyDisplay method
     public void SetEnemyDisplay(EnemyDisplay display)
     {
         enemyDisplay = display;
     }
 
     /// <summary>
-    /// Executes the enemy's turn action.
+    /// Executes the enemy's behavior depending on the current turn logic.
     /// </summary>
     public void ExecuteTurn()
     {
-        Debug.Log($"🐺 Wolf1AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}."); // Debug log added for verification
-
         if (currentTurn == 2)
         {
-            // Second turn: Apply rage effect
-            var rageEffect = new RageEffect();
-            rageEffect.ApplyEffect(enemyStats, enemyStats);
+            var rage = new RageEffect();
+            rage.ApplyEffect(stats, stats);
+            Debug.Log($"{stats.enemyName} becomes enraged!");
 
-            Debug.Log($"{enemyStats.enemyName} becomes enraged!");
-
-            // *** ADD THIS BLOCK HERE ***
+            // NEW: Set enraged visual for Wolf1AI
             if (enemyDisplay != null)
             {
                 enemyDisplay.SetEnragedVisual(true);
-                Debug.Log($"🎨 Called SetEnragedVisual(true) for {enemyStats.enemyName}."); // Debug log for verification
+                Debug.Log($"🎨 Called SetEnragedVisual(true) for {stats.enemyName} (Wolf1AI).");
             }
             else
             {
-                Debug.LogWarning("EnemyDisplay reference is null in Wolf1AI. Cannot set enraged visual."); // Debug log if reference is missing
+                Debug.LogWarning("EnemyDisplay reference is null in Wolf1AI. Cannot set enraged visual.");
             }
-            // ***************************
         }
         else
         {
-            // All other turns: Attack
-            PerformAttack();
+            int finalDamage = damageAmount;
+            if (stats != null && stats.IsEnraged)
+                finalDamage *= 2;
+
+            var damage = new DamageEffect() { damageAmount = finalDamage };
+            if (playerStats != null)
+            {
+                damage.ApplyEffect(stats, playerStats);
+            }
+            else
+            {
+                Debug.LogWarning("PlayerStats reference is missing in Wolf1AI.");
+            }
         }
 
         currentTurn++;
         PredictNextIntent();
     }
 
-    /// <summary>
-    /// Performs an attack on the player.
-    /// </summary>
-    private void PerformAttack()
-    {
-        if (playerStats == null)
-        {
-            Debug.LogWarning("PlayerStats reference is missing in Wolf1AI!");
-            return;
-        }
-
-        int finalDamage = CalculateDamage();
-        var damageEffect = new DamageEffect { damageAmount = finalDamage };
-        damageEffect.ApplyEffect(enemyStats, playerStats);
-
-        Debug.Log($"{enemyStats.enemyName} attacks for {finalDamage} damage!");
-    }
-
-    /// <summary>
-    /// Calculates damage based on current state.
-    /// </summary>
-    private int CalculateDamage()
-    {
-        int damage = baseDamageAmount;
-
-        if (enemyStats != null && enemyStats.IsEnraged)
-        {
-            damage *= 2;
-        }
-
-        return damage;
-    }
-
-    /// <summary>
-    /// Predicts what the enemy will do next turn.
-    /// </summary>
     public EnemyIntent PredictNextIntent()
     {
+        if (attackIcon == null || buffIcon == null)
+        {
+            Debug.LogWarning("Intent icons are not set for Wolf1AI. Intents might not display correctly.");
+        }
+
         if (currentTurn == 2)
         {
-            // Next turn will be enrage (buff)
-            nextIntent = EnemyIntent.CreateBuffIntent("Enrage");
+            nextIntent = new EnemyIntent(IntentType.Buff, string.Empty, 0, buffIcon);
         }
         else
         {
-            // Next turn will be attack
-            int previewDamage = CalculateDamage();
-            nextIntent = EnemyIntent.CreateAttackIntent(previewDamage);
+            int previewDamage = damageAmount;
+            if (stats != null && stats.IsEnraged)
+                previewDamage *= 2;
+            nextIntent = new EnemyIntent(IntentType.Attack, previewDamage.ToString(), previewDamage, attackIcon);
         }
 
         return nextIntent;
     }
 
-    /// <summary>
-    /// Gets the current predicted intent.
-    /// </summary>
     public EnemyIntent GetCurrentIntent()
     {
         return nextIntent;

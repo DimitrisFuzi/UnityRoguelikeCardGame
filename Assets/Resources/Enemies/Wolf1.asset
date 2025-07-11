@@ -18,3 +18,5 @@ MonoBehaviour:
   position: {x: -600, y: -60}
   size: {x: 100, y: 100}
   enemyAIType: 1
+  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
+  buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}

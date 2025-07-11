@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// Wolf2AI.cs
+using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
@@ -11,13 +12,14 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     private int currentTurn = 1;
     private EnemyIntent nextIntent;
 
+    private Sprite attackIcon;
+    private Sprite buffIcon;
+
     [Header("Combat Stats")]
     [SerializeField] private int baseDamageAmount = 8;
 
-    // Reference to the player stats
     private CharacterStats playerStats;
-
-    private EnemyDisplay enemyDisplay; // This reference is correct
+    private EnemyDisplay enemyDisplay; // Reference to the EnemyDisplay
 
     private void Awake()
     {
@@ -28,24 +30,23 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         }
     }
 
-    private void Start()
+    public void InitializeAI()
     {
-        // Predict initial intent
         PredictNextIntent();
     }
 
-    /// <summary>
-    /// Sets the player stats reference for targeting.
-    /// </summary>
     public void SetPlayerStats(CharacterStats player)
     {
         playerStats = player;
     }
 
-    /// <summary>
-    /// Sets the EnemyDisplay reference for visual updates.
-    /// </summary>
-    /// <param name="display">The EnemyDisplay component.</param>
+    public void SetIntentIcons(UnityEngine.Sprite attack, UnityEngine.Sprite buff)
+    {
+        attackIcon = attack;
+        buffIcon = buff;
+    }
+
+    // Ensure SetEnemyDisplay method is correctly implemented from IEnemyAI
     public void SetEnemyDisplay(EnemyDisplay display)
     {
         enemyDisplay = display;
@@ -56,31 +57,28 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     /// </summary>
     public void ExecuteTurn()
     {
-        Debug.Log($"🐺 Wolf2AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}."); // Debug log added for verification
+        Debug.Log($"🐺 Wolf2AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}.");
 
-        if (currentTurn == 4)
+        if (currentTurn == 4) // Wolf2AI's enrage turn
         {
-            // Second turn: Apply rage effect
             var rageEffect = new RageEffect();
             rageEffect.ApplyEffect(enemyStats, enemyStats);
 
             Debug.Log($"{enemyStats.enemyName} becomes enraged!");
 
-            // *** ADD THIS BLOCK HERE ***
+            // Set enraged visual for Wolf2AI
             if (enemyDisplay != null)
             {
                 enemyDisplay.SetEnragedVisual(true);
-                Debug.Log($"🎨 Called SetEnragedVisual(true) for {enemyStats.enemyName}."); // Debug log for verification
+                Debug.Log($"🎨 Called SetEnragedVisual(true) for {enemyStats.enemyName} (Wolf2AI).");
             }
             else
             {
-                Debug.LogWarning("EnemyDisplay reference is null in Wolf2AI. Cannot set enraged visual."); // Debug log if reference is missing
+                Debug.LogWarning("EnemyDisplay reference is null in Wolf2AI. Cannot set enraged visual.");
             }
-            // ***************************
         }
         else
         {
-            // All other turns: Attack
             PerformAttack();
         }
 
@@ -88,9 +86,6 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         PredictNextIntent();
     }
 
-    /// <summary>
-    /// Performs an attack on the player.
-    /// </summary>
     private void PerformAttack()
     {
         if (playerStats == null)
@@ -106,9 +101,6 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         Debug.Log($"{enemyStats.enemyName} attacks for {finalDamage} damage!");
     }
 
-    /// <summary>
-    /// Calculates damage based on current state.
-    /// </summary>
     private int CalculateDamage()
     {
         int damage = baseDamageAmount;
@@ -121,29 +113,26 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         return damage;
     }
 
-    /// <summary>
-    /// Predicts what the enemy will do next turn.
-    /// </summary>
     public EnemyIntent PredictNextIntent()
     {
+        if (attackIcon == null || buffIcon == null)
+        {
+            Debug.LogWarning("Intent icons are not set for Wolf2AI. Intents might not display correctly.");
+        }
+
         if (currentTurn == 4)
         {
-            // Next turn will be enrage (buff)
-            nextIntent = EnemyIntent.CreateBuffIntent("Enrage");
+            nextIntent = new EnemyIntent(IntentType.Buff, string.Empty, 0, buffIcon);
         }
         else
         {
-            // Next turn will be attack
             int previewDamage = CalculateDamage();
-            nextIntent = EnemyIntent.CreateAttackIntent(previewDamage);
+            nextIntent = new EnemyIntent(IntentType.Attack, previewDamage.ToString(), previewDamage, attackIcon);
         }
 
         return nextIntent;
     }
 
-    /// <summary>
-    /// Gets the current predicted intent.
-    /// </summary>
     public EnemyIntent GetCurrentIntent()
     {
         return nextIntent;

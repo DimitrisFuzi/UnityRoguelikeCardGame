@@ -1,34 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using TMPro; // Make sure to include this namespace for TextMeshProUGUI
 
 /// <summary>
 /// Displays the enemy's next intended action to the player.
-/// Clean version that uses explicit intent types instead of string parsing.
+/// This version is compatible with EnemyIntent having only Description and Icon.
 /// </summary>
 public class IntentDisplay : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Image intentImage;
-    [SerializeField] private Text intentText;
-    [SerializeField] private TextMeshProUGUI intentTextTMP; // For TextMeshPro support
+    [Tooltip("The Image component that displays the intent icon.")]
+    [SerializeField] private Image intentIconImage; // Renamed for clarity (was intentImage)
 
-    [Header("Default Intent Icons")]
-    [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite buffIcon;
+    [Tooltip("The TextMeshProUGUI component that displays the intent description/value.")]
+    [SerializeField] private TextMeshProUGUI intentDescriptionText; // Renamed for clarity (was intentTextTMP, removed intentText)
 
-    private void Awake()
-    {
-        // Auto-find components if not assigned
-        if (intentImage == null)
-            intentImage = transform.Find("IntentImage")?.GetComponent<Image>();
-
-        if (intentText == null)
-            intentText = transform.Find("IntentValue")?.GetComponent<Text>();
-
-        if (intentTextTMP == null)
-            intentTextTMP = transform.Find("IntentValue")?.GetComponent<TextMeshProUGUI>();
-    }
+    // Removed Awake() method's auto-finding as it can interfere with Inspector assignments.
+    // Removed redundant Text intentText field.
+    // Removed default icons as they should come from EnemyIntent.Icon directly.
 
     /// <summary>
     /// Sets the intent display based on the enemy's predicted action.
@@ -38,24 +27,34 @@ public class IntentDisplay : MonoBehaviour
     {
         if (intent == null)
         {
-            ClearIntent();
+            ClearIntent(); // Clear display if intent is null
             return;
         }
 
-        // Set the icon based on intent type
-        if (intentImage != null)
+        // Set the icon
+        if (intentIconImage != null)
         {
-            Sprite iconToUse = GetIconForIntent(intent);
-            intentImage.sprite = iconToUse;
-            intentImage.gameObject.SetActive(iconToUse != null);
+            intentIconImage.sprite = intent.Icon;
+            intentIconImage.gameObject.SetActive(intent.Icon != null); // Activate/Deactivate based on icon presence
+        }
+        else
+        {
+            Logger.LogWarning("[IntentDisplay] Intent Icon Image is not assigned in the Inspector!", this);
         }
 
-        // Set the value text
-        string valueText = intent.Value > 0 ? intent.Value.ToString() : "";
-        SetIntentText(valueText);
+        // Set the description text
+        if (intentDescriptionText != null)
+        {
+            intentDescriptionText.text = intent.Description;
+            intentDescriptionText.gameObject.SetActive(!string.IsNullOrEmpty(intent.Description)); // Activate/Deactivate based on text presence
+        }
+        else
+        {
+            Logger.LogWarning("[IntentDisplay] Intent Description Text (TextMeshProUGUI) is not assigned in the Inspector!", this);
+        }
 
-        // Make sure the display is visible
-        gameObject.SetActive(true);
+        // Ensure the root IntentDisplay GameObject is active if there's content
+        gameObject.SetActive(intent.Icon != null || !string.IsNullOrEmpty(intent.Description));
     }
 
     /// <summary>
@@ -63,69 +62,32 @@ public class IntentDisplay : MonoBehaviour
     /// </summary>
     public void ClearIntent()
     {
-        if (intentImage != null)
+        if (intentIconImage != null)
         {
-            intentImage.sprite = null;
-            intentImage.gameObject.SetActive(false);
+            intentIconImage.sprite = null;
+            intentIconImage.gameObject.SetActive(false);
         }
-
-        SetIntentText("");
-        gameObject.SetActive(false);
+        if (intentDescriptionText != null)
+        {
+            intentDescriptionText.text = string.Empty;
+            intentDescriptionText.gameObject.SetActive(false);
+        }
+        gameObject.SetActive(false); // Hide the root IntentDisplay GameObject
     }
 
-    /// <summary>
-    /// Shows the intent during player's turn.
-    /// </summary>
+    // ShowIntent and HideIntent are not strictly necessary if SetIntent/ClearIntent manage visibility
+    // based on whether an intent is provided. However, if you have specific turn-based show/hide logic,
+    // you can keep them and call them from TurnManager or EnemyManager.
     public void ShowIntent()
     {
         gameObject.SetActive(true);
     }
 
-    /// <summary>
-    /// Hides the intent during enemy's turn.
-    /// </summary>
     public void HideIntent()
     {
         gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Gets the appropriate icon for the given intent.
-    /// </summary>
-    private Sprite GetIconForIntent(EnemyIntent intent)
-    {
-        // Use custom icon if provided
-        if (intent.Icon != null)
-            return intent.Icon;
-
-        // Use default icon based on type
-        switch (intent.Type)
-        {
-            case IntentType.Attack:
-                return attackIcon;
-            case IntentType.Buff:
-                return buffIcon;
-            default:
-                return null;
-        }
-    }
-
-    /// <summary>
-    /// Sets text using either regular Text or TextMeshPro.
-    /// </summary>
-    private void SetIntentText(string text)
-    {
-        bool hasText = !string.IsNullOrEmpty(text);
-
-        if (intentTextTMP != null)
-        {
-            intentTextTMP.text = text;
-            intentTextTMP.gameObject.SetActive(hasText);
-        }
-        else if (intentText != null)
-        {
-            intentText.text = text;
-            intentText.gameObject.SetActive(hasText);
-        }
-    }
+    // Removed GetIconForIntent as it's now handled by EnemyIntent.Icon directly
+    // Removed SetIntentText as it's now handled directly by intentDescriptionText
 }

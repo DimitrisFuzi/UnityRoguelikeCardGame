@@ -1,3 +1,4 @@
+// IEnemyAI.cs
 /// <summary>
 /// Interface that defines the basic behavior of any enemy AI.
 /// Allows for turn-based decision making and intent prediction.
@@ -9,11 +10,13 @@ public interface IEnemyAI
     /// </summary>
     void ExecuteTurn();
 
-    /// <summary>
-    /// Predicts what the enemy will do on their next turn.
-    /// </summary>
-    EnemyIntent PredictNextIntent();
+    
 
     void SetPlayerStats(CharacterStats player);
 
+    void SetIntentIcons(UnityEngine.Sprite attack, UnityEngine.Sprite buff);
+    void InitializeAI();
+    EnemyIntent PredictNextIntent();
+    EnemyIntent GetCurrentIntent();
+    void SetEnemyDisplay(EnemyDisplay display);
 }

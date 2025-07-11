@@ -1,3 +1,4 @@
+// EnemyData.cs
 using UnityEngine;
 
 /// <summary>
@@ -29,6 +30,13 @@ public class EnemyData : ScriptableObject
     [Header("AI Behavior")]
     [Tooltip("What kind of AI this enemy should use.")]
     public EnemyAIType enemyAIType;
+
+    [Header("Intent Icons")]
+    [Tooltip("Sprite for the attack intent.")]
+    public Sprite attackIntentIcon;
+    [Tooltip("Sprite for the buff intent.")]
+    public Sprite buffIntentIcon;
+
 }
 
 /// <summary>

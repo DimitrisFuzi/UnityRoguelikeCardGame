@@ -43,7 +43,7 @@ public class DamageEffect : EffectData
             Vector3 attackOffset = Vector3.right * 20f; // 20 pixels περίπου, για testing
 
             // Αν ο source είναι εχθρός, κινείται προς τα αριστερά
-            if (source is EnemyStats)
+            if (source is Enemy)
             {
                 attackOffset = Vector3.left * 100f;
             }

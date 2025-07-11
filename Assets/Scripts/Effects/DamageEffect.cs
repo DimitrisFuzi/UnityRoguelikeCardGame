@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
+using DG.Tweening;
 
 /// <summary>
 /// Represents an effect that deals damage to a target character.
@@ -27,9 +28,33 @@ public class DamageEffect : EffectData
     /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
+        Debug.Log($"[AttackAnimationRoot] {source.name} is attacking", target);
         if (target != null)
         {
             target.TakeDamage(damageAmount);
         }
+
+        // Animation στον επιτιθέμενο χαρακτήρα
+        if (source != null && source.characterVisualTransform != null)
+        {
+            Debug.Log($"[AttackAnimation] {source.name} is attacking", target);
+            // Χρήση τοπικής θέσης
+            Vector3 originalPos = source.characterVisualTransform.localPosition;
+            Vector3 attackOffset = Vector3.right * 20f; // 20 pixels περίπου, για testing
+
+            // Αν ο source είναι εχθρός, κινείται προς τα αριστερά
+            if (source is EnemyStats)
+            {
+                attackOffset = Vector3.left * 100f;
+            }
+
+            // DOTween sequence για "μπρος-πίσω" κίνηση
+            Sequence attackSeq = DOTween.Sequence();
+            attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos + attackOffset, 0.1f));
+            attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos, 0.1f));
+        }
     }
+
+
+
 }

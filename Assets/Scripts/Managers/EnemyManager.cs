@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Managers;
 
@@ -80,13 +81,19 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calls each enemy to perform their battle action.
+    /// Calls each enemy to perform their battle action one at a time with a delay.
     /// </summary>
     public void PerformEnemyActions()
+    {
+        StartCoroutine(PerformEnemyActionsCoroutine());
+    }
+
+    private IEnumerator PerformEnemyActionsCoroutine()
     {
         foreach (var enemy in activeEnemies)
         {
             enemy.PerformAction();
+            yield return new WaitForSeconds(1f);
         }
     }
 

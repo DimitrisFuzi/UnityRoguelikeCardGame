@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+
 /// <summary>
 /// Base class for any character that has health, armor, and can take damage or perform attacks.
 /// </summary>
@@ -21,6 +22,9 @@ public abstract class CharacterStats : MonoBehaviour
 
     public int Armor { get; protected set; }
 
+    // Add energy stat here if it's common to all characters
+    // For now, it's specific to PlayerStats, but we will add the event here.
+
     /// <summary>
     /// Event fired when health changes.
     /// Parameters: currentHealth, maxHealth
@@ -34,6 +38,12 @@ public abstract class CharacterStats : MonoBehaviour
     public event Action<int> OnArmorChanged;
 
     /// <summary>
+    /// Event fired when energy changes.
+    /// Parameter: currentEnergy
+    /// </summary>
+    public event Action<int> OnEnergyChanged; // ADDED: OnEnergyChanged event
+
+    /// <summary>
     /// Event fired when the character dies.
     /// </summary>
     public event Action OnDied;
@@ -42,32 +52,32 @@ public abstract class CharacterStats : MonoBehaviour
     /// Initialize the stats, usually called on spawn or setup.
     /// </summary>
     /// <param name="maxHealth">Maximum health value.</param>
-    /// <param name="startingArmor">Starting armor value (optional).</param>
+    /// <param name="startingArmor">Starting armor value (optional, defaults to 0).</param>
     public virtual void InitializeStats(int maxHealth, int startingArmor = 0)
     {
         MaxHealth = maxHealth;
-        CurrentHealth = maxHealth;
+        CurrentHealth = maxHealth; // Start with full health
         Armor = startingArmor;
 
-        //Logger.Log($"{gameObject.name} initialized with {MaxHealth} HP and {Armor} Armor.", this);
+        // Immediately invoke events to update UI on initialization
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         OnArmorChanged?.Invoke(Armor);
+        // OnEnergyChanged will be invoked by PlayerStats if applicable
     }
 
     /// <summary>
-    /// Deals damage to the character, reducing armor first then health.
+    /// Reduces character's health, accounting for armor. Triggers OnHealthChanged.
     /// </summary>
-    /// <param name="damage">Amount of incoming damage.</param>
-    public virtual void TakeDamage(int damage)
+    /// <param name="amount">Amount of damage to take.</param>
+    public virtual void TakeDamage(int amount)
     {
-        int damageToArmor = Mathf.Min(Armor, damage);
-        Armor -= damageToArmor;
+        int damageAfterArmor = Mathf.Max(0, amount - Armor); // Damage absorbed by armor
+        Armor = Mathf.Max(0, Armor - amount); // Armor reduced first
 
-        int damageToHealth = damage - damageToArmor;
-        CurrentHealth -= damageToHealth;
+        CurrentHealth -= damageAfterArmor;
 
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
-        OnArmorChanged?.Invoke(Armor);
+        OnArmorChanged?.Invoke(Armor); // Armor might have changed too
 
         if (CurrentHealth <= 0)
         {
@@ -76,7 +86,7 @@ public abstract class CharacterStats : MonoBehaviour
     }
 
     /// <summary>
-    /// Performs a default attack on another character.
+    /// Performs an attack on another character.
     /// </summary>
     /// <param name="target">The character receiving the attack.</param>
     public virtual void PerformAttack(CharacterStats target)
@@ -117,7 +127,6 @@ public abstract class CharacterStats : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
-        Logger.Log($"{gameObject.name} died.", this);
-        OnDied?.Invoke();
+        OnDied?.Invoke(); // Notify listeners that the character has died
     }
 }

@@ -1,3 +1,4 @@
+// EnemyData.cs
 using UnityEngine;
 
 /// <summary>
@@ -25,4 +26,25 @@ public class EnemyData : ScriptableObject
 
     [Tooltip("Visual size of the enemy in the scene.")]
     public Vector2 size;
+
+    [Header("AI Behavior")]
+    [Tooltip("What kind of AI this enemy should use.")]
+    public EnemyAIType enemyAIType;
+
+    [Header("Intent Icons")]
+    [Tooltip("Sprite for the attack intent.")]
+    public Sprite attackIntentIcon;
+    [Tooltip("Sprite for the buff intent.")]
+    public Sprite buffIntentIcon;
+
+}
+
+/// <summary>
+/// Enum to choose which AI script to attach to an enemy dynamically.
+/// </summary>
+public enum EnemyAIType
+{
+    None,
+    Wolf1,
+    Wolf2
 }

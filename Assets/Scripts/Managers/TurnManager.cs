@@ -85,15 +85,29 @@ public class TurnManager : MonoBehaviour
         Debug.Log("👿 Enemy Turn Started!");
         OnEnemyTurnStart?.Invoke();
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(0.5f);
 
+        // Step 1: Perform enemy actions
         enemyManager.PerformEnemyActions();
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(1f); // Small delay before next intent setup
+
+        // Set next intent for each enemy
+        foreach (Enemy enemy in enemyManager.Enemies)
+        {
+            // Ensure enemyDisplay is available before trying to set intent
+            EnemyDisplay enemyDisplay = enemy.GetComponent<EnemyDisplay>();
+            if (enemy.EnemyAI != null && enemyDisplay != null)
+            {
+                EnemyIntent nextIntent = enemy.EnemyAI.PredictNextIntent();
+                enemyDisplay.SetIntent(nextIntent); // Pass the intent to the display
+            }
+        }
 
         Debug.Log("👿 Enemy Turn Ended!");
         OnEnemyTurnEnd?.Invoke();
 
+        // Step 3: Start player's turn
         StartPlayerTurn();
     }
 }

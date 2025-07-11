@@ -1,22 +1,20 @@
-﻿using UnityEngine;
+﻿// PlayerDisplay.cs
+using UnityEngine;
 using TMPro;
 using MyProjectF.Assets.Scripts.Player;
 
 public class PlayerDisplay : MonoBehaviour
 {
-    //[Header("Player Stats Reference")]
-    //public PlayerStats playerStats; // Reference to PlayerStats (can be assigned manually or auto-detected)
     private PlayerStats playerStats;
 
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI healthText;
+    // REMOVED: [SerializeField] private TextMeshProUGUI healthText; // Health text handled by HealthBar.cs
+    [SerializeField] private HealthBar playerHealthBar; // NEW: Reference to HealthBar script for player
     [SerializeField] private TextMeshProUGUI armorText;
     [SerializeField] private TextMeshProUGUI energyText;
 
     private void Start()
     {
-
-        // Attempt to auto-assign if not set in Inspector
         if (playerStats == null)
         {
             playerStats = PlayerStats.Instance;
@@ -48,7 +46,19 @@ public class PlayerDisplay : MonoBehaviour
             SetFallbackDisplay();
             return;
         }
-        healthText.text = $"{playerStats.CurrentHealth} / {playerStats.MaxHealth}";
+
+        // Update player health using the HealthBar script
+        if (playerHealthBar != null)
+        {
+            playerHealthBar.UpdateHealthBar(playerStats.CurrentHealth, playerStats.MaxHealth);
+        }
+        else
+        {
+            Logger.LogWarning("[PlayerDisplay] playerHealthBar is not assigned! Player health will not display.", this);
+            // Fallback for health text if health bar isn't set up
+            // You might want to have a separate TextMeshProUGUI for health here if HealthBar isn't always used.
+        }
+
         armorText.text = $"{playerStats.Armor}";
         energyText.text = $"{playerStats.energy}";
     }
@@ -58,7 +68,18 @@ public class PlayerDisplay : MonoBehaviour
     /// </summary>
     private void SetFallbackDisplay()
     {
-        healthText.text = "-- / --";
+        // For health, you'd need to decide if HealthBar handles fallback or if there's a separate text field.
+        // For now, this will show 0/0 on the health bar.
+        if (playerHealthBar != null)
+        {
+            playerHealthBar.UpdateHealthBar(0, 0);
+        }
+        else
+        {
+            // If playerHealthBar is null AND you removed healthText, this will not show health.
+            // You might need a separate TextMeshProUGUI for player health if HealthBar isn't mandatory.
+        }
+
         armorText.text = "--";
         energyText.text = "--";
     }

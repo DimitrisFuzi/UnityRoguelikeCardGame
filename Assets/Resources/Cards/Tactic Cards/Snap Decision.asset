@@ -15,10 +15,11 @@ MonoBehaviour:
   resourcePath: Cards/Tactic Cards/Snap Decision
   cardName: Snap Decision
   cardDescription: Draw {cards} card. Gain {armor} armor.
-  cardType: 0
+  cardType: 2
   cardSprite: {fileID: 4319880946195423169, guid: 131e95b4f4a537347be8d372957cab7b, type: 3}
   energyCost: 0
-  cardTypeSprite: {fileID: 0}
+  cardRarity: 0
+  exhaustAfterUse: 0
   effects:
   - rid: 3013811131194015923
   - rid: 3013811131194015945

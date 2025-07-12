@@ -99,7 +99,6 @@ public class CardDisplay : MonoBehaviour
             // Update UI elements with card data
             descriptionText.text = finalDescription;
             CardImage.sprite = cardData.cardSprite;
-            CardTypeImage.sprite = cardData.cardTypeSprite;
         }
     }
 }

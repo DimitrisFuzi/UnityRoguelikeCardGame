@@ -18,7 +18,8 @@ MonoBehaviour:
   cardType: 1
   cardSprite: {fileID: -7719837488831736502, guid: 10ee3a07792a4f941b42d8d97bd91173, type: 3}
   energyCost: 1
-  cardTypeSprite: {fileID: 0}
+  cardRarity: 1
+  exhaustAfterUse: 0
   effects:
   - rid: 3013811131194016009
   - rid: 3013811131194016010

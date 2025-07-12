@@ -6,6 +6,10 @@ using UnityEngine;
 /// </summary>
 public abstract class CharacterStats : MonoBehaviour
 {
+    [Header("Visuals")]
+    [Tooltip("The transform used for visual animations (e.g., attack move).")]
+    public Transform characterVisualTransform;
+
     [Header("Stats")]
     public int MaxHealth { get; protected set; }
 

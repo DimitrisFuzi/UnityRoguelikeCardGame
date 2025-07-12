@@ -30,6 +30,8 @@ public class HandManager : MonoBehaviour
 
     private readonly List<GameObject> cardsInHand = new();
 
+    public IReadOnlyList<GameObject> CardsInHand => cardsInHand;
+
     private void Awake()
     {
         if (Instance == null)

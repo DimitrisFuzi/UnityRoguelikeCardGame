@@ -60,7 +60,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-            "Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort",
+            "Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus",
             "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction",
         
         };

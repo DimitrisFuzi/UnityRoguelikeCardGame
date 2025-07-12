@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
-  m_Name: Punch Attack
-  m_EditorClassIdentifier: 
-  resourcePath: Cards/Attack Cards/Punch Attack
-  cardName: Punch Attack
-  cardDescription: Deal {damage} damage to an enemy
+  m_Name: Wide Swing
+  m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
+  resourcePath: Cards/Attack Cards/Wide Swing
+  cardName: Wide Swing
+  cardDescription: Deal {damage} damage to all enemies.
   cardType: 0
-  cardSprite: {fileID: 2083714419175171275, guid: f53e363dec1f1db42ae396588a0111ac, type: 3}
+  cardSprite: {fileID: -431391707168837896, guid: 5eadc1518ed53c04d90d9b99da629d4a, type: 3}
   energyCost: 1
-  cardTypeSprite: {fileID: -1730254177, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
+  cardTypeSprite: {fileID: 0}
   effects:
-  - rid: 8812507693837714228
-  targetType: 0
+  - rid: 3013811131194015901
+  targetType: 1
   references:
     version: 2
     RefIds:
-    - rid: 8812507693837714228
+    - rid: 3013811131194015901
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
-        damageAmount: 8
+        damageAmount: 4

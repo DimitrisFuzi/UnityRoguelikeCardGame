@@ -60,10 +60,9 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-            "Bat Attack", "Bat Attack",
-            "Punch Attack", "Punch Attack", "Punch Attack",
-            "Arm Block", "Arm Block", "Arm Block", "Arm Block",
-            "Flash Bomb"
+            "Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out",
+            "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction",
+        
         };
 
         foreach (string cardName in selectedCards)

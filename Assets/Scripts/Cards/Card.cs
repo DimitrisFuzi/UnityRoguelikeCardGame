@@ -51,9 +51,19 @@ namespace MyProjectF.Assets.Scripts.Cards
         public enum CardType
         {
             Attack,
-            Defence,
-            Utility,
-            Special
+            Guard,
+            Tactic
+        }
+
+        /// <summary>
+        /// Enum representing card rarity types.
+        /// </summary>
+        public enum CardRarity
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Legendary
         }
 
         /// <summary>

@@ -217,35 +217,44 @@ namespace MyProjectF.Assets.Scripts.Cards
                 return;
             }
 
-            CharacterStats target = null;
-
-            if (cardData.targetType == Card.TargetType.SingleEnemy)
-            {
-                Enemy targetEnemy = GetEnemyUnderCursor();
-                target = ResolveTarget(targetEnemy);
-
-                if (target == null)
-                {
-                    Logger.LogWarning("CardMovement: Card requires a target but none found.", this);
-                    TransitionToIdle();
-                    return;
-                }
-            }
-            else if (cardData.targetType == Card.TargetType.Self)
-            {
-                target = PlayerStats.Instance;
-            }
-
+            // Loop through each effect and resolve individual targets
             foreach (EffectData effect in cardData.GetCardEffects())
             {
-                effect.ApplyEffect(PlayerStats.Instance, target);
+                CharacterStats effectTarget = ResolveTargetForEffect(effect.targetType);
+
+                // Handle null for non-targeting effects gracefully
+                if (effect.targetType == Card.TargetType.SingleEnemy && effectTarget == null)
+                {
+                    Logger.LogWarning($"CardMovement: Effect {effect.GetType().Name} requires a target but none was found.");
+                    continue;
+                }
+
+                effect.ApplyEffect(PlayerStats.Instance, effectTarget);
             }
 
             PlayerManager.Instance.UseCard(cardData);
             TransitionToIdle();
             HandManager.Instance.RemoveCardFromHand(this.gameObject);
+        }
 
-           
+        /// <summary>
+        /// Resolves the target CharacterStats based on the effect's target type.
+        /// </summary>
+        private CharacterStats ResolveTargetForEffect(Card.TargetType type)
+        {
+            switch (type)
+            {
+                case Card.TargetType.SingleEnemy:
+                    return GetEnemyUnderCursor();
+
+                case Card.TargetType.Self:
+                    return PlayerStats.Instance;
+
+                case Card.TargetType.AllEnemies:
+                case Card.TargetType.None:
+                default:
+                    return null;
+            }
         }
 
         /// <summary>

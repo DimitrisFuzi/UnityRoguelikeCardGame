@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 51a7972963462b44fa613bd0eed3dc65
+guid: 97f787dfd43a64d4bb3fdfa782938eb2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -802916507955162676
-    second: Flash Bomb_0
+      213: 8464539905210852758
+    second: FocusBreathingSprite_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Flash Bomb_0
+      name: FocusBreathingSprite_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 600
-        height: 450
+        width: 650
+        height: 400
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cc11907a0b77bd4f0800000000000000
-      internalID: -802916507955162676
+      spriteID: 695263d5236187570800000000000000
+      internalID: 8464539905210852758
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Flash Bomb_0: -802916507955162676
+      FocusBreathingSprite_0: 8464539905210852758
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

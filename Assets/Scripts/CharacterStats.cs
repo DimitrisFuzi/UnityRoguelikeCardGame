@@ -88,6 +88,21 @@ public abstract class CharacterStats : MonoBehaviour
             Die();
         }
     }
+    /// <summary>
+    /// Directly reduces health without considering armor.
+    /// </summary>
+    public virtual void LoseHealthDirect(int amount)
+    {
+        currentHealth = Mathf.Clamp(currentHealth - amount, 0, MaxHealth);
+        OnHealthChanged?.Invoke(currentHealth, MaxHealth);
+
+        Logger.Log($"{gameObject.name} lost {amount} HP (ignoring armor).", this);
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
 
     /// <summary>
     /// Performs an attack on another character.

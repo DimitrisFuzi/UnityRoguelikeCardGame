@@ -47,7 +47,9 @@ public class CardDisplay : MonoBehaviour
             // Prepare to fill placeholders like {damage} or {armor}
             int damage = 0;
             int armor = 0;
-
+            int cards = 0;
+            int energy = 0;
+            int HPlost = 0;
             // ✅ Read and parse card effects to extract values
             foreach (EffectData effect in cardData.GetCardEffects())
             {
@@ -59,12 +61,27 @@ public class CardDisplay : MonoBehaviour
                 {
                     armor = armorEffect.armorAmount;
                 }
+                else if(effect is DrawCardEffect drawCardEffect)
+                {
+                    cards = drawCardEffect.cardsToDraw;
+                }
+                else if (effect is GainEnergyEffect gainEnergyEffect)
+                {
+                    energy = gainEnergyEffect.energyAmount;
+                }
+                else if (effect is LoseHealthEffect loseHealthEffect)
+                {
+                    HPlost = loseHealthEffect.healthLoss;
+                }
             }
 
             // ✅ Replace placeholders in the description with actual values
             string finalDescription = cardData.cardDescription;
             finalDescription = finalDescription.Replace("{damage}", damage > 0 ? damage.ToString() : "-");
             finalDescription = finalDescription.Replace("{armor}", armor > 0 ? armor.ToString() : "-");
+            finalDescription = finalDescription.Replace("{cards}", cards > 0 ? cards.ToString() : "-");
+            finalDescription = finalDescription.Replace("{energy}", energy > 0 ? energy.ToString() : "-");
+            finalDescription = finalDescription.Replace("{HPlost}", HPlost > 0 ? HPlost.ToString() : "-");
 
             // Update UI elements with card data
             descriptionText.text = finalDescription;

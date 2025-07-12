@@ -81,6 +81,16 @@ namespace MyProjectF.Assets.Scripts.Player
         }
 
         /// <summary>
+        /// Increases the player's energy by a specified amount.
+        /// </summary>
+        public void GainEnergy(int amount)
+        {
+            energy += amount;
+            NotifyUI();
+        }
+
+
+        /// <summary>
         /// Notifies listeners that player stats have changed.
         /// </summary>
         private void NotifyUI()

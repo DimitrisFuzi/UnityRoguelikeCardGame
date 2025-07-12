@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c7401d0d1cba6164ea7f170073aedc5c
+guid: 10ee3a07792a4f941b42d8d97bd91173
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5292249155271154335
-    second: Bat Attack_0
+      213: -7719837488831736502
+    second: ShiftStanceSprite_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bat Attack_0
+      name: ShiftStanceSprite_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 607
-        height: 466
+        width: 650
+        height: 400
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 165a33dce672e86b0800000000000000
-      internalID: -5292249155271154335
+      spriteID: a45d07294b0add490800000000000000
+      internalID: -7719837488831736502
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Bat Attack_0: -5292249155271154335
+      ShiftStanceSprite_0: -7719837488831736502
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

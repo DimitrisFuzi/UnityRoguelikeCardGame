@@ -10,29 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
-  m_Name: Snap Decision
+  m_Name: Shift Stance
   m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
-  resourcePath: Cards/Tactic Cards/Snap Decision
-  cardName: Snap Decision
-  cardDescription: Draw {cards} card. Gain {armor} armor.
-  cardType: 0
-  cardSprite: {fileID: 4319880946195423169, guid: 131e95b4f4a537347be8d372957cab7b, type: 3}
-  energyCost: 0
+  resourcePath: Cards/Defence Cards/Shift Stance
+  cardName: Shift Stance
+  cardDescription: Gain {armor} armor, draw {cards} card.
+  cardType: 1
+  cardSprite: {fileID: -7719837488831736502, guid: 10ee3a07792a4f941b42d8d97bd91173, type: 3}
+  energyCost: 1
   cardTypeSprite: {fileID: 0}
   effects:
-  - rid: 3013811131194015923
-  - rid: 3013811131194015945
+  - rid: 3013811131194016009
+  - rid: 3013811131194016010
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194015923
+    - rid: 3013811131194016009
+      type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
+      data:
+        targetType: 2
+        armorAmount: 5
+    - rid: 3013811131194016010
       type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 4
         cardsToDraw: 1
-    - rid: 3013811131194015945
-      type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
-      data:
-        targetType: 2
-        armorAmount: 1

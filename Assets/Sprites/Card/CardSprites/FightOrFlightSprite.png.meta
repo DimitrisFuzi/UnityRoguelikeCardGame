@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 10c40b32205081f4f8c8f9d4c337199d
+guid: b233e78053328664e85ccc02ddcd4392
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6578051183051854707
-    second: Hand Block_0
+      213: 3127360827113617931
+    second: FightOrFlightSprite_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hand Block_0
+      name: FightOrFlightSprite_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 600
-        height: 450
+        width: 650
+        height: 400
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 373d420f2bee94b50800000000000000
-      internalID: 6578051183051854707
+      spriteID: b0a34905a1e966b20800000000000000
+      internalID: 3127360827113617931
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Hand Block_0: 6578051183051854707
+      FightOrFlightSprite_0: 3127360827113617931
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

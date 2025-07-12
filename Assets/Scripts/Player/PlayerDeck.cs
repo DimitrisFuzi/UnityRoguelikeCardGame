@@ -60,7 +60,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-            "Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out",
+            "Fight or Flight","Fight or Flight","Fight or Flight","Fight or Flight","Fight or Flight","Fight or Flight",
             "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction",
         
         };

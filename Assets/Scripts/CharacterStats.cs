@@ -105,6 +105,17 @@ public abstract class CharacterStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets the current health directly, clamping it between 0 and max health.
+    /// </summary> 
+    public void SetCurrentHealth(int value)
+    {
+        int oldHealth = currentHealth;
+        currentHealth = Mathf.Clamp(value, 0, MaxHealth);
+        OnHealthChanged?.Invoke(oldHealth, currentHealth);
+    }
+
+
+    /// <summary>
     /// Performs an attack on another character.
     /// </summary>
     /// <param name="target">The character receiving the attack.</param>

@@ -19,6 +19,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         public Sprite cardSprite;           // Visual sprite for the card's image
         public int energyCost;              // Energy cost to play the card
         public Sprite cardTypeSprite;       // Icon representing the card type (used in UI)
+        public bool exhaustAfterUse = false; // Whether the card is exhausted after use
 
         [Header("Card Effects")]
         [SerializeReference]

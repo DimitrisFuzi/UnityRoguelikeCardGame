@@ -400,6 +400,6 @@ namespace MyProjectF.Assets.Scripts.Cards
                     return null;
             }
         }
-     
     }
 }
+

@@ -49,7 +49,10 @@ public class CardDisplay : MonoBehaviour
             int armor = 0;
             int cards = 0;
             int energy = 0;
-            int HPlost = 0;
+            int hpLost = 0;
+            int aoeDamage = 0;
+            int healthSet = 0;
+
             // ✅ Read and parse card effects to extract values
             foreach (EffectData effect in cardData.GetCardEffects())
             {
@@ -71,7 +74,15 @@ public class CardDisplay : MonoBehaviour
                 }
                 else if (effect is LoseHealthEffect loseHealthEffect)
                 {
-                    HPlost = loseHealthEffect.healthLoss;
+                    hpLost = loseHealthEffect.healthLoss;
+                }
+                else if (effect is AOEDamageEffect aoeDamageEffect)
+                {
+                    aoeDamage = aoeDamageEffect.damageAmount;
+                }
+                else if (effect is SetHealthEffect setHealthEffect)
+                {
+                    healthSet = setHealthEffect.newHealth;
                 }
             }
 
@@ -81,7 +92,9 @@ public class CardDisplay : MonoBehaviour
             finalDescription = finalDescription.Replace("{armor}", armor > 0 ? armor.ToString() : "-");
             finalDescription = finalDescription.Replace("{cards}", cards > 0 ? cards.ToString() : "-");
             finalDescription = finalDescription.Replace("{energy}", energy > 0 ? energy.ToString() : "-");
-            finalDescription = finalDescription.Replace("{HPlost}", HPlost > 0 ? HPlost.ToString() : "-");
+            finalDescription = finalDescription.Replace("{hpLost}", hpLost > 0 ? hpLost.ToString() : "-");
+            finalDescription = finalDescription.Replace("{aoeDamage}", aoeDamage > 0 ? aoeDamage.ToString() : "-");
+            finalDescription = finalDescription.Replace("{healthSet}", healthSet > 0 ? healthSet.ToString() : "-");
 
             // Update UI elements with card data
             descriptionText.text = finalDescription;

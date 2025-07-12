@@ -14,18 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
   resourcePath: Cards/Attack Cards/Wide Swing
   cardName: Wide Swing
-  cardDescription: Deal {damage} damage to all enemies.
+  cardDescription: Deal {aoeDamage} damage to all enemies.
   cardType: 0
   cardSprite: {fileID: -431391707168837896, guid: 5eadc1518ed53c04d90d9b99da629d4a, type: 3}
   energyCost: 1
   cardTypeSprite: {fileID: 0}
   effects:
-  - rid: 3013811131194015901
+  - rid: 3013811131194016186
   targetType: 1
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194015901
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+    - rid: 3013811131194016186
+      type: {class: AOEDamageEffect, ns: , asm: Assembly-CSharp}
       data:
+        targetType: 1
         damageAmount: 4

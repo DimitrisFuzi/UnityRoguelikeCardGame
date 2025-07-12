@@ -28,13 +28,11 @@ public class DamageEffect : EffectData
     /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
-        Debug.Log($"[AttackAnimationRoot] {source.name} is attacking", target);
         if (target != null)
         {
             target.TakeDamage(damageAmount);
         }
 
-        // Animation στον επιτιθέμενο χαρακτήρα
         if (source != null && source.characterVisualTransform != null)
         {
             Debug.Log($"[AttackAnimation] {source.name} is attacking", target);
@@ -48,7 +46,6 @@ public class DamageEffect : EffectData
                 attackOffset = Vector3.left * 100f;
             }
 
-            // DOTween sequence για "μπρος-πίσω" κίνηση
             Sequence attackSeq = DOTween.Sequence();
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos + attackOffset, 0.1f));
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos, 0.1f));

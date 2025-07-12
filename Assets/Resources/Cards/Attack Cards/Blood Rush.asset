@@ -10,29 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
-  m_Name: Fight or Flight
+  m_Name: Blood Rush
   m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
-  resourcePath: Cards/Tactic Cards/Fight or Flight
-  cardName: Fight or Flight
-  cardDescription: Gain {energy} energy, lose {hpLost} HP
-  cardType: 2
-  cardSprite: {fileID: 3127360827113617931, guid: b233e78053328664e85ccc02ddcd4392, type: 3}
-  energyCost: 0
+  resourcePath: Cards/Attack Cards/Blood Rush
+  cardName: Blood Rush
+  cardDescription: Deal {damage} damage. Gain {energy} energy. Lose {hpLost} HP.
+  cardType: 0
+  cardSprite: {fileID: 7879439024000254689, guid: ce42796fadcd3a946941387ba3abeaed, type: 3}
+  energyCost: 1
   cardTypeSprite: {fileID: 0}
   effects:
-  - rid: 3013811131194016117
-  - rid: 3013811131194016118
-  targetType: 2
+  - rid: 3013811131194016201
+  - rid: 3013811131194016202
+  - rid: 3013811131194016203
+  targetType: 0
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016117
+    - rid: 3013811131194016201
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 0
+        damageAmount: 8
+    - rid: 3013811131194016202
       type: {class: GainEnergyEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 2
-        energyAmount: 2
-    - rid: 3013811131194016118
+        energyAmount: 1
+    - rid: 3013811131194016203
       type: {class: LoseHealthEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 2
-        healthLoss: 3
+        healthLoss: 2

@@ -57,10 +57,6 @@ MonoBehaviour:
   descriptionText: {fileID: 6836347981060600}
   manaCostText: {fileID: 7357649609358084447}
   CardTypeImage: {fileID: 7477161882149453462}
-  attackSprite: {fileID: -1730254177, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
-  defenceSprite: {fileID: -2081245629, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
-  utilitySprite: {fileID: 276966819, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
-  specialSprite: {fileID: -1756047590, guid: 132358e9bf26b60458b731bf001e31db, type: 3}
 --- !u!61 &850609725544105672
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -119,11 +115,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348664cc42a81b845b8c87e9e94fbc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isInHand: 1
   selectScale: 1.1
-  cardPlay: {x: 0, y: 400}
-  playPosition: {x: -600, y: 500, z: 0}
   glowEffect: {fileID: 2043751710176427291}
   playArrow: {fileID: 2834380698392247112}
+  cardPlay: {x: 0, y: 400}
+  playPosition: {x: -600, y: 500, z: 0}
   lerpFactor: 0.1
   cardPlayDivider: 4
   cardPlayMultiplier: 1
@@ -133,6 +130,7 @@ MonoBehaviour:
   playPositionXDivider: -3
   playPositionXMultiplier: 1.2
   needUpdatePlayPosition: 0
+  cardData: {fileID: 0}
 --- !u!1 &2043751710176427291
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,11 +257,10 @@ MonoBehaviour:
   arrowPrefab: {fileID: 2323714894986619478, guid: f39c81e65dee7ea46b36ab489ee4f493, type: 3}
   dotPrefab: {fileID: 1769807111154378001, guid: d35c013d2ab13b1428b9cb51d0bcc296, type: 3}
   poolSize: 50
+  baseScreenWidth: 1920
   spacing: 40
   arrowAngleAdjustment: 180
   dotsToSkip: 2
-  baseScreenWidth: 1920
-  spacingScale: 0
 --- !u!1 &2881013551209077941
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,6 +320,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -344,6 +343,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -393,8 +393,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -876,14 +876,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2735849, g: 0.25680846, b: 0.25680846, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7654328554491658452, guid: ef02dbcf4d274504b874c26907c4db65, type: 3}
+  m_Sprite: {fileID: -9011745926881706217, guid: 181c2ab3fa7e0e040b15055cf3840492, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -928,8 +928,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1}
-  m_SizeDelta: {x: 1.8, y: 1.3}
+  m_AnchoredPosition: {x: 0, y: -1.2}
+  m_SizeDelta: {x: 1.8, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5577182949227991550
 CanvasRenderer:
@@ -1050,6 +1050,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1071,6 +1073,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -1109,8 +1112,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.5}
-  m_SizeDelta: {x: 2, y: 1.5}
+  m_AnchoredPosition: {x: 0.019, y: 0.309}
+  m_SizeDelta: {x: 2.326005, y: 1.9607}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3543415152773275630
 CanvasRenderer:
@@ -1140,9 +1143,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5292249155271154335, guid: c7401d0d1cba6164ea7f170073aedc5c, type: 3}
+  m_Sprite: {fileID: 9183195442896860297, guid: b74666dfe5918dd4a8d796cc777703f0, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

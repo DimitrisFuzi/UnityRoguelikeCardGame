@@ -60,7 +60,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-            "Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus",
+            "Brace","Brace","Brace","Brace","Brace","Brace","Brace","Brace","Brace","Brace",
             "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction", "Gut Reaction",
         
         };

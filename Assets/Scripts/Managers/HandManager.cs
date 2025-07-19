@@ -32,6 +32,17 @@ public class HandManager : MonoBehaviour
 
     public IReadOnlyList<GameObject> CardsInHand => cardsInHand;
 
+
+#if UNITY_EDITOR
+private void OnValidate()
+{
+    if (Application.isPlaying)
+    {
+        UpdateHandLayout();
+    }
+}
+#endif
+
     private void Awake()
     {
         if (Instance == null)

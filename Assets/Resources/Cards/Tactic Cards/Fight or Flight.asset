@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Fight or Flight
   cardDescription: Gain {energy} energy, lose {hpLost} HP
   cardType: 2
-  cardSprite: {fileID: 3127360827113617931, guid: b233e78053328664e85ccc02ddcd4392, type: 3}
+  cardSprite: {fileID: 3127360827113617931, guid: bad5212e26c593c468fc31a9f90d82d6, type: 3}
   energyCost: 0
   cardRarity: 1
   exhaustAfterUse: 0

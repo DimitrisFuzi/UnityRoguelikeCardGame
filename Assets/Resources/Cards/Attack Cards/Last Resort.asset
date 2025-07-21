@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Last Resort
   cardDescription: Deal {damage} damage, set you health to {healthSet}. Exhaust.
   cardType: 0
-  cardSprite: {fileID: -850387258280292663, guid: 7f3596f53a952c24b8e9c7455e17c149, type: 3}
+  cardSprite: {fileID: -850387258280292663, guid: 2bd0a7928016a4546a80e30a3111bb13, type: 3}
   energyCost: 2
   cardRarity: 2
   exhaustAfterUse: 1

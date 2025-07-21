@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f53e363dec1f1db42ae396588a0111ac
+guid: 55645f074eb48474bab1ce2dad513bf3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2083714419175171275
-    second: Punch Attack_0
+      213: 8974026933910150871
+    second: LastResortSpriteAlt_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Punch Attack_0
+      name: LastResortSpriteAlt_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 600
-        height: 450
+        width: 1024
+        height: 744
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bc4ab486937daec10800000000000000
-      internalID: 2083714419175171275
+      spriteID: 7de908033f52a8c70800000000000000
+      internalID: 8974026933910150871
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Punch Attack_0: 2083714419175171275
+      LastResortSpriteAlt_0: 8974026933910150871
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

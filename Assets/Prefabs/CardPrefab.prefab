@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34acdb99575df4745a8a7a7e41ca4d79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardData: {fileID: 0}
+  cardData: {fileID: 11400000, guid: c42235c0be1ffa645b41940fdd54098b, type: 2}
   CardImage: {fileID: 7829953772938943211}
   nameText: {fileID: 370655349817009883}
   descriptionText: {fileID: 6836347981060600}
@@ -1053,8 +1053,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 26.7}
-  m_SizeDelta: {x: 250, y: 250}
+  m_AnchoredPosition: {x: 0, y: 3}
+  m_SizeDelta: {x: 226, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3543415152773275630
 CanvasRenderer:
@@ -1084,9 +1084,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9183195442896860297, guid: b74666dfe5918dd4a8d796cc777703f0, type: 3}
+  m_Sprite: {fileID: 4828371148437627436, guid: 3526b9631b0552842a100c7511cabcb4, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

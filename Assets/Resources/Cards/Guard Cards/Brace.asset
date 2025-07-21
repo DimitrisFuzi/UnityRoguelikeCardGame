@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Brace
   cardDescription: Gain {armor} armor.
   cardType: 1
-  cardSprite: {fileID: 9183195442896860297, guid: b74666dfe5918dd4a8d796cc777703f0, type: 3}
+  cardSprite: {fileID: 4828371148437627436, guid: 3526b9631b0552842a100c7511cabcb4, type: 3}
   energyCost: 2
   cardRarity: 1
   exhaustAfterUse: 0

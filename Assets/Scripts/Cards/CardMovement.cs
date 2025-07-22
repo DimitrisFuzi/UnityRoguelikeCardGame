@@ -236,7 +236,6 @@ namespace MyProjectF.Assets.Scripts.Cards
             // If no valid target is selected, return the card to the hand
             if (!validTargetSelected)
             {
-                Logger.Log("CardMovement: No valid target selected. Returning card to hand.");
                 TransitionToIdle();
                 return;
             }

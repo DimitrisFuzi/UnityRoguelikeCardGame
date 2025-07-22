@@ -12,7 +12,7 @@ namespace MyProjectF.Assets.Scripts.Player
         public static PlayerStats Instance { get; private set; }
 
         [Header("Energy Settings")]
-        public int initialEnergy = 5;
+        public int initialEnergy;
         public int energy;
 
         /// <summary>

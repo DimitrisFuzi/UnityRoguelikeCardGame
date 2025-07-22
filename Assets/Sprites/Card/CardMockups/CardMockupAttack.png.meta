@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 754bc8c16df0f154594e61ca360389c3
+guid: 59d551ccce909f24ebd56dac27f0892b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3022804297150349171
-    second: CardMockupAttack_0
+      213: -8737173279866047088
+    second: CardMockupAttackAlt2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CardMockupAttack_0
+      name: CardMockupAttackAlt2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 37fbb252e7823f920800000000000000
-      internalID: 3022804297150349171
+      spriteID: 095bc8881335fb680800000000000000
+      internalID: -8737173279866047088
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CardMockupAttack_0: 3022804297150349171
+      CardMockupAttackAlt2_0: -8737173279866047088
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

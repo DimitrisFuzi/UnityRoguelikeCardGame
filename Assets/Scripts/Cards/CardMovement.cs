@@ -217,21 +217,38 @@ namespace MyProjectF.Assets.Scripts.Cards
                 return;
             }
 
-            // Loop through each effect and resolve individual targets
+            // Validate target selection
+            bool validTargetSelected = true;
+
             foreach (EffectData effect in cardData.GetCardEffects())
             {
                 CharacterStats effectTarget = ResolveTargetForEffect(effect.targetType);
 
-                // Handle null for non-targeting effects gracefully
+                // If the effect requires a target and no valid target is found, mark as invalid
                 if (effect.targetType == Card.TargetType.SingleEnemy && effectTarget == null)
                 {
                     Logger.LogWarning($"CardMovement: Effect {effect.GetType().Name} requires a target but none was found.");
-                    continue;
+                    validTargetSelected = false;
+                    break;
                 }
+            }
 
+            // If no valid target is selected, return the card to the hand
+            if (!validTargetSelected)
+            {
+                Logger.Log("CardMovement: No valid target selected. Returning card to hand.");
+                TransitionToIdle();
+                return;
+            }
+
+            // Apply effects if all targets are valid
+            foreach (EffectData effect in cardData.GetCardEffects())
+            {
+                CharacterStats effectTarget = ResolveTargetForEffect(effect.targetType);
                 effect.ApplyEffect(PlayerStats.Instance, effectTarget);
             }
 
+            // Deduct energy and remove the card from the hand
             PlayerManager.Instance.UseCard(cardData);
             TransitionToIdle();
             HandManager.Instance.RemoveCardFromHand(this.gameObject);

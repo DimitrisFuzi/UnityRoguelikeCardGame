@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
+  m_Name: Deep Focus
+  m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
+  resourcePath: Cards/Tactic Cards/Deep Focus
+  cardName: Deep Focus
+  cardDescription: Draw {cards} cards. Discard 1 random card.
+  cardType: 2
+  cardSprite: {fileID: 3824878468554095376, guid: 95fd637b237417946b5a44271e7ed5b6, type: 3}
+  energyCost: 1
+  cardRarity: 2
+  exhaustAfterUse: 0
+  effects:
+  - rid: 3013811131194016371
+  - rid: 3013811131194016370
+  targetType: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: 3013811131194016370
+      type: {class: DiscardRandomCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 2
+    - rid: 3013811131194016371
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 2
+        cardsToDraw: 3

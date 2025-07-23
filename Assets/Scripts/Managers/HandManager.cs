@@ -30,6 +30,19 @@ public class HandManager : MonoBehaviour
 
     private readonly List<GameObject> cardsInHand = new();
 
+    public IReadOnlyList<GameObject> CardsInHand => cardsInHand;
+
+
+#if UNITY_EDITOR
+private void OnValidate()
+{
+    if (Application.isPlaying)
+    {
+        UpdateHandLayout();
+    }
+}
+#endif
+
     private void Awake()
     {
         if (Instance == null)
@@ -125,10 +138,21 @@ public class HandManager : MonoBehaviour
             var cm = cardObject.GetComponent<CardMovement>();
             if (cm != null) cm.enabled = false;
 
-            // Discard the card data
+            // Discard the card data if not exhausted
             var cd = cardObject.GetComponent<CardDisplay>();
             if (cd != null)
-                DeckManager.Instance?.DiscardCard(cd.cardData);
+            {
+                if (cd.cardData.exhaustAfterUse)
+                {
+                    Debug.Log($"[HandManager] '{cd.cardData.cardName}' was exhausted.");
+                    // Skip discard
+                }
+                else
+                {
+                    DeckManager.Instance?.DiscardCard(cd.cardData);
+                }
+            }
+
 
             // ✅ Kill all active DOTween tweens (position, scale, etc.)
             var rect = cardObject.GetComponent<RectTransform>();

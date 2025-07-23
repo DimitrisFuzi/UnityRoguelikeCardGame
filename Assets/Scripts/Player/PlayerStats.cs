@@ -12,7 +12,7 @@ namespace MyProjectF.Assets.Scripts.Player
         public static PlayerStats Instance { get; private set; }
 
         [Header("Energy Settings")]
-        public int initialEnergy = 5;
+        public int initialEnergy;
         public int energy;
 
         /// <summary>
@@ -79,6 +79,16 @@ namespace MyProjectF.Assets.Scripts.Player
 
             NotifyUI();
         }
+
+        /// <summary>
+        /// Increases the player's energy by a specified amount.
+        /// </summary>
+        public void GainEnergy(int amount)
+        {
+            energy += amount;
+            NotifyUI();
+        }
+
 
         /// <summary>
         /// Notifies listeners that player stats have changed.

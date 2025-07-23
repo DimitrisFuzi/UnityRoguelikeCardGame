@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
+  m_Name: Fight or Flight
+  m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
+  resourcePath: Cards/Tactic Cards/Fight or Flight
+  cardName: Fight or Flight
+  cardDescription: Gain {energy} energy, lose {hpLost} HP
+  cardType: 2
+  cardSprite: {fileID: 3127360827113617931, guid: bad5212e26c593c468fc31a9f90d82d6, type: 3}
+  energyCost: 0
+  cardRarity: 1
+  exhaustAfterUse: 0
+  effects:
+  - rid: 3013811131194016117
+  - rid: 3013811131194016118
+  targetType: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: 3013811131194016117
+      type: {class: GainEnergyEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 2
+        energyAmount: 2
+    - rid: 3013811131194016118
+      type: {class: LoseHealthEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 2
+        healthLoss: 3

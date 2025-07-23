@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86606e38029157c4a963f97c1e862b3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterVisualTransform: {fileID: 0}
   initialEnergy: 10
   energy: 10

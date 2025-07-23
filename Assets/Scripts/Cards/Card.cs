@@ -18,7 +18,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         public CardType cardType;           // Category of the card (Attack, Defense, etc.)
         public Sprite cardSprite;           // Visual sprite for the card's image
         public int energyCost;              // Energy cost to play the card
-        public Sprite cardTypeSprite;       // Icon representing the card type (used in UI)
+        public CardRarity cardRarity;     // Rarity of the card (Common, Uncommon, etc.)
+        public bool exhaustAfterUse = false; // Whether the card is exhausted after use
 
         [Header("Card Effects")]
         [SerializeReference]
@@ -51,9 +52,19 @@ namespace MyProjectF.Assets.Scripts.Cards
         public enum CardType
         {
             Attack,
-            Defence,
-            Utility,
-            Special
+            Guard,
+            Tactic
+        }
+
+        /// <summary>
+        /// Enum representing card rarity types.
+        /// </summary>
+        public enum CardRarity
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Legendary
         }
 
         /// <summary>

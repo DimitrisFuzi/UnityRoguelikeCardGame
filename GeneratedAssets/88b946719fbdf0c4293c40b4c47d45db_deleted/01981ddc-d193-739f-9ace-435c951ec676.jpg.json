@@ -1,0 +1,20 @@
+{
+    "asset": "88b946719fbdf0c4293c40b4c47d45db",
+    "fileName": "01981ddc-d193-739f-9ace-435c951ec676.jpg",
+    "prompt": "smoth effect area",
+    "negativePrompt": "",
+    "model": "73cd3343-4a41-4d96-b15d-10cd7a4db561",
+    "modelName": "Card Frames",
+    "customSeed": -1,
+    "w3CTraceId": "23a40c77ddc0a18f20edf52be6db8c74",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

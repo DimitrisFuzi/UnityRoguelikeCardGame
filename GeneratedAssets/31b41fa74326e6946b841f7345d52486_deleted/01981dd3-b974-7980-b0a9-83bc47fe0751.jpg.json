@@ -1,0 +1,20 @@
+{
+    "asset": "31b41fa74326e6946b841f7345d52486",
+    "fileName": "01981dd3-b974-7980-b0a9-83bc47fe0751.jpg",
+    "prompt": "increase the size of the effect box",
+    "negativePrompt": "",
+    "model": "73cd3343-4a41-4d96-b15d-10cd7a4db561",
+    "modelName": "Card Frames",
+    "customSeed": -1,
+    "w3CTraceId": "ad293e16888a693b90fb4fa108709b49",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

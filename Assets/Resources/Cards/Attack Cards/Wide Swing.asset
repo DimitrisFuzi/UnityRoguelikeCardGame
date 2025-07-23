@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d39b0d3a141cc14a955653310dd53c6, type: 3}
+  m_Name: Wide Swing
+  m_EditorClassIdentifier: Assembly-CSharp::MyProjectF.Assets.Scripts.Cards.Card
+  resourcePath: Cards/Attack Cards/Wide Swing
+  cardName: Wide Swing
+  cardDescription: Deal {aoeDamage} damage to all enemies.
+  cardType: 0
+  cardSprite: {fileID: -431391707168837896, guid: 5eadc1518ed53c04d90d9b99da629d4a, type: 3}
+  energyCost: 1
+  cardRarity: 1
+  exhaustAfterUse: 0
+  effects:
+  - rid: 3013811131194016186
+  targetType: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 3013811131194016186
+      type: {class: AOEDamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 1
+        damageAmount: 4

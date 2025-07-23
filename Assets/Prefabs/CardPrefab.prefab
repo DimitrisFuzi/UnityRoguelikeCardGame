@@ -130,7 +130,7 @@ MonoBehaviour:
   cardPlay: {x: 0, y: 400}
   playPosition: {x: -600, y: 500, z: 0}
   lerpFactor: 0.1
-  cardPlayDivider: 4
+  cardPlayDivider: 2
   cardPlayMultiplier: 1
   needUpdateCardPlayPosition: 0
   playPositionYDivider: 2

@@ -99,9 +99,18 @@ namespace MyProjectF.Assets.Scripts.Cards
                     break;
 
                 case 3:
-                    HandlePlayState();
+                    if (cardData.targetType == Card.TargetType.SingleEnemy)
+                    {
+                        HandlePlayState();
+                    }
+                    else
+                    {
+                        HandleDragState(); // let non-target cards follow the mouse naturally
+                    }
+
                     if (!Input.GetMouseButton(0)) TransitionToIdle();
                     break;
+
             }
         }
 
@@ -191,8 +200,17 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
                 else
                 {
-                    HandleDragState();
+                    if (Input.mousePosition.y > cardPlay.y)
+                    {
+                        currentState = 3;
+                     
+                    }
+                    else
+                    {
+                        HandleDragState();
+                    }
                 }
+
             }
         }
 
@@ -212,10 +230,19 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             if (!PlayerManager.Instance.CanPlayCard(cardData))
             {
+
                 Logger.Log("CardMovement: Not enough energy to play this card.", this);
                 TransitionToIdle();
                 return;
             }
+
+            // Ensure the card was dragged high enough to be considered 'played'
+            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < cardPlay.y)
+            {
+                TransitionToIdle();
+                return;
+            }
+
 
             // Validate target selection
             bool validTargetSelected = true;

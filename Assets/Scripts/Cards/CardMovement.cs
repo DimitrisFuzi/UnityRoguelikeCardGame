@@ -121,7 +121,14 @@ namespace MyProjectF.Assets.Scripts.Cards
         {
             currentState = 0;
 
+            Image glowImage = glowEffect.GetComponent<Image>();
+            if (glowImage != null)
+            {
+                DOTween.Kill(glowImage);
+                glowImage.DOFade(0f, 0.2f);
+            }
             glowEffect.SetActive(false);
+
             playArrow.SetActive(false);
             //rectTransform.DOKill(); // stop active tweens
             DOTween.Kill(gameObject, complete: true);
@@ -309,7 +316,20 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (rectTransform == null || this == null || !gameObject.activeInHierarchy)
                 return;
 
+            Image glowImage = glowEffect.GetComponent<Image>();
+            if (glowImage != null)
+            {
+                glowImage.color = GetColorByCardType();
+                glowImage.DOFade(0.2f, 0.7f)
+                    .SetLoops(-1, LoopType.Yoyo)
+                    .SetEase(Ease.InOutSine)
+                    .SetUpdate(true)
+                    .SetId(glowImage);
+            }
+
             glowEffect.SetActive(true);
+
+
             transform.SetAsLastSibling();
 
             //rectTransform.DOKill();
@@ -443,6 +463,20 @@ namespace MyProjectF.Assets.Scripts.Cards
                     return null;
             }
         }
+        /// <summary>
+        /// Returns a color based on the card type for visual feedback.    
+        /// </summary>
+        private Color GetColorByCardType()
+        {
+            switch (cardData.cardType)
+            {
+                case Card.CardType.Attack: return new Color32(180, 28, 34, 255); // red
+                case Card.CardType.Guard: return new Color32(0, 128, 24, 255);  // green
+                case Card.CardType.Tactic: return new Color32(0, 37, 194, 255); // blue
+                default: return Color.white;
+            }
+        }
+
     }
 }
 

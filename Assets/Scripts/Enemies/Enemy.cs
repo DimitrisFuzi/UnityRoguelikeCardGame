@@ -8,7 +8,7 @@ public class Enemy : CharacterStats
     public string enemyName;
     public bool IsEnraged = false;
 
-    private EnemyDisplay enemyDisplay; // Reference to the UI component
+    public EnemyDisplay enemyDisplay; // Reference to the UI component
     public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
 
     /// <summary>

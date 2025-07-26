@@ -28,24 +28,41 @@ public class DamageEffect : EffectData
     /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
+        Enemy enemyTarget = target as Enemy;
+
         if (target != null)
         {
             target.TakeDamage(damageAmount);
 
-            // 🔥 Visual damage effect (ScratchEffect)
             GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
 
-            if (scratchPrefab != null && target.characterVisualTransform != null)
+            if (scratchPrefab != null &&
+                enemyTarget != null &&
+                enemyTarget.enemyDisplay != null &&
+                enemyTarget.enemyDisplay.enemyImage != null)
             {
+                // ✅ κάνε instantiate και αμέσως set parent σωστά
                 GameObject instance = GameObject.Instantiate(scratchPrefab);
+                instance.transform.SetParent(enemyTarget.enemyDisplay.enemyImage.transform, false); // false = reset local pos
+
+                // ✅ force reset το RectTransform
+                RectTransform rect = instance.GetComponent<RectTransform>();
+                if (rect != null)
+                {
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.localScale = Vector3.one;
+                    rect.localRotation = Quaternion.identity;
+                }
+
+                // 🔁 Παίξε το effect
                 var effect = instance.GetComponent<ScratchEffect>();
                 if (effect != null)
                 {
-                    effect.PlayEffect(target.characterVisualTransform.position);
+                    effect.PlayEffect(); // θέση δεν χρειάζεται πια
                 }
             }
-
         }
+
 
         // 🔄 Visual "attack movement" animation
         if (source != null && source.characterVisualTransform != null)

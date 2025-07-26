@@ -1,7 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(RectTransform))]
 public class ScratchEffect : MonoBehaviour
 {
     [SerializeField] private float showDuration = 0.5f;
@@ -15,20 +17,31 @@ public class ScratchEffect : MonoBehaviour
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
-
-        if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
-    public void PlayEffect(Vector3 worldPosition)
+    public void PlayEffect()
     {
-        transform.position = worldPosition;
-        transform.localScale = Vector3.one;
+        if (rectTransform == null || canvasGroup == null)
+        {
+            Debug.LogError("[ScratchEffect] Missing RectTransform or CanvasGroup!");
+            return;
+        }
+
+        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.localScale = Vector3.one;
+        rectTransform.localRotation = Quaternion.identity;
         canvasGroup.alpha = 1f;
 
-        rectTransform.DOPunchScale(Vector3.one * punchScale, 0.3f, 6, 0.5f);
-        canvasGroup.DOFade(0f, showDuration).SetDelay(fadeDelay).OnComplete(() =>
-        {
-            Destroy(gameObject);
-        });
+        // Προαιρετικά: ελαφριά μεγέθυνση
+        rectTransform.DOPunchScale(Vector3.one * punchScale, 0.2f, 6, 0.8f)
+            .SetEase(Ease.OutQuad);
+
+        // Πιο σταδιακό και “ομαλό” fade-out
+        canvasGroup.DOFade(0f, showDuration)
+            .SetDelay(fadeDelay)
+            .SetEase(Ease.InOutQuad) // <— smooth in/out
+            .OnComplete(() => Destroy(gameObject));
+
     }
+
 }

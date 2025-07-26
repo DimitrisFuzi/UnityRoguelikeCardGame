@@ -534,8 +534,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisualTransform: {fileID: 3408035541078347624}
-  initialEnergy: 3
-  energy: 3
+  initialEnergy: 10
+  energy: 10
 --- !u!114 &1798116372734490168
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -73,7 +73,7 @@ public abstract class CharacterStats : MonoBehaviour
     /// Reduces character's health, accounting for armor. Triggers OnHealthChanged.
     /// </summary>
     /// <param name="amount">Amount of damage to take.</param>
-    public virtual void TakeDamage(int amount)
+    public virtual int TakeDamage(int amount)
     {
         int damageAfterArmor = Mathf.Max(0, amount - Armor); // Damage absorbed by armor
         Armor = Mathf.Max(0, Armor - amount); // Armor reduced first
@@ -87,7 +87,10 @@ public abstract class CharacterStats : MonoBehaviour
         {
             Die();
         }
+
+        return damageAfterArmor;
     }
+
     /// <summary>
     /// Directly reduces health without considering armor.
     /// </summary>

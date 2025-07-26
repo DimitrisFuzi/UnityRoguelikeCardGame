@@ -2,6 +2,7 @@
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 using DG.Tweening;
+using MyProjectF.Assets.Scripts.Player;
 
 /// <summary>
 /// Represents an effect that deals damage to a target character.
@@ -32,7 +33,13 @@ public class DamageEffect : EffectData
 
         if (target != null)
         {
-            target.TakeDamage(damageAmount);
+            int realDamage = target.TakeDamage(damageAmount);
+
+            if (target is PlayerStats playerTarget && playerTarget.playerDisplay != null)
+            {
+                if (realDamage > 0)
+                    playerTarget.playerDisplay.ShowDamagePopup(realDamage);
+            }
 
             GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
 
@@ -41,7 +48,7 @@ public class DamageEffect : EffectData
                 enemyTarget.enemyDisplay != null &&
                 enemyTarget.enemyDisplay.enemyImage != null)
             {
-                // ✅ κάνε instantiate και αμέσως set parent σωστά
+                // ✅ Instantiate the scratch effect prefab
                 GameObject instance = GameObject.Instantiate(scratchPrefab);
                 instance.transform.SetParent(enemyTarget.enemyDisplay.enemyImage.transform, false); // false = reset local pos
 
@@ -54,13 +61,20 @@ public class DamageEffect : EffectData
                     rect.localRotation = Quaternion.identity;
                 }
 
-                // 🔁 Παίξε το effect
+                // ✅ Get the ScratchEffect component and play it
                 var effect = instance.GetComponent<ScratchEffect>();
                 if (effect != null)
                 {
-                    effect.PlayEffect(); // θέση δεν χρειάζεται πια
+                    effect.PlayEffect();
                 }
+
             }
+
+            if (enemyTarget != null && enemyTarget.enemyDisplay != null)
+            {
+                enemyTarget.enemyDisplay.ShowDamagePopup(damageAmount);
+            }
+
         }
 
 

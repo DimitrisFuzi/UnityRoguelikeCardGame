@@ -114,14 +114,16 @@ public class Enemy : CharacterStats
     }
 
 
-    public override void TakeDamage(int amount)
+    public override int TakeDamage(int amount)
     {
-        base.TakeDamage(amount);
+        int realDamage = base.TakeDamage(amount);
 
         if (enemyDisplay != null)
             enemyDisplay.UpdateDisplay(CurrentHealth, MaxHealth);
 
-        Logger.Log($"🔥 {enemyName} took {amount} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
+        Logger.Log($"🔥 {enemyName} took {realDamage} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
+
+        return realDamage;
     }
 
     protected override void Die()

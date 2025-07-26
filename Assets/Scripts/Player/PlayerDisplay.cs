@@ -14,6 +14,9 @@ public class PlayerDisplay : MonoBehaviour
     [SerializeField] private TextMeshProUGUI armorText;
     [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private Image armorImage;
+    [SerializeField] private GameObject floatingDamageTextPrefab;
+    [SerializeField] private RectTransform textSpawnAnchor;
+
     private void Start()
     {
         if (playerStats == null)
@@ -120,5 +123,37 @@ public class PlayerDisplay : MonoBehaviour
                 .OnComplete(() => armorText.color = originalTextColor);
         }
     }
+    // <summary>
+    /// Displays a floating damage text popup at the specified anchor position.
+    /// </summary>
+    public void ShowDamagePopup(int damage)
+    {
+        if (floatingDamageTextPrefab == null || textSpawnAnchor == null) return;
+
+        GameObject go = Instantiate(floatingDamageTextPrefab, textSpawnAnchor);
+        RectTransform rect = go.GetComponent<RectTransform>();
+        CanvasGroup group = go.GetComponent<CanvasGroup>();
+        TMP_Text text = go.GetComponentInChildren<TMP_Text>();
+
+        if (text != null)
+        {
+            text.text = damage.ToString();
+            text.color = Color.white;
+        }
+
+        rect.localScale = Vector3.one * 1.6f;
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(rect.DOShakeScale(0.1f, 0.2f, 10));
+        seq.Append(text.DOColor(Color.white, 0.05f));
+        seq.Append(text.DOColor(new Color32(0xFF, 0x7A, 0x7A, 255), 0.2f));
+
+        seq.Append(rect.DOScale(0.8f, 0.6f).SetEase(Ease.InOutQuad))
+           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic))
+           .Join(group.DOFade(0f, 0.6f))
+           .AppendCallback(() => Destroy(go));
+    }
+
 
 }

@@ -31,16 +31,29 @@ public class DamageEffect : EffectData
         if (target != null)
         {
             target.TakeDamage(damageAmount);
+
+            // 🔥 Visual damage effect (ScratchEffect)
+            GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
+
+            if (scratchPrefab != null && target.characterVisualTransform != null)
+            {
+                GameObject instance = GameObject.Instantiate(scratchPrefab);
+                var effect = instance.GetComponent<ScratchEffect>();
+                if (effect != null)
+                {
+                    effect.PlayEffect(target.characterVisualTransform.position);
+                }
+            }
+
         }
 
+        // 🔄 Visual "attack movement" animation
         if (source != null && source.characterVisualTransform != null)
         {
             Debug.Log($"[AttackAnimation] {source.name} is attacking", target);
-            // Χρήση τοπικής θέσης
             Vector3 originalPos = source.characterVisualTransform.localPosition;
-            Vector3 attackOffset = Vector3.right * 20f; // 20 pixels περίπου, για testing
+            Vector3 attackOffset = Vector3.right * 20f;
 
-            // Αν ο source είναι εχθρός, κινείται προς τα αριστερά
             if (source is Enemy)
             {
                 attackOffset = Vector3.left * 100f;
@@ -51,6 +64,7 @@ public class DamageEffect : EffectData
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos, 0.1f));
         }
     }
+
 
 
 

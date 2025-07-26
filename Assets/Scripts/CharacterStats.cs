@@ -45,7 +45,7 @@ public abstract class CharacterStats : MonoBehaviour
     /// Event fired when energy changes.
     /// Parameter: currentEnergy
     /// </summary>
-    public event Action<int> OnEnergyChanged; // ADDED: OnEnergyChanged event
+    //public event Action<int> OnEnergyChanged; // ADDED: OnEnergyChanged event
 
     /// <summary>
     /// Event fired when the character dies.

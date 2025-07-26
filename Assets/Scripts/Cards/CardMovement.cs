@@ -80,11 +80,24 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         /// <summary>
         /// destroys the card GameObject and cleans up DOTween tweens.
-        /// </summary>  
+        /// </summary> 
+        /// 
         private void OnDestroy()
         {
-            DOTween.Kill(gameObject);
+            // Kill any tweens on this GameObject
+            DOTween.Kill(gameObject, complete: true);
+
+            // Kill tweens on glowEffect / glowImage
+            if (glowEffect != null)
+            {
+                var glowImage = glowEffect.GetComponent<Image>();
+                if (glowImage != null)
+                {
+                    DOTween.Kill(glowImage);
+                }
+            }
         }
+
 
         void Update()
         {
@@ -99,9 +112,18 @@ namespace MyProjectF.Assets.Scripts.Cards
                     break;
 
                 case 3:
-                    HandlePlayState();
+                    if (cardData.targetType == Card.TargetType.SingleEnemy)
+                    {
+                        HandlePlayState();
+                    }
+                    else
+                    {
+                        HandleDragState(); // let non-target cards follow the mouse naturally
+                    }
+
                     if (!Input.GetMouseButton(0)) TransitionToIdle();
                     break;
+
             }
         }
 
@@ -112,17 +134,34 @@ namespace MyProjectF.Assets.Scripts.Cards
         {
             currentState = 0;
 
-            glowEffect.SetActive(false);
-            playArrow.SetActive(false);
-            //rectTransform.DOKill(); // stop active tweens
+            if (glowEffect != null)
+            {
+                Image glowImage = glowEffect.GetComponent<Image>();
+                if (glowImage != null && glowImage.gameObject != null && glowImage.gameObject.activeInHierarchy)
+                {
+                    DOTween.Kill(glowImage);
+                    if (glowImage != null)
+                        glowImage.DOFade(0f, 0.2f);
+                }
+
+                glowEffect.SetActive(false);
+            }
+
+            if (playArrow != null)
+                playArrow.SetActive(false);
+
             DOTween.Kill(gameObject, complete: true);
 
-            rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
-            rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
-            rectTransform.DOLocalRotateQuaternion(originalRotation, 0.2f).SetEase(Ease.OutQuad);
+            if (rectTransform != null && gameObject.activeInHierarchy)
+            {
+                rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalRotateQuaternion(originalRotation, 0.2f).SetEase(Ease.OutQuad);
+            }
 
             transform.SetSiblingIndex(originalSiblingIndex);
         }
+
 
         /// <summary>
         /// Triggered when pointer enters card; enters hover state.
@@ -191,8 +230,17 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
                 else
                 {
-                    HandleDragState();
+                    if (Input.mousePosition.y > cardPlay.y)
+                    {
+                        currentState = 3;
+                     
+                    }
+                    else
+                    {
+                        HandleDragState();
+                    }
                 }
+
             }
         }
 
@@ -212,10 +260,19 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             if (!PlayerManager.Instance.CanPlayCard(cardData))
             {
+
                 Logger.Log("CardMovement: Not enough energy to play this card.", this);
                 TransitionToIdle();
                 return;
             }
+
+            // Ensure the card was dragged high enough to be considered 'played'
+            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < cardPlay.y)
+            {
+                TransitionToIdle();
+                return;
+            }
+
 
             // Validate target selection
             bool validTargetSelected = true;
@@ -282,7 +339,20 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (rectTransform == null || this == null || !gameObject.activeInHierarchy)
                 return;
 
+            Image glowImage = glowEffect.GetComponent<Image>();
+            if (glowImage != null)
+            {
+                glowImage.color = GetColorByCardType();
+                glowImage.DOFade(0.2f, 0.7f)
+                    .SetLoops(-1, LoopType.Yoyo)
+                    .SetEase(Ease.InOutSine)
+                    .SetUpdate(true)
+                    .SetId(glowImage);
+            }
+
             glowEffect.SetActive(true);
+
+
             transform.SetAsLastSibling();
 
             //rectTransform.DOKill();
@@ -416,6 +486,20 @@ namespace MyProjectF.Assets.Scripts.Cards
                     return null;
             }
         }
+        /// <summary>
+        /// Returns a color based on the card type for visual feedback.    
+        /// </summary>
+        private Color GetColorByCardType()
+        {
+            switch (cardData.cardType)
+            {
+                case Card.CardType.Attack: return new Color32(180, 28, 34, 255); // red
+                case Card.CardType.Guard: return new Color32(0, 128, 24, 255);  // green
+                case Card.CardType.Tactic: return new Color32(0, 37, 194, 255); // blue
+                default: return Color.white;
+            }
+        }
+
     }
 }
 

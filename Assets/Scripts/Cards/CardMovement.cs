@@ -80,11 +80,24 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         /// <summary>
         /// destroys the card GameObject and cleans up DOTween tweens.
-        /// </summary>  
+        /// </summary> 
+        /// 
         private void OnDestroy()
         {
-            DOTween.Kill(gameObject);
+            // Kill any tweens on this GameObject
+            DOTween.Kill(gameObject, complete: true);
+
+            // Kill tweens on glowEffect / glowImage
+            if (glowEffect != null)
+            {
+                var glowImage = glowEffect.GetComponent<Image>();
+                if (glowImage != null)
+                {
+                    DOTween.Kill(glowImage);
+                }
+            }
         }
+
 
         void Update()
         {
@@ -121,24 +134,34 @@ namespace MyProjectF.Assets.Scripts.Cards
         {
             currentState = 0;
 
-            Image glowImage = glowEffect.GetComponent<Image>();
-            if (glowImage != null)
+            if (glowEffect != null)
             {
-                DOTween.Kill(glowImage);
-                glowImage.DOFade(0f, 0.2f);
-            }
-            glowEffect.SetActive(false);
+                Image glowImage = glowEffect.GetComponent<Image>();
+                if (glowImage != null && glowImage.gameObject != null && glowImage.gameObject.activeInHierarchy)
+                {
+                    DOTween.Kill(glowImage);
+                    if (glowImage != null)
+                        glowImage.DOFade(0f, 0.2f);
+                }
 
-            playArrow.SetActive(false);
-            //rectTransform.DOKill(); // stop active tweens
+                glowEffect.SetActive(false);
+            }
+
+            if (playArrow != null)
+                playArrow.SetActive(false);
+
             DOTween.Kill(gameObject, complete: true);
 
-            rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
-            rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
-            rectTransform.DOLocalRotateQuaternion(originalRotation, 0.2f).SetEase(Ease.OutQuad);
+            if (rectTransform != null && gameObject.activeInHierarchy)
+            {
+                rectTransform.DOScale(originalScale, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalMove(originalPosition, 0.2f).SetEase(Ease.OutQuad);
+                rectTransform.DOLocalRotateQuaternion(originalRotation, 0.2f).SetEase(Ease.OutQuad);
+            }
 
             transform.SetSiblingIndex(originalSiblingIndex);
         }
+
 
         /// <summary>
         /// Triggered when pointer enters card; enters hover state.

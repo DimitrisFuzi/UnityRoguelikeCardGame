@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using MyProjectF.Assets.Scripts.Player;
+
 
 namespace MyProjectF.Assets.Scripts.Effects
 {
@@ -9,9 +11,6 @@ namespace MyProjectF.Assets.Scripts.Effects
     [Serializable]
     public class ArmorEffect : EffectData
     {
-        /// <summary>
-        /// Amount of armor to add.
-        /// </summary>
         public int armorAmount;
 
         public void SetAmount(int amount)
@@ -19,14 +18,19 @@ namespace MyProjectF.Assets.Scripts.Effects
             armorAmount = amount;
         }
 
-        /// <summary>
-        /// Applies the armor effect by adding armor to the target.
-        /// </summary>
         public override void ApplyEffect(CharacterStats source, CharacterStats target)
         {
             if (target != null)
             {
+                // Προσθήκη armor στον στόχο
                 target.AddArmor(armorAmount);
+
+                // Αν είναι ο παίκτης, ενεργοποίησε το visual
+                PlayerStats player = target as PlayerStats;
+                if (player != null && player.playerDisplay != null)
+                {
+                    player.playerDisplay.ShowArmorGainEffect();
+                }
             }
         }
     }

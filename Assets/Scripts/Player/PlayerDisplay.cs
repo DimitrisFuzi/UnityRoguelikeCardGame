@@ -1,6 +1,8 @@
 ﻿// PlayerDisplay.cs
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using DG.Tweening;
 using MyProjectF.Assets.Scripts.Player;
 
 public class PlayerDisplay : MonoBehaviour
@@ -8,11 +10,10 @@ public class PlayerDisplay : MonoBehaviour
     private PlayerStats playerStats;
 
     [Header("UI Elements")]
-    // REMOVED: [SerializeField] private TextMeshProUGUI healthText; // Health text handled by HealthBar.cs
     [SerializeField] private HealthBar playerHealthBar; // NEW: Reference to HealthBar script for player
     [SerializeField] private TextMeshProUGUI armorText;
     [SerializeField] private TextMeshProUGUI energyText;
-
+    [SerializeField] private Image armorImage;
     private void Start()
     {
         if (playerStats == null)
@@ -99,4 +100,25 @@ public class PlayerDisplay : MonoBehaviour
             PlayerStats.OnStatsChanged -= UpdatePlayerUI;
         }
     }
+
+    public void ShowArmorGainEffect()
+    {
+        if (armorImage == null) return;
+
+        armorImage.rectTransform.DOKill();
+        armorImage.rectTransform.DOPunchScale(Vector3.one * 0.25f, 0.3f, 8, 1.0f);
+
+        // Armor Text
+        if (armorText != null)
+        {
+            armorText.rectTransform.DOKill();
+            armorText.rectTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+
+            Color originalTextColor = armorText.color;
+            armorText.DOColor(Color.cyan, 0.1f)
+                .SetLoops(2, LoopType.Yoyo)
+                .OnComplete(() => armorText.color = originalTextColor);
+        }
+    }
+
 }

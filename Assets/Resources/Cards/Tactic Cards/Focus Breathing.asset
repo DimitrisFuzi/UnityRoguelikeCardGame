@@ -21,12 +21,12 @@ MonoBehaviour:
   cardRarity: 2
   exhaustAfterUse: 1
   effects:
-  - rid: 3013811131194016077
+  - rid: 3013811501433618559
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016077
+    - rid: 3013811501433618559
       type: {class: GainEnergyEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 2

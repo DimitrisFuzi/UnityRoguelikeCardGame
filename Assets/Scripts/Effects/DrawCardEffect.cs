@@ -1,19 +1,27 @@
-using System;
+using System.Collections;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Player;
+using MyProjectF.Assets.Scripts.Cards;
 
-[Serializable]
+//[CreateAssetMenu(fileName = "New DrawCardEffect", menuName = "Effects/Draw Card")]
 public class DrawCardEffect : EffectData
 {
     public int cardsToDraw = 1;
 
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
-        for (int i = 0; i < cardsToDraw; i++)
-        {
-            DeckManager.Instance.DrawCard();
-        }
+        if (DeckManager.Instance == null || cardsToDraw <= 0) return;
 
-        Debug.Log($"[Effect] Drew {cardsToDraw} card(s).");
+        // Χρησιμοποιούμε Coroutine για σειριακό animation
+        HandManager.Instance.StartCoroutine(DrawCardsAnimated(cardsToDraw));
+    }
+
+    private IEnumerator DrawCardsAnimated(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
+        }
     }
 }

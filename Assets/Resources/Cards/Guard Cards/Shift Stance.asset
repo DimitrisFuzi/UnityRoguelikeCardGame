@@ -21,18 +21,18 @@ MonoBehaviour:
   cardRarity: 1
   exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194016009
-  - rid: 3013811131194016010
+  - rid: 3013811501433618553
+  - rid: 3013811501433618554
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016009
+    - rid: 3013811501433618553
       type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
       data:
         targetType: 2
         armorAmount: 5
-    - rid: 3013811131194016010
+    - rid: 3013811501433618554
       type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 4

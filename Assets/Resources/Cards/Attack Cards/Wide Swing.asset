@@ -21,12 +21,12 @@ MonoBehaviour:
   cardRarity: 1
   exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194016186
+  - rid: 3013811501433618550
   targetType: 1
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016186
+    - rid: 3013811501433618550
       type: {class: AOEDamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 1

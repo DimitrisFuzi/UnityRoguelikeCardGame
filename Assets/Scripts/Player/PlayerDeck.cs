@@ -60,7 +60,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-           "Snap Decision","Snap Decision","Snap Decision","Snap Decision","Snap Decision","Snap Decision","Snap Decision","Snap Decision","Deep Focus"
+           "Snap Decision","Snap Decision","Snap Decision","Snap Decision","Snap Decision","Lashing Out","Lashing Out","Lashing Out","Lashing Out",
 
         };
 

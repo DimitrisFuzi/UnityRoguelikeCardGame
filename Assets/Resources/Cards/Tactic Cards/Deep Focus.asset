@@ -21,18 +21,18 @@ MonoBehaviour:
   cardRarity: 2
   exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194016371
-  - rid: 3013811131194016370
+  - rid: 3013811501433618555
+  - rid: 3013811501433618556
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016370
-      type: {class: DiscardRandomCardEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetType: 2
-    - rid: 3013811131194016371
+    - rid: 3013811501433618555
       type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetType: 2
+        targetType: 4
         cardsToDraw: 3
+    - rid: 3013811501433618556
+      type: {class: DiscardRandomCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 4

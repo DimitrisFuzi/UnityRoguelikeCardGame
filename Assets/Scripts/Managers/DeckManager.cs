@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 
 /// <summary>
@@ -68,10 +69,11 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Draws a card from the draw pile into the player's hand.
+    /// Draws a card from the draw pile and adds it to the player's hand.
     /// </summary>
-    public void DrawCard()
+    public async Task DrawCardAsync()
     {
+        Debug.Log("📦 DrawCardAsync called at: " + Time.time);
         if (drawPile.Count == 0)
             ReshuffleDiscardPile();
 
@@ -80,38 +82,32 @@ public class DeckManager : MonoBehaviour
             Card drawnCard = drawPile[0];
             drawPile.RemoveAt(0);
 
-            // Δημιουργία χωρίς parent αρχικά
             GameObject newCardObject = Instantiate(cardPrefab);
             RectTransform cardRect = newCardObject.GetComponent<RectTransform>();
-
-            // Ορισμός γονέα (UI canvas)
             newCardObject.transform.SetParent(HandManager.Instance.handTransform, false);
 
-            // Τοποθέτηση πάνω στο drawPileAnchor με ακριβή anchoredPosition
             Vector2 uiStartPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 HandManager.Instance.handTransform as RectTransform,
                 RectTransformUtility.WorldToScreenPoint(null, drawPileAnchor.position),
-                null, // ή βάλε Camera αν έχεις Screen Space - Camera
+                null,
                 out uiStartPos
             );
-            cardRect.anchoredPosition = uiStartPos;
 
+            cardRect.anchoredPosition = uiStartPos;
             cardRect.localScale = Vector3.one * 0.5f;
             cardRect.SetAsLastSibling();
 
-            // Ενημέρωση περιεχομένου κάρτας
             CardDisplay display = newCardObject.GetComponent<CardDisplay>();
             display.cardData = drawnCard;
             display.UpdateCardDisplay();
 
-            // Υπολογισμός στόχου
             Transform slotTarget = HandManager.Instance.GetNextCardSlotPosition();
             RectTransform slotRect = slotTarget.GetComponent<RectTransform>();
-
             Vector2 midPoint = (cardRect.anchoredPosition + slotRect.anchoredPosition) / 2f + Vector2.up * 100f;
 
-            // Animation με arc και scale
+            TaskCompletionSource<bool> tcs = new();
+
             Sequence drawSeq = DOTween.Sequence();
             drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.25f).SetEase(Ease.OutQuad));
             drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.25f).SetEase(Ease.InQuad));
@@ -120,9 +116,11 @@ public class DeckManager : MonoBehaviour
             {
                 HandManager.Instance.AddCardToHand(newCardObject);
                 Destroy(slotTarget.gameObject);
+                tcs.SetResult(true);
             });
 
             NotifyDrawPileUI();
+            await tcs.Task;
         }
     }
 

@@ -2,6 +2,7 @@
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
 using DG.Tweening;
+using System.Collections;
 
 /// <summary>
 /// Manages the player's hand: draw, add, remove, arrange.
@@ -56,22 +57,41 @@ private void OnValidate()
         }
     }
 
+    private IEnumerator DrawStartingCardsCoroutine()
+    {
+        Debug.Log($"🃏 Starting hand: current={CurrentHandSize}, starting={startingHandSize}, max={MaxHandSize}");
+
+        int cardsToDraw = Mathf.Min(startingHandSize, MaxHandSize - CurrentHandSize);
+
+        for (int i = 0; i < cardsToDraw; i++)
+        {
+            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
+        }
+    }
+
+    private IEnumerator DrawMultipleCards(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
+        }
+    }
+
+
     /// <summary>
     /// Draw starting cards for a new turn.
     /// </summary>
     public void DrawCardsForTurn()
     {
-        if (DeckManager.Instance == null)
-        {
-            Logger.LogError("❌ DeckManager.Instance is NULL! Cannot draw cards.", this);
-            return;
-        }
+        int spaceLeft = MaxHandSize - CurrentHandSize;
+        int cardsToDraw = Mathf.Min(startingHandSize, spaceLeft);
 
-        for (int i = 0; i < startingHandSize; i++)
-        {
-            DeckManager.Instance.DrawCard();
-        }
+        if (cardsToDraw > 0)
+            StartCoroutine(DrawMultipleCards(cardsToDraw));
     }
+
+
+
 
     /// <summary>
     /// Adds a new card GameObject to the hand and rearranges.

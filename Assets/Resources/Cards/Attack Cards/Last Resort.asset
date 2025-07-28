@@ -21,18 +21,18 @@ MonoBehaviour:
   cardRarity: 2
   exhaustAfterUse: 1
   effects:
-  - rid: 3013811131194016320
-  - rid: 3013811131194016334
+  - rid: 3013811501433618548
+  - rid: 3013811501433618549
   targetType: 0
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016320
+    - rid: 3013811501433618548
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 0
         damageAmount: 20
-    - rid: 3013811131194016334
+    - rid: 3013811501433618549
       type: {class: SetHealthEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 2

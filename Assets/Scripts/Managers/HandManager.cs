@@ -173,8 +173,33 @@ private void OnValidate()
         }
     }
 
+    /// <summary>
+    /// Returns the next available card slot position in the hand layout.
+    /// </summary> 
+    public Transform GetNextCardSlotPosition()
+    {
+        GameObject tempCard = new GameObject("TempCard", typeof(RectTransform));
+        tempCard.transform.SetParent(handTransform, false);
+        cardsInHand.Add(tempCard); // προσωρινά για layout
+        UpdateHandLayout();
 
+        Vector3 pos = tempCard.GetComponent<RectTransform>().anchoredPosition;
+        cardsInHand.Remove(tempCard);
+        Destroy(tempCard);
 
+        return CreateTempAnchorAt(pos);
+    }
 
+    /// <summary>
+    /// Creates a temporary anchor at the specified position.
+    /// </summary>
+    private Transform CreateTempAnchorAt(Vector3 anchoredPos)
+    {
+        GameObject anchor = new GameObject("CardTargetAnchor", typeof(RectTransform));
+        anchor.transform.SetParent(handTransform, false);
+        RectTransform rect = anchor.GetComponent<RectTransform>();
+        rect.anchoredPosition = anchoredPos;
+        return anchor.transform;
+    }
 
 }

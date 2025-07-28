@@ -173,14 +173,30 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             if (currentState == 0)
             {
-               
                 currentState = 1;
                 originalSiblingIndex = transform.GetSiblingIndex();
-                transform.SetAsLastSibling(); // bring to front
+                transform.SetAsLastSibling();
 
-                HandleHoverState(); // ✅ play hover animation ONCE
+                if (glowEffect != null)
+                {
+                    Image glowImage = glowEffect.GetComponent<Image>();
+                    if (glowImage != null)
+                    {
+                        glowImage.color = GetColorByCardType();
+                        glowImage.DOFade(0.2f, 0.7f)
+                            .SetLoops(-1, LoopType.Yoyo)
+                            .SetEase(Ease.InOutSine)
+                            .SetUpdate(true)
+                            .SetId(glowImage);
+                    }
+
+                    glowEffect.SetActive(true);
+                }
+
+                HandleHoverState();
             }
         }
+
 
         /// <summary>
         /// Triggered when pointer exits card; returns to idle.

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
+using DG.Tweening;
+
 
 /// <summary>
 /// Handles the draw and discard piles, deck shuffling, and card drawing logic.
@@ -19,6 +21,9 @@ public class DeckManager : MonoBehaviour
 
     [Tooltip("Prefab used to instantiate card objects.")]
     [SerializeField] private GameObject cardPrefab;
+
+    [Tooltip("Anchor for the draw pile in the UI.")]
+    [SerializeField] private Transform drawPileAnchor;
 
     public static event Action OnDrawPileChanged;
     public static event Action OnDiscardPileChanged;
@@ -68,36 +73,62 @@ public class DeckManager : MonoBehaviour
     public void DrawCard()
     {
         if (drawPile.Count == 0)
-        {
             ReshuffleDiscardPile();
-        }
 
         if (drawPile.Count > 0 && HandManager.Instance.CurrentHandSize < HandManager.Instance.MaxHandSize)
         {
             Card drawnCard = drawPile[0];
             drawPile.RemoveAt(0);
 
-            if (drawnCard == null)
+            // Δημιουργία χωρίς parent αρχικά
+            GameObject newCardObject = Instantiate(cardPrefab);
+            RectTransform cardRect = newCardObject.GetComponent<RectTransform>();
+
+            // Ορισμός γονέα (UI canvas)
+            newCardObject.transform.SetParent(HandManager.Instance.handTransform, false);
+
+            // Τοποθέτηση πάνω στο drawPileAnchor με ακριβή anchoredPosition
+            Vector2 uiStartPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                HandManager.Instance.handTransform as RectTransform,
+                RectTransformUtility.WorldToScreenPoint(null, drawPileAnchor.position),
+                null, // ή βάλε Camera αν έχεις Screen Space - Camera
+                out uiStartPos
+            );
+            cardRect.anchoredPosition = uiStartPos;
+
+            cardRect.localScale = Vector3.one * 0.5f;
+            cardRect.SetAsLastSibling();
+
+            // Ενημέρωση περιεχομένου κάρτας
+            CardDisplay display = newCardObject.GetComponent<CardDisplay>();
+            display.cardData = drawnCard;
+            display.UpdateCardDisplay();
+
+            // Υπολογισμός στόχου
+            Transform slotTarget = HandManager.Instance.GetNextCardSlotPosition();
+            RectTransform slotRect = slotTarget.GetComponent<RectTransform>();
+
+            Vector2 midPoint = (cardRect.anchoredPosition + slotRect.anchoredPosition) / 2f + Vector2.up * 100f;
+
+            // Animation με arc και scale
+            Sequence drawSeq = DOTween.Sequence();
+            drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.25f).SetEase(Ease.OutQuad));
+            drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.25f).SetEase(Ease.InQuad));
+            drawSeq.Join(cardRect.DOScale(1f, 0.3f));
+            drawSeq.OnComplete(() =>
             {
-                Logger.LogError("❌ DrawCard: Drawn card is NULL!", this);
-                return;
-            }
+                HandManager.Instance.AddCardToHand(newCardObject);
+                Destroy(slotTarget.gameObject);
+            });
 
-            GameObject newCardObject = Instantiate(cardPrefab, HandManager.Instance.handTransform, false);
-            CardDisplay cardDisplay = newCardObject.GetComponent<CardDisplay>();
-
-            if (cardDisplay == null)
-            {
-                Logger.LogError("❌ CardDisplay is NULL on instantiated card!", this);
-                return;
-            }
-
-            cardDisplay.cardData = drawnCard;
-            cardDisplay.UpdateCardDisplay();
-            HandManager.Instance.AddCardToHand(newCardObject);
             NotifyDrawPileUI();
         }
     }
+
+
+
+
 
     /// <summary>
     /// Moves the specified card to the discard pile.

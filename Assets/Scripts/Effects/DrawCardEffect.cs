@@ -5,21 +5,15 @@ using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Cards;
 
 //[CreateAssetMenu(fileName = "New DrawCardEffect", menuName = "Effects/Draw Card")]
-public class DrawCardEffect : EffectData
+public class DrawCardEffect : EffectData, ICoroutineEffect
 {
     public int cardsToDraw = 1;
 
-    public override void ApplyEffect(CharacterStats source, CharacterStats target)
-    {
-        if (DeckManager.Instance == null || cardsToDraw <= 0) return;
+    public override void ApplyEffect(CharacterStats source, CharacterStats target) { }
 
-        // Χρησιμοποιούμε Coroutine για σειριακό animation
-        HandManager.Instance.StartCoroutine(DrawCardsAnimated(cardsToDraw));
-    }
-
-    private IEnumerator DrawCardsAnimated(int amount)
+    public IEnumerator ApplyEffectRoutine(CharacterStats source, CharacterStats target)
     {
-        for (int i = 0; i < amount; i++)
+        for (int i = 0; i < cardsToDraw; i++)
         {
             yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
         }

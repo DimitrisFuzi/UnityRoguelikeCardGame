@@ -154,6 +154,7 @@ Transform:
   - {fileID: 964784947150439179}
   - {fileID: 842503815}
   - {fileID: 764903217}
+  - {fileID: 1562471850158402221}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &30504526
@@ -1643,7 +1644,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1562471850158402221}
   - {fileID: 6128613881901255266}
   m_Father: {fileID: 1696736291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2305,14 +2305,14 @@ RectTransform:
   m_GameObject: {fileID: 3723116437758987542}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3333334, y: 1.3333334, z: 1.3333334}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1561882755}
+  m_Father: {fileID: 30504525}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 464.6018, y: 216.30591}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3031244767557514315
@@ -2417,7 +2417,7 @@ MonoBehaviour:
   fanSpread: -7.5
   cardSpacing: 175
   verticalSpacing: 100
-  maxHandSize: 10
+  maxHandSize: 8
   startingHandSize: 5
 --- !u!1 &5251611962290998988
 GameObject:

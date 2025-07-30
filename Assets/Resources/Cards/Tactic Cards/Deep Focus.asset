@@ -23,7 +23,7 @@ MonoBehaviour:
   effects:
   - rid: 3013811501433618555
   - rid: 3013811501433618556
-  targetType: 2
+  targetType: 4
   references:
     version: 2
     RefIds:

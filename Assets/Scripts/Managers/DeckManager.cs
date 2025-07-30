@@ -73,7 +73,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public async Task DrawCardAsync()
     {
-        Debug.Log("📦 DrawCardAsync called at: " + Time.time);
         if (drawPile.Count == 0)
             ReshuffleDiscardPile();
 

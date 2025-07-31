@@ -60,7 +60,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-           "Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Deep Focus","Lashing Out",
+           "Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out","Lashing Out"
 
         };
 

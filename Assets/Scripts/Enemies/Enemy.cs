@@ -131,7 +131,7 @@ public class Enemy : CharacterStats
         base.Die();
         if (enemyDisplay != null)
         {
-            enemyDisplay.gameObject.SetActive(false);
+            enemyDisplay.PlayDeathAnimation();
         }
     }
 }

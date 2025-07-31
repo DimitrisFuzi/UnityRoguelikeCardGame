@@ -150,6 +150,19 @@ public class EnemyDisplay : MonoBehaviour
            .AppendCallback(() => Destroy(go));
     }
 
+    /// <summary>
+    /// Plays the death animation for the enemy.
+    /// </summary> 
+    public void PlayDeathAnimation()
+    {
+        if (enemyImage == null) return;
+
+        enemyImage.DOFade(0f, 1f)
+                  .SetEase(Ease.InOutQuad)
+                  .OnComplete(() => gameObject.SetActive(false));
+    }
+
+
 
 
 

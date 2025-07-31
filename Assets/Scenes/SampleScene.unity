@@ -2454,8 +2454,8 @@ MonoBehaviour:
   cardSpacing: 175
   verticalSpacing: 100
   maxHandSize: 8
-  startingHandSize: 5
-  discardPileAnchor: {fileID: 0}
+  startingHandSize: 8
+  discardPileAnchor: {fileID: 894121366}
 --- !u!1 &5251611962290998988
 GameObject:
   m_ObjectHideFlags: 0

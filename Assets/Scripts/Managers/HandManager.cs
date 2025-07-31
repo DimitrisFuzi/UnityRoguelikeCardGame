@@ -33,6 +33,8 @@ public class HandManager : MonoBehaviour
 
     public IReadOnlyList<GameObject> CardsInHand => cardsInHand;
 
+    [SerializeField] private Transform discardPileAnchor;
+
 
 #if UNITY_EDITOR
 private void OnValidate()
@@ -221,5 +223,34 @@ private void OnValidate()
         rect.anchoredPosition = anchoredPos;
         return anchor.transform;
     }
+
+    public IEnumerator AnimateDiscardAndRemoveCard(GameObject card)
+    {
+        var rectTransform = card.GetComponent<RectTransform>();
+        if (rectTransform == null)
+        {
+            Logger.LogWarning("Tried to discard a card without RectTransform", this);
+            yield break;
+        }
+
+        if (discardPileAnchor == null)
+        {
+            Logger.LogWarning("Discard pile anchor is not assigned!", this);
+            yield break;
+        }
+
+        float duration = 0.5f;
+
+        rectTransform.SetAsLastSibling(); // να φαίνεται μπροστά
+
+        rectTransform.DOMove(discardPileAnchor.position, duration).SetEase(Ease.InBack);
+        rectTransform.DOScale(Vector3.zero, duration);
+        rectTransform.DORotate(new Vector3(0, 0, 180f), duration, RotateMode.FastBeyond360);
+
+        yield return new WaitForSeconds(duration);
+
+        RemoveCardFromHand(card); // Περιλαμβάνει το Destroy
+    }
+
 
 }

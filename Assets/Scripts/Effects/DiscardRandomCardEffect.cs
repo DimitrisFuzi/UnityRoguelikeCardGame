@@ -13,14 +13,14 @@ public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
         var cards = hand.CardsInHand;
 
         if (cards.Count == 0)
-        {
             yield break;
-        }
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.3f); // για "δράμα"
 
         int index = UnityEngine.Random.Range(0, cards.Count);
         GameObject randomCard = cards[index];
-        hand.RemoveCardFromHand(randomCard);
+
+        yield return hand.AnimateDiscardAndRemoveCard(randomCard);
     }
+
 }

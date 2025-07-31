@@ -18,14 +18,15 @@ MonoBehaviour:
   cardType: 0
   cardSprite: {fileID: 5382162441484220745, guid: 17d4a65eecd38bd469a4d59a10f50594, type: 3}
   energyCost: 1
-  cardTypeSprite: {fileID: 0}
+  cardRarity: 0
+  exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194015858
+  - rid: 3013811501433618510
   targetType: 0
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194015858
+    - rid: 3013811501433618510
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 0

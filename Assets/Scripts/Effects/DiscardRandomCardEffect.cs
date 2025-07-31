@@ -1,28 +1,26 @@
 using System;
 using UnityEngine;
+using System.Collections;
 using MyProjectF.Assets.Scripts.Effects;
 
-[Serializable]
-public class DiscardRandomCardEffect : EffectData
+public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
 {
-    [SerializeField]
+    public override void ApplyEffect(CharacterStats source, CharacterStats target) { }
 
-    public override void ApplyEffect(CharacterStats source, CharacterStats target)
+    public IEnumerator ApplyEffectRoutine(CharacterStats source, CharacterStats target)
     {
         var hand = HandManager.Instance;
         var cards = hand.CardsInHand;
 
         if (cards.Count == 0)
-        {
-            Debug.Log("[Effect] No cards in hand to discard.");
-            return;
-        }
+            yield break;
+
+        yield return new WaitForSeconds(0.3f); // για "δράμα"
 
         int index = UnityEngine.Random.Range(0, cards.Count);
         GameObject randomCard = cards[index];
 
-        Debug.Log($"[Effect] Randomly discarding card: {randomCard.name}");
-        hand.RemoveCardFromHand(randomCard);
-
+        yield return hand.AnimateDiscardAndRemoveCard(randomCard);
     }
+
 }

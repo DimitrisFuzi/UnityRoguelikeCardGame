@@ -60,6 +60,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1760074006918924703}
   m_CullTransparentMesh: 1
+--- !u!1 &3023875829188257904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4549856237908017644}
+  m_Layer: 5
+  m_Name: DamageTextAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4549856237908017644
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3023875829188257904}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3428980254169565311}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 130}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5859620517839548399
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,6 +126,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5649490490150827553}
+  - {fileID: 4549856237908017644}
   m_Father: {fileID: 6767169461657931637}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -267,6 +303,7 @@ MonoBehaviour:
   characterVisualTransform: {fileID: 3428980254169565311}
   enemyName: test
   IsEnraged: 0
+  enemyDisplay: {fileID: 0}
 --- !u!114 &3911588373252659996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,6 +319,8 @@ MonoBehaviour:
   enemyImage: {fileID: 1006496098490049519}
   healthBar: {fileID: 3717141462467964489}
   intentDisplay: {fileID: 6883995395569379232}
+  textSpawnAnchor: {fileID: 4549856237908017644}
+  floatingDamageTextPrefab: {fileID: 6435819573051269018, guid: a6e93f96d12bca54e8ec9156c88b6eab, type: 3}
 --- !u!61 &4837050038522909619
 BoxCollider2D:
   m_ObjectHideFlags: 0

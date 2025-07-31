@@ -18,14 +18,15 @@ MonoBehaviour:
   cardType: 1
   cardSprite: {fileID: 6428065620193080218, guid: 8fa3d2379c472b24bb6324e45891a0ee, type: 3}
   energyCost: 1
-  cardTypeSprite: {fileID: 0}
+  cardRarity: 0
+  exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194015873
+  - rid: 3013811501433618552
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194015873
+    - rid: 3013811501433618552
       type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
       data:
         targetType: 2

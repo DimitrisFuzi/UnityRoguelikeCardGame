@@ -8,7 +8,7 @@ public class Enemy : CharacterStats
     public string enemyName;
     public bool IsEnraged = false;
 
-    private EnemyDisplay enemyDisplay; // Reference to the UI component
+    public EnemyDisplay enemyDisplay; // Reference to the UI component
     public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
 
     /// <summary>
@@ -114,14 +114,16 @@ public class Enemy : CharacterStats
     }
 
 
-    public override void TakeDamage(int amount)
+    public override int TakeDamage(int amount)
     {
-        base.TakeDamage(amount);
+        int realDamage = base.TakeDamage(amount);
 
         if (enemyDisplay != null)
             enemyDisplay.UpdateDisplay(CurrentHealth, MaxHealth);
 
-        Logger.Log($"🔥 {enemyName} took {amount} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
+        Logger.Log($"🔥 {enemyName} took {realDamage} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
+
+        return realDamage;
     }
 
     protected override void Die()
@@ -129,7 +131,7 @@ public class Enemy : CharacterStats
         base.Die();
         if (enemyDisplay != null)
         {
-            enemyDisplay.gameObject.SetActive(false);
+            enemyDisplay.PlayDeathAnimation();
         }
     }
 }

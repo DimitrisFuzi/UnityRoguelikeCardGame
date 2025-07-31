@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using DG.Tweening;
+using System.Collections;
 using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Managers;
@@ -173,14 +174,30 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             if (currentState == 0)
             {
-               
                 currentState = 1;
                 originalSiblingIndex = transform.GetSiblingIndex();
-                transform.SetAsLastSibling(); // bring to front
+                transform.SetAsLastSibling();
 
-                HandleHoverState(); // ✅ play hover animation ONCE
+                if (glowEffect != null)
+                {
+                    Image glowImage = glowEffect.GetComponent<Image>();
+                    if (glowImage != null)
+                    {
+                        glowImage.color = GetColorByCardType();
+                        glowImage.DOFade(0.2f, 0.7f)
+                            .SetLoops(-1, LoopType.Yoyo)
+                            .SetEase(Ease.InOutSine)
+                            .SetUpdate(true)
+                            .SetId(glowImage);
+                    }
+
+                    glowEffect.SetActive(true);
+                }
+
+                HandleHoverState();
             }
         }
+
 
         /// <summary>
         /// Triggered when pointer exits card; returns to idle.
@@ -297,12 +314,9 @@ namespace MyProjectF.Assets.Scripts.Cards
                 return;
             }
 
-            // Apply effects if all targets are valid
-            foreach (EffectData effect in cardData.GetCardEffects())
-            {
-                CharacterStats effectTarget = ResolveTargetForEffect(effect.targetType);
-                effect.ApplyEffect(PlayerStats.Instance, effectTarget);
-            }
+            // If we reach here, the card is being played successfully
+            StartCoroutine(ApplyEffectsInSequence());
+            return;
 
             // Deduct energy and remove the card from the hand
             PlayerManager.Instance.UseCard(cardData);
@@ -499,6 +513,30 @@ namespace MyProjectF.Assets.Scripts.Cards
                 default: return Color.white;
             }
         }
+
+        private IEnumerator ApplyEffectsInSequence()
+        {
+            var effects = cardData.GetCardEffects();
+
+            foreach (EffectData effect in effects)
+            {
+                CharacterStats target = ResolveTargetForEffect(effect.targetType);
+
+                if (effect is ICoroutineEffect coroutineEffect)
+                {
+                    yield return StartCoroutine(coroutineEffect.ApplyEffectRoutine(PlayerStats.Instance, target));
+                }
+                else
+                {
+                    effect.ApplyEffect(PlayerStats.Instance, target);
+                }
+            }
+
+            PlayerManager.Instance.UseCard(cardData);
+            TransitionToIdle();
+            HandManager.Instance.RemoveCardFromHand(this.gameObject);
+        }
+
 
     }
 }

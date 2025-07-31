@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class EnemyDisplay : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class EnemyDisplay : MonoBehaviour
     public Image enemyImage; // Enemy sprite image
     [SerializeField] private HealthBar healthBar; // NEW: Reference to the HealthBar script
     [SerializeField] private IntentDisplay intentDisplay; // Reference to the IntentDisplay component
+    [SerializeField] private Transform textSpawnAnchor;
+    [SerializeField] private GameObject floatingDamageTextPrefab;
+
+
 
     private RectTransform enemyRect;
 
@@ -108,4 +113,59 @@ public class EnemyDisplay : MonoBehaviour
             enemyImage.color = Color.white;
         }
     }
+
+    public void ShowDamagePopup(int damage)
+    {
+        if (floatingDamageTextPrefab == null || textSpawnAnchor == null) return;
+
+        GameObject go = Instantiate(floatingDamageTextPrefab, textSpawnAnchor);
+        RectTransform rect = go.GetComponent<RectTransform>();
+        CanvasGroup group = go.GetComponent<CanvasGroup>();
+        TMP_Text text = go.GetComponentInChildren<TMP_Text>();
+
+        if (text != null)
+        {
+            text.text = damage.ToString();
+            text.color = Color.white; // base color
+        }
+
+        rect.localScale = Vector3.one * 1.6f;
+
+        Sequence seq = DOTween.Sequence();
+
+        // Shake
+        seq.Append(rect.DOShakeScale(0.1f, 0.2f, 10));
+
+        // Light flash (e.g. white glow)
+        if (text != null)
+        {
+            seq.Append(text.DOColor(new Color(1f, 1f, 1f), 0.05f));  // Full white
+           // seq.Append(text.DOColor(new Color32(0xFF, 0x7A, 0x7A, 255), 0.2f)); // Slight red tone
+        }
+
+        // Shrink, Float & Fade out
+        seq.Append(rect.DOScale(0.8f, 0.6f).SetEase(Ease.InOutQuad))
+           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic))
+           .Join(group.DOFade(0f, 0.6f))
+           .AppendCallback(() => Destroy(go));
+    }
+
+    /// <summary>
+    /// Plays the death animation for the enemy.
+    /// </summary> 
+    public void PlayDeathAnimation()
+    {
+        if (enemyImage == null) return;
+
+        enemyImage.DOFade(0f, 1f)
+                  .SetEase(Ease.InOutQuad)
+                  .OnComplete(() => gameObject.SetActive(false));
+    }
+
+
+
+
+
+
+
 }

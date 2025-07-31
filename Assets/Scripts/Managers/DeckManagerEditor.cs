@@ -24,7 +24,8 @@ public class DeckManagerEditor : Editor
 
             if (handManager != null)
             {
-                deckManager.DrawCard();
+
+                HandManager.Instance.StartCoroutine(DeckManager.Instance.DrawCardAsync().AsCoroutine());
                 Debug.Log("✅ Card drawn via inspector.");
             }
             else

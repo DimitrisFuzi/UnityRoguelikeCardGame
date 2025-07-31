@@ -61,7 +61,7 @@ public class PlayerDeck : MonoBehaviour
         string[] selectedCards =
         {
            "Blood Rush", "Lashing Out", "Last Resort", "Wide Swing", "Brace", "Gut Reaction",
-           "Shift Stance", "Deep Focus", "Fight or Flight", "Focus Breathing", "Snap Decision",
+ "Shift Stance", "Deep Focus", "Fight or Flight", "Focus Breathing", "Snap Decision"
 
         };
 

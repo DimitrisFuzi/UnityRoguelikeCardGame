@@ -21,19 +21,19 @@ MonoBehaviour:
   cardRarity: 1
   exhaustAfterUse: 0
   effects:
-  - rid: 3013811131194016117
-  - rid: 3013811131194016118
+  - rid: 3013811501433618557
+  - rid: 3013811501433618558
   targetType: 2
   references:
     version: 2
     RefIds:
-    - rid: 3013811131194016117
+    - rid: 3013811501433618557
       type: {class: GainEnergyEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 2
         energyAmount: 2
-    - rid: 3013811131194016118
+    - rid: 3013811501433618558
       type: {class: LoseHealthEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetType: 2
+        targetType: 0
         healthLoss: 3

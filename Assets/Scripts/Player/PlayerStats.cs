@@ -10,6 +10,7 @@ namespace MyProjectF.Assets.Scripts.Player
     public class PlayerStats : CharacterStats
     {
         public static PlayerStats Instance { get; private set; }
+        public PlayerDisplay playerDisplay;
 
         [Header("Energy Settings")]
         public int initialEnergy;
@@ -28,6 +29,9 @@ namespace MyProjectF.Assets.Scripts.Player
                 InitializeStats(100); // Example starting health
 
                 energy = initialEnergy;
+
+                playerDisplay = GetComponentInChildren<PlayerDisplay>();
+
                 NotifyUI();
             }
             else

@@ -2,6 +2,7 @@
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 using DG.Tweening;
+using MyProjectF.Assets.Scripts.Player;
 
 /// <summary>
 /// Represents an effect that deals damage to a target character.
@@ -28,19 +29,62 @@ public class DamageEffect : EffectData
     /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
+        Enemy enemyTarget = target as Enemy;
+
         if (target != null)
         {
-            target.TakeDamage(damageAmount);
+            int realDamage = target.TakeDamage(damageAmount);
+
+            if (target is PlayerStats playerTarget && playerTarget.playerDisplay != null)
+            {
+                if (realDamage > 0)
+                    playerTarget.playerDisplay.ShowDamagePopup(realDamage);
+            }
+
+            GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
+
+            if (scratchPrefab != null &&
+                enemyTarget != null &&
+                enemyTarget.enemyDisplay != null &&
+                enemyTarget.enemyDisplay.enemyImage != null)
+            {
+                // ✅ Instantiate the scratch effect prefab
+                GameObject instance = GameObject.Instantiate(scratchPrefab);
+                instance.transform.SetParent(enemyTarget.enemyDisplay.enemyImage.transform, false); // false = reset local pos
+
+                // ✅ force reset το RectTransform
+                RectTransform rect = instance.GetComponent<RectTransform>();
+                if (rect != null)
+                {
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.localScale = Vector3.one;
+                    rect.localRotation = Quaternion.identity;
+                }
+
+                // ✅ Get the ScratchEffect component and play it
+                var effect = instance.GetComponent<ScratchEffect>();
+                if (effect != null)
+                {
+                    effect.PlayEffect();
+                }
+
+            }
+
+            if (enemyTarget != null && enemyTarget.enemyDisplay != null)
+            {
+                enemyTarget.enemyDisplay.ShowDamagePopup(damageAmount);
+            }
+
         }
 
+
+        // 🔄 Visual "attack movement" animation
         if (source != null && source.characterVisualTransform != null)
         {
             Debug.Log($"[AttackAnimation] {source.name} is attacking", target);
-            // Χρήση τοπικής θέσης
             Vector3 originalPos = source.characterVisualTransform.localPosition;
-            Vector3 attackOffset = Vector3.right * 20f; // 20 pixels περίπου, για testing
+            Vector3 attackOffset = Vector3.right * 20f;
 
-            // Αν ο source είναι εχθρός, κινείται προς τα αριστερά
             if (source is Enemy)
             {
                 attackOffset = Vector3.left * 100f;
@@ -51,6 +95,7 @@ public class DamageEffect : EffectData
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos, 0.1f));
         }
     }
+
 
 
 

@@ -38,7 +38,16 @@ public class DamageEffect : EffectData
             if (target is PlayerStats playerTarget && playerTarget.playerDisplay != null)
             {
                 if (realDamage > 0)
+                {
+                    AudioManager.Instance?.PlaySFX("Player_Hit");
                     playerTarget.playerDisplay.ShowDamagePopup(realDamage);
+                }
+                else if (damageAmount > 0)
+                {
+
+                    AudioManager.Instance?.PlaySFX("Player_Hit_Blocked");
+                }
+
             }
 
             GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
@@ -73,6 +82,10 @@ public class DamageEffect : EffectData
             if (enemyTarget != null && enemyTarget.enemyDisplay != null)
             {
                 enemyTarget.enemyDisplay.ShowDamagePopup(damageAmount);
+
+                // ✅ Play enemy hit sound effect
+                AudioManager.Instance?.PlaySFX("Enemy_Hit");
+
             }
 
         }

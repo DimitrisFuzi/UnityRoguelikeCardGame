@@ -49,6 +49,7 @@ public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private void EndTurn()
     {
         Debug.Log("⏭️ End Turn Button Pressed");
+        AudioManager.Instance?.PlaySFX("End_Turn");
         TurnManager.Instance?.EndPlayerTurn();
     }
 

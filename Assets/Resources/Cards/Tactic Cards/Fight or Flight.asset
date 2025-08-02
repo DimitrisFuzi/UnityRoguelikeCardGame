@@ -35,5 +35,5 @@ MonoBehaviour:
     - rid: 3013811501433618558
       type: {class: LoseHealthEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetType: 0
+        targetType: 2
         healthLoss: 3

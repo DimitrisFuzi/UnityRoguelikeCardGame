@@ -2544,6 +2544,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 4e9bcb7404879df41b3bd00e0d116a0b, type: 3}
   - name: Rage_Effect
     clip: {fileID: 8300000, guid: 5af10c9eec258e34ab9e12a08bae349c, type: 3}
+  - name: Discard_Card
+    clip: {fileID: 8300000, guid: e62520ac3bbaa724db4a51a63713e05a, type: 3}
 --- !u!4 &6689091179503757147
 Transform:
   m_ObjectHideFlags: 0

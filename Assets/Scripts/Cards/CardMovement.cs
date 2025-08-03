@@ -175,6 +175,10 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (currentState == 0)
             {
                 currentState = 1;
+
+                // sound for card hover
+                AudioManager.Instance?.PlaySFX("Card_Hover");
+
                 originalSiblingIndex = transform.GetSiblingIndex();
                 transform.SetAsLastSibling();
 
@@ -220,6 +224,9 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (currentState == 1)
             {
                 currentState = 2;
+
+                // sound for card selection
+                AudioManager.Instance?.PlaySFX("Card_Select");
             }
         }
 

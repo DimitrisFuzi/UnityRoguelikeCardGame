@@ -131,7 +131,10 @@ public class Enemy : CharacterStats
         base.Die();
         if (enemyDisplay != null)
         {
+
+            AudioManager.Instance?.PlaySFX("Enemy_Death");
             enemyDisplay.PlayDeathAnimation();
+
         }
     }
 }

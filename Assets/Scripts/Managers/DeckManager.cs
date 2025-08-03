@@ -92,6 +92,8 @@ public class DeckManager : MonoBehaviour
                 null,
                 out uiStartPos
             );
+            // Play sound effect
+            AudioManager.Instance?.PlaySFX("Card_Draw");
 
             cardRect.anchoredPosition = uiStartPos;
             cardRect.localScale = Vector3.one * 0.5f;
@@ -106,7 +108,7 @@ public class DeckManager : MonoBehaviour
             Vector2 midPoint = (cardRect.anchoredPosition + slotRect.anchoredPosition) / 2f + Vector2.up * 100f;
 
             TaskCompletionSource<bool> tcs = new();
-
+            
             Sequence drawSeq = DOTween.Sequence();
             drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.25f).SetEase(Ease.OutQuad));
             drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.25f).SetEase(Ease.InQuad));

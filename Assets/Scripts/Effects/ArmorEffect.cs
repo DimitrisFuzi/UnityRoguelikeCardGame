@@ -29,6 +29,7 @@ namespace MyProjectF.Assets.Scripts.Effects
                 PlayerStats player = target as PlayerStats;
                 if (player != null && player.playerDisplay != null)
                 {
+                    AudioManager.Instance?.PlaySFX("Block_Gain");
                     player.playerDisplay.ShowArmorGainEffect();
                 }
             }

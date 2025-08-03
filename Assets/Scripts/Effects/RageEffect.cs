@@ -11,6 +11,8 @@ namespace MyProjectF.Assets.Scripts.Effects
             if (target is Enemy enemy)
             {
                 enemy.IsEnraged = true;
+                AudioManager.Instance?.PlaySFX("Rage_Effect");
+
             }
         }
     }

@@ -16,6 +16,7 @@ public class DrawCardEffect : EffectData, ICoroutineEffect
         for (int i = 0; i < cardsToDraw; i++)
         {
             yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
+
         }
     }
 }

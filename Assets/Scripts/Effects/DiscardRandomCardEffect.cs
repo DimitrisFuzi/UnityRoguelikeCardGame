@@ -20,6 +20,7 @@ public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
         int index = UnityEngine.Random.Range(0, cards.Count);
         GameObject randomCard = cards[index];
 
+        AudioManager.Instance?.PlaySFX("Discard_Card");
         yield return hand.AnimateDiscardAndRemoveCard(randomCard);
     }
 

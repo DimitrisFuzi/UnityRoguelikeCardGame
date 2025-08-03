@@ -326,9 +326,9 @@ namespace MyProjectF.Assets.Scripts.Cards
             return;
 
             // Deduct energy and remove the card from the hand
-            PlayerManager.Instance.UseCard(cardData);
-            TransitionToIdle();
-            HandManager.Instance.RemoveCardFromHand(this.gameObject);
+            //PlayerManager.Instance.UseCard(cardData);
+            //TransitionToIdle();
+           // HandManager.Instance.RemoveCardFromHand(this.gameObject);
         }
 
         /// <summary>

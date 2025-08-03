@@ -133,7 +133,8 @@ public class Enemy : CharacterStats
         {
 
             AudioManager.Instance?.PlaySFX("Enemy_Death");
-            enemyDisplay.PlayDeathAnimation();
+            enemyDisplay.PlayDeathAnimation(() => EnemyManager.Instance?.RemoveEnemy(this));
+
 
         }
     }

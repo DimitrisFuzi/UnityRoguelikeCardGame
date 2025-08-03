@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1578736679254851283
+--- !u!1 &2600015750644176518
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1375136871092332121}
-  - component: {fileID: 4436456362514729845}
+  - component: {fileID: 5743313261849328624}
+  - component: {fileID: 8839502610092930111}
+  - component: {fileID: 2604433479442722620}
+  - component: {fileID: 4909036245937797379}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -17,30 +19,165 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1375136871092332121
+--- !u!4 &5743313261849328624
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1578736679254851283}
+  m_GameObject: {fileID: 2600015750644176518}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4436456362514729845
+--- !u!114 &8839502610092930111
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1578736679254851283}
+  m_GameObject: {fileID: 2600015750644176518}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e9e628834b8ead40aeb538380fc01cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioMixer: {fileID: 0}
+  sfxSource: {fileID: 2604433479442722620}
+  sfxList:
+  - name: Enemy_Hit
+    clip: {fileID: 8300000, guid: 1ac45e0b0f8534048984ed82b8d7d92c, type: 3}
+  - name: Card_Draw
+    clip: {fileID: 8300000, guid: e8d643e653ea59b498ac31838f8ea422, type: 3}
+  - name: Card_Select
+    clip: {fileID: 8300000, guid: 8503c5704d6555045bde7fa942e12d41, type: 3}
+  - name: Card_Hover
+    clip: {fileID: 8300000, guid: 8b4d19d693571ac47a324e6251386182, type: 3}
+  - name: Enemy_Death
+    clip: {fileID: 8300000, guid: 2dac90f58fbc9a14298d3e9d6ca649e5, type: 3}
+  - name: Block_Gain
+    clip: {fileID: 8300000, guid: 3042df871eb282d4e8f3963da8c24d36, type: 3}
+  - name: Player_Hit
+    clip: {fileID: 8300000, guid: d94224c5ec81ee345b945b1fcf1c4d73, type: 3}
+  - name: Player_Hit_Blocked
+    clip: {fileID: 8300000, guid: c91faaafd3ef3694f9a66762883ba56c, type: 3}
+  - name: End_Turn
+    clip: {fileID: 8300000, guid: 4e9bcb7404879df41b3bd00e0d116a0b, type: 3}
+  - name: Rage_Effect
+    clip: {fileID: 8300000, guid: 5af10c9eec258e34ab9e12a08bae349c, type: 3}
+  - name: Discard_Card
+    clip: {fileID: 8300000, guid: e62520ac3bbaa724db4a51a63713e05a, type: 3}
+--- !u!82 &2604433479442722620
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2600015750644176518}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: d8b76540e7172af46a5a10469423394c, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &4909036245937797379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2600015750644176518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5107ef34382818e4fb260dd175cdeb54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestSFXPlayer
+  sfxName: Enemy_Hit

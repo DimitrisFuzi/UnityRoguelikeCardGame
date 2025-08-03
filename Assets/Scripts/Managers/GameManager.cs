@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     public OptionsManager OptionsManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
-    public DeckManager DeckManager { get; private set; }
+    //public DeckManager DeckManager { get; private set; }
 
     private void Awake()
     {
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         OptionsManager = LoadOrInstantiateManager<OptionsManager>("Prefabs/Managers/OptionsManager");
         AudioManager = LoadOrInstantiateManager<AudioManager>("Prefabs/Managers/AudioManager");
-        DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/Managers/DeckManager");
+        //DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/Managers/DeckManager");
     }
 
 

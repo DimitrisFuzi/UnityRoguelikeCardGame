@@ -27,7 +27,9 @@ public class AudioManager : MonoBehaviour
         { "End_Turn", 0.3f },
         { "Player_Hit_Blocked", 0.2f },
         { "Player_Hit", 0.1f },
-        { "Rage_Effect", 0.2f }
+        { "Rage_Effect", 0.2f },
+        { "MainMenuHover",0.5f },
+        { "MainMenuClick",0.5f }
     };
 
     private void Awake()

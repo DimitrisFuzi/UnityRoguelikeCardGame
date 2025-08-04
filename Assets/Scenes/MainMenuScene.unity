@@ -1236,11 +1236,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MenuButtonHover
   hoverScale: 1.1
   scaleDuration: 0.2
+  clickScale: 0.95
+  clickDuration: 0.1
   shadowImage: {fileID: 2105986968}
   shadowFadeDuration: 0.2
   shadowTargetAlpha: 1
-  clickScale: 0.95
-  clickDuration: 0.1
+  hoverSFX: MainMenuHover
+  clickSFX: MainMenuClick
 --- !u!1 &1092582519
 GameObject:
   m_ObjectHideFlags: 0
@@ -1646,11 +1648,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MenuButtonHoverWithShadow
   hoverScale: 1.1
   scaleDuration: 0.2
+  clickScale: 0.95
+  clickDuration: 0.1
   shadowImage: {fileID: 1444043079}
   shadowFadeDuration: 0.2
   shadowTargetAlpha: 1
-  clickScale: 0.95
-  clickDuration: 0.1
+  hoverSFX: MainMenuHover
+  clickSFX: MainMenuClick
 --- !u!1 &1444043077
 GameObject:
   m_ObjectHideFlags: 0
@@ -1875,11 +1879,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MenuButtonHoverWithShadow
   hoverScale: 1.1
   scaleDuration: 0.2
+  clickScale: 0.95
+  clickDuration: 0.1
   shadowImage: {fileID: 1129458982}
   shadowFadeDuration: 0.2
   shadowTargetAlpha: 1
-  clickScale: 0.95
-  clickDuration: 0.1
+  hoverSFX: MainMenuHover
+  clickSFX: MainMenuClick
 --- !u!1 &2105986966
 GameObject:
   m_ObjectHideFlags: 0

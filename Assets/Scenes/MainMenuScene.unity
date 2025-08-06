@@ -399,7 +399,7 @@ GameObject:
   - component: {fileID: 403580045}
   - component: {fileID: 403580044}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: OptionsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -638,7 +638,7 @@ GameObject:
   - component: {fileID: 561343471}
   - component: {fileID: 561343470}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: QuitText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1007,6 +1007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146c4a58f177bd9449f0042cb0ded6bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuUI
+  optionsButton: {fileID: 1262437625}
 --- !u!4 &970502327
 Transform:
   m_ObjectHideFlags: 0
@@ -1255,7 +1256,7 @@ GameObject:
   - component: {fileID: 1092582522}
   - component: {fileID: 1092582521}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: StartGameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1583,19 +1584,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1262437626}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 970502325}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1262437626
 MonoBehaviour:
   m_ObjectHideFlags: 0

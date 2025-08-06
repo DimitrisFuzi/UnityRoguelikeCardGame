@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9e628834b8ead40aeb538380fc01cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioMixer: {fileID: 0}
+  audioMixer: {fileID: 24100000, guid: ba65f82b33303a74eafeb01431201282, type: 2}
   sfxSource: {fileID: 2604433479442722620}
   sfxList:
   - name: Enemy_Hit

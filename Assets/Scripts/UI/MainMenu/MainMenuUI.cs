@@ -9,7 +9,7 @@ public class MainMenuUI : MonoBehaviour
     private void Start()
     {
         // Dynamically bind the Options button to the OptionsUI.OpenOptions method
-        var optionsUI = FindObjectOfType<OptionsUI>();
+        var optionsUI = FindFirstObjectByType<OptionsUI>();
         if (optionsUI != null && optionsButton != null)
         {
             optionsButton.onClick.AddListener(() => optionsUI.OpenOptions());

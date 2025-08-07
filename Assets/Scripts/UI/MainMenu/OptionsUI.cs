@@ -4,11 +4,11 @@ using DG.Tweening;
 
 public class OptionsUI : MonoBehaviour
 {
-    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Slider menuSFXSlider;
+    [SerializeField] private Slider gameplaySFXSlider;
+    [SerializeField] private Slider musicSlider;
     [SerializeField] private GameObject panel;
-
     [SerializeField] private CanvasGroup canvasGroup;
-
 
     private void Awake()
     {
@@ -18,30 +18,36 @@ public class OptionsUI : MonoBehaviour
             canvasGroup = panel.AddComponent<CanvasGroup>();
         }
 
-        panel.SetActive(false); // ensure it's off at start
+        panel.SetActive(false);
         canvasGroup.alpha = 0f;
     }
 
     private void Start()
     {
-        float savedSFX = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
-        sfxSlider.value = savedSFX;
+        float savedMenuSFX = PlayerPrefs.GetFloat("MenuSFXVolume", 0.5f);
+        float savedGameplaySFX = PlayerPrefs.GetFloat("GameplaySFXVolume", 0.5f);
+        float savedMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
 
-        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
-        SetSFXVolume(savedSFX);
+        menuSFXSlider.value = savedMenuSFX;
+        gameplaySFXSlider.value = savedGameplaySFX;
+        musicSlider.value = savedMusicVolume;
+
+        menuSFXSlider.onValueChanged.AddListener(SetMenuSFXVolume);
+        gameplaySFXSlider.onValueChanged.AddListener(SetGameplaySFXVolume);
+        musicSlider.onValueChanged.AddListener(SetMusicVolume);
+
+        SetMenuSFXVolume(savedMenuSFX);
+        SetGameplaySFXVolume(savedGameplaySFX);
+        SetMusicVolume(savedMusicVolume); 
     }
 
     public void OpenOptions()
     {
-        Debug.Log("👀 OpenOptions was called");
-        Debug.Log($"📦 Panel is: {panel?.name} | Active: {panel?.activeSelf}");
-
-
-        panel.SetActive(true);                // Make sure it's visible
-        canvasGroup.alpha = 0f;              // Start from 0 opacity
+        panel.SetActive(true);
+        canvasGroup.alpha = 0f;
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
-        canvasGroup.DOFade(1f, 0.3f);        // Fade in
+        canvasGroup.DOFade(1f, 0.3f);
     }
 
     public void CloseOptions()
@@ -54,9 +60,23 @@ public class OptionsUI : MonoBehaviour
         });
     }
 
-    public void SetSFXVolume(float volume)
+    public void SetMenuSFXVolume(float volume)
     {
-        AudioManager.Instance?.SetSFXVolume(volume);
-        PlayerPrefs.SetFloat("SFXVolume", volume);
+        AudioManager.Instance?.SetCategoryVolume("Menu", volume);
+        PlayerPrefs.SetFloat("MenuSFXVolume", volume);
+    }
+
+    public void SetGameplaySFXVolume(float volume)
+    {
+        AudioManager.Instance?.SetCategoryVolume("Gameplay", volume);
+        PlayerPrefs.SetFloat("GameplaySFXVolume", volume);
+
+
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        AudioManager.Instance?.SetCategoryVolume("Music", volume);
+        PlayerPrefs.SetFloat("MusicVolume", volume);
     }
 }

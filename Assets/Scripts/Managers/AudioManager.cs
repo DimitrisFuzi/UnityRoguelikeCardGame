@@ -1,16 +1,21 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
 
 /// <summary>
-/// Manages audio playback for SFX with volume overrides and future mixer integration.
+/// Manages audio playback for SFX with volume overrides and mixer category control.
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
     [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private AudioSource sfxSource;
+    //[SerializeField] private AudioSource sfxSource;
+
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource uiSFXSource;
+    [SerializeField] private AudioSource gameplaySFXSource;
+
 
     [SerializeField] private List<SFXEntry> sfxList = new List<SFXEntry>();
     private Dictionary<string, AudioClip> sfxDictionary = new Dictionary<string, AudioClip>();
@@ -27,7 +32,9 @@ public class AudioManager : MonoBehaviour
         { "End_Turn", 0.3f },
         { "Player_Hit_Blocked", 0.2f },
         { "Player_Hit", 0.1f },
-        { "Rage_Effect", 0.2f }
+        { "Rage_Effect", 0.2f },
+        { "MainMenuHover", 0.5f },
+        { "MainMenuClick", 0.5f }
     };
 
     private void Awake()
@@ -55,13 +62,23 @@ public class AudioManager : MonoBehaviour
         if (sfxDictionary.TryGetValue(name, out var clip))
         {
             float volume = GetVolumeForSFX(name);
-            sfxSource.PlayOneShot(clip, volume);
+
+            // Επιλογή κατάλληλης πηγής
+            if (name.StartsWith("MainMenu"))
+            {
+                uiSFXSource?.PlayOneShot(clip, volume);
+            }
+            else
+            {
+                gameplaySFXSource?.PlayOneShot(clip, volume);
+            }
         }
         else
         {
             Debug.LogWarning($"[AudioManager] SFX '{name}' not found.");
         }
     }
+
 
     /// <summary>
     /// Gets custom volume scale for a given SFX name.
@@ -75,18 +92,36 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the SFX group volume via AudioMixer (range: 0.0001 to 1.0).
+    /// Updates the volume of a specific audio category via AudioMixer.
+    /// Supported categories: "Menu", "Gameplay", "Music"
+    /// </summary>
+    public void SetCategoryVolume(string category, float volume)
+    {
+
+        float dbVolume = Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f;
+
+        switch (category)
+        {
+            case "Music":
+                audioMixer.SetFloat("MusicVolume", dbVolume);
+                break;
+            case "Gameplay":
+                audioMixer.SetFloat("SFXVolume", dbVolume);
+                break;
+            case "Menu":
+                audioMixer.SetFloat("MenuSFXVolume", dbVolume);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Legacy support - sets general SFX volume (mapped to Gameplay).
     /// </summary>
     public void SetSFXVolume(float volume)
     {
-        if (volume <= 0f)
-            audioMixer.SetFloat("SFXVolume", -80f); // effectively muted
-        else
-            audioMixer.SetFloat("SFXVolume", Mathf.Log10(volume) * 20f);
+        SetCategoryVolume("Gameplay", volume);
     }
-
 }
-
 
 [System.Serializable]
 public class SFXEntry

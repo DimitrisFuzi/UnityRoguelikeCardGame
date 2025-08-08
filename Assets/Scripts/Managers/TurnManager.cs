@@ -87,14 +87,29 @@ public class TurnManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
+        // Check if the battle has already ended
+        if (BattleManager.Instance.State == BattleManager.BattleState.LOST ||
+        BattleManager.Instance.State == BattleManager.BattleState.WON)
+        {
+            Debug.LogWarning("⚠️ EnemyTurn cancelled: Battle already ended.");
+            yield break;
+        }
+
         // Step 1: Perform enemy actions
         enemyManager.PerformEnemyActions();
 
         yield return new WaitForSeconds(1f); // Small delay before next intent setup
 
+        if (BattleManager.Instance.IsBattleOver())
+        {
+            Logger.Log("⚠️ EnemyTurn aborted (battle ended during enemy actions).", this);
+            yield break;
+        }
+
         // Set next intent for each enemy
         foreach (Enemy enemy in enemyManager.Enemies)
         {
+            if (enemy == null) continue;
             // Ensure enemyDisplay is available before trying to set intent
             EnemyDisplay enemyDisplay = enemy.GetComponent<EnemyDisplay>();
             if (enemy.EnemyAI != null && enemyDisplay != null)
@@ -102,6 +117,13 @@ public class TurnManager : MonoBehaviour
                 EnemyIntent nextIntent = enemy.EnemyAI.PredictNextIntent();
                 enemyDisplay.SetIntent(nextIntent); // Pass the intent to the display
             }
+        }
+
+        if (BattleManager.Instance.IsBattleOver())
+
+        {
+            Logger.Log("⚠️ EnemyTurn aborted (battle ended during enemy actions).", this);
+            yield break;
         }
 
         Debug.Log("👿 Enemy Turn Ended!");

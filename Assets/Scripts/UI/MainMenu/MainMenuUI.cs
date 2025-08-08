@@ -22,7 +22,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("BattleScene");
+        SceneManager.LoadScene("Battle1");
     }
 
     public void QuitGame()

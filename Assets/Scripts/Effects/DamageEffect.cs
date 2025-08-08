@@ -3,6 +3,7 @@ using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 using DG.Tweening;
 using MyProjectF.Assets.Scripts.Player;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Represents an effect that deals damage to a target character.
@@ -29,6 +30,12 @@ public class DamageEffect : EffectData
     /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
+        if (BattleManager.Instance != null && BattleManager.Instance.IsBattleOver())
+        {
+            Debug.LogWarning("🛑 Skipping ApplyEffect: battle is over.");
+            return;
+        }
+
         Enemy enemyTarget = target as Enemy;
 
         if (target != null)
@@ -90,6 +97,11 @@ public class DamageEffect : EffectData
 
         }
 
+        if (BattleManager.Instance != null && BattleManager.Instance.IsBattleOver())
+        {
+            Debug.LogWarning("🛑 Skipping attack animation: battle is over.");
+            return;
+        }
 
         // 🔄 Visual "attack movement" animation
         if (source != null && source.characterVisualTransform != null)

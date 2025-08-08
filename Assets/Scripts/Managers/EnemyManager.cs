@@ -92,6 +92,12 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (var enemy in activeEnemies)
         {
+            if (BattleManager.Instance.IsBattleOver())
+            {
+                Logger.Log("⚠️ Skipping enemy actions: battle ended.", this);
+                yield break;
+            }
+
             enemy.PerformAction();
             yield return new WaitForSeconds(1f);
         }
@@ -113,7 +119,7 @@ public class EnemyManager : MonoBehaviour
         if (activeEnemies.Count == 0)
         {
             Logger.Log("🎉 All enemies defeated! Battle won!", this);
-            BattleManager.Instance.SetBattleState(BattleManager.BattleState.WON);
+            BattleManager.Instance.HandleBattleVictory();
         }
     }
 

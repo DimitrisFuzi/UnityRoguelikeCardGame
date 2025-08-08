@@ -1,6 +1,7 @@
 ﻿// Wolf2AI.cs
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Enemy AI logic specific to the Wolf2 enemy.
@@ -57,7 +58,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     /// </summary>
     public void ExecuteTurn()
     {
-        Debug.Log($"🐺 Wolf2AI ExecuteTurn called on turn {currentTurn} for {enemyStats.enemyName}.");
+        if (BattleManager.Instance.State == BattleManager.BattleState.LOST) return;
 
         if (currentTurn == 4) // Wolf2AI's enrage turn
         {

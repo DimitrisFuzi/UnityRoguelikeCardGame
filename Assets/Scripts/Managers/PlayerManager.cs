@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MyProjectF.Assets.Scripts.Cards;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Manages player initialization, energy usage, and application of card effects.
@@ -59,6 +60,8 @@ public class PlayerManager : MonoBehaviour
             Logger.LogError("playerPrefab does not have a PlayerStats component.", this);
             return;
         }
+
+        BattleManager.Instance.RegisterPlayerEvents(playerStats);
 
         playerStats.ResetEnergy();
         playerStats.ResetArmor();

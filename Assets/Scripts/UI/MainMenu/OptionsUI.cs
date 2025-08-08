@@ -5,6 +5,12 @@ using TMPro;
 
 public class OptionsUI : MonoBehaviour
 {
+
+    
+    private float defaultMusicVolume = 0.5f;
+    private float defaultGameplaySFXVolume = 0.5f;
+    private float defaultMenuSFXVolume = 0.5f;
+
     [SerializeField] private Slider menuSFXSlider;
     [SerializeField] private Slider gameplaySFXSlider;
     [SerializeField] private Slider musicSlider;
@@ -14,6 +20,9 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TMP_Text musicVolumeText;
     [SerializeField] private TMP_Text menuSFXVolumeText;
     [SerializeField] private TMP_Text gameplaySFXVolumeText;
+
+    [SerializeField] private Button backButton;
+
 
     [Header("SFX")]
     [Tooltip("Name of the SFX clip to play on hover (must match AudioManager entry).")]
@@ -36,9 +45,11 @@ public class OptionsUI : MonoBehaviour
 
     private void Start()
     {
-        float savedMenuSFX = PlayerPrefs.GetFloat("MenuSFXVolume", 0.5f);
-        float savedGameplaySFX = PlayerPrefs.GetFloat("GameplaySFXVolume", 0.5f);
-        float savedMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+
+        float savedMenuSFX = defaultMenuSFXVolume;
+        float savedGameplaySFX = defaultGameplaySFXVolume;
+        float savedMusicVolume = defaultMusicVolume;
+
 
         menuSFXSlider.value = savedMenuSFX;
         gameplaySFXSlider.value = savedGameplaySFX;
@@ -101,5 +112,4 @@ public class OptionsUI : MonoBehaviour
         int percent = Mathf.RoundToInt(value * 100f);
         label.text = percent.ToString();
     }
-
 }

@@ -98,23 +98,6 @@ public class AudioManager : MonoBehaviour
     public void SetCategoryVolume(string category, float volume)
     {
 
-        /*string paramName = category switch
-        {
-            "Menu" => "MenuSFXVolume",
-            "Gameplay" => "SFXVolume",
-            "Music" => "MusicVolume",
-            _ => null
-        };
-
-        if (string.IsNullOrEmpty(paramName))
-        {
-            Debug.LogWarning($"[AudioManager] Unknown category: {category}");
-            return;
-        }
-
-        float db = (volume <= 0f) ? -80f : Mathf.Log10(volume) * 20f;
-        audioMixer.SetFloat(paramName, db);*/
-
         float dbVolume = Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f;
 
         switch (category)
@@ -129,8 +112,6 @@ public class AudioManager : MonoBehaviour
                 audioMixer.SetFloat("MenuSFXVolume", dbVolume);
                 break;
         }
-
-        Debug.Log($"[AudioManager] Set {category} volume: {volume} → {dbVolume} dB");
     }
 
     /// <summary>

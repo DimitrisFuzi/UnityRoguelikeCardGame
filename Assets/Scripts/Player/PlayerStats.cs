@@ -108,7 +108,7 @@ namespace MyProjectF.Assets.Scripts.Player
         protected override void Die()
         {
             Logger.Log("💀 Player died! Game Over.", this);
-            // Add game over screen, effects, etc...
+            base.Die();
         }
     }
 }

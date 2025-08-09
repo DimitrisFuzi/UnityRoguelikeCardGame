@@ -1,7 +1,7 @@
 ﻿// Wolf1AI.cs
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
-
+using MyProjectF.Assets.Scripts.Managers;
 /// <summary>
 /// Enemy AI logic specific to the Wolf enemy.
 /// </summary>
@@ -51,6 +51,9 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     /// </summary>
     public void ExecuteTurn()
     {
+
+        if (BattleManager.Instance.State == BattleManager.BattleState.LOST) return;
+
         if (currentTurn == 2)
         {
             var rage = new RageEffect();

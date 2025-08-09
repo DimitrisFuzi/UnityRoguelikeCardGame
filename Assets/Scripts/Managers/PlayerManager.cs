@@ -3,30 +3,16 @@ using System.Collections.Generic;
 using MyProjectF.Assets.Scripts.Cards;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Manages player initialization, energy usage, and application of card effects.
 /// Singleton for handling player-related actions in the game.
 /// </summary>
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : SceneSingleton<PlayerManager>
 {
-    public static PlayerManager Instance { get; private set; }
 
     [SerializeField] private GameObject playerPrefab;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            //DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Logger.LogWarning("Duplicate PlayerManager detected. Destroying duplicate.", this);
-            Destroy(gameObject);
-        }
-    }
 
     /// <summary>
     /// Initializes the player by instantiating the playerPrefab under PlayerCanvas.
@@ -59,6 +45,8 @@ public class PlayerManager : MonoBehaviour
             Logger.LogError("playerPrefab does not have a PlayerStats component.", this);
             return;
         }
+
+        BattleManager.Instance.RegisterPlayerEvents(playerStats);
 
         playerStats.ResetEnergy();
         playerStats.ResetArmor();

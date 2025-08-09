@@ -7,27 +7,13 @@ using MyProjectF.Assets.Scripts.Managers;
 /// Manages enemy spawning, tracking, and behavior during battle.
 /// Implements singleton pattern for global access.
 /// </summary>
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : SceneSingleton<EnemyManager>
 {
-    public static EnemyManager Instance { get; private set; }
 
     private readonly List<Enemy> activeEnemies = new();
     
     [Header("Enemy Setup")]
     [SerializeField] private GameObject enemyPrefab;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Logger.LogWarning("⚠️ Duplicate EnemyManager detected. Destroying new instance.", this);
-            Destroy(gameObject);
-        }
-    }
 
     /// <summary>
     /// Loads enemies from Resources and spawns them into the scene.
@@ -92,6 +78,12 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (var enemy in activeEnemies)
         {
+            if (BattleManager.Instance.IsBattleOver())
+            {
+                Logger.Log("⚠️ Skipping enemy actions: battle ended.", this);
+                yield break;
+            }
+
             enemy.PerformAction();
             yield return new WaitForSeconds(1f);
         }
@@ -113,7 +105,7 @@ public class EnemyManager : MonoBehaviour
         if (activeEnemies.Count == 0)
         {
             Logger.Log("🎉 All enemies defeated! Battle won!", this);
-            BattleManager.Instance.SetBattleState(BattleManager.BattleState.WON);
+            BattleManager.Instance.HandleBattleVictory();
         }
     }
 

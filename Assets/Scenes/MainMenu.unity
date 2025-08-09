@@ -1099,7 +1099,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 970502326}
         m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: OnStartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1409,6 +1409,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersistentManagerLoader
   gameManagerPrefab: {fileID: 8707350977492352684, guid: 919ebd687d130d244a6b36c7bdd2fbb3, type: 3}
+  sceneFlowManagerPrefab: {fileID: 51464319379334402, guid: 4370b0e060a0bdb4fb4c423c56c6f253, type: 3}
+  gameOverUIManager: {fileID: 2014220346838803643, guid: 597d260cb4ccc1c47bb0b9b5958f819a, type: 3}
 --- !u!4 &1195946561
 Transform:
   m_ObjectHideFlags: 0

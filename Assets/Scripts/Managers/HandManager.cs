@@ -8,9 +8,8 @@ using System.Collections;
 /// Manages the player's hand: draw, add, remove, arrange.
 /// Singleton for global access.
 /// </summary>
-public class HandManager : MonoBehaviour
+public class HandManager : SceneSingleton<HandManager>
 {
-    public static HandManager Instance { get; private set; }
 
     [Header("Card Settings")]
     public GameObject cardPrefab;
@@ -45,19 +44,6 @@ private void OnValidate()
     }
 }
 #endif
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Logger.LogWarning("Duplicate HandManager instance found. Destroying duplicate.", this);
-            Destroy(gameObject);
-        }
-    }
 
     private IEnumerator DrawStartingCardsCoroutine()
     {

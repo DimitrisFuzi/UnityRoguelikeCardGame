@@ -20,10 +20,13 @@ public class MainMenuUI : MonoBehaviour
         }
     }
 
-    public void StartGame()
+    /*public void StartGame()
     {
         SceneManager.LoadScene("Battle1");
     }
+    */
+
+    public void OnStartGame() => SceneFlowManager.Instance.LoadScene(SceneType.Battle1);
 
     public void QuitGame()
     {

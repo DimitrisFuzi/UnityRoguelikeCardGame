@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 /// <summary>
 /// Handles the draw and discard piles, deck shuffling, and card drawing logic.
 /// </summary>
-public class DeckManager : MonoBehaviour
+public class DeckManager : SceneSingleton<DeckManager>
 {
-    public static DeckManager Instance { get; private set; }
 
     [Header("Deck Settings")]
     [Tooltip("Cards available to draw.")]
@@ -29,17 +28,6 @@ public class DeckManager : MonoBehaviour
     public static event Action OnDrawPileChanged;
     public static event Action OnDiscardPileChanged;
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     /// <summary>
     /// Loads the player's deck into the draw pile and clears the discard pile.

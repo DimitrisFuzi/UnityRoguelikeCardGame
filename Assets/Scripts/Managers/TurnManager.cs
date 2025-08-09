@@ -7,9 +7,8 @@ using MyProjectF.Assets.Scripts.Managers;
 /// <summary>
 /// Manages the turn flow between player and enemies.
 /// </summary>
-public class TurnManager : MonoBehaviour
+public class TurnManager : SceneSingleton<TurnManager>
 {
-    public static TurnManager Instance { get; private set; }
 
     public event Action OnPlayerTurnStart;
     public event Action OnPlayerTurnEnd;
@@ -24,18 +23,6 @@ public class TurnManager : MonoBehaviour
     /// Returns true if it's currently the player's turn.
     /// </summary>
     public bool IsPlayerTurn { get; private set; }
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     void Start()
     {

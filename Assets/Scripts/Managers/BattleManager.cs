@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using MyProjectF.Assets.Scripts.Cards;
 using MyProjectF.Assets.Scripts.Player;
+using System.Collections;
 
 namespace MyProjectF.Assets.Scripts.Managers
 {
     /// <summary>
     /// Manages the overall battle flow and state transitions.
     /// </summary>
-    public class BattleManager : MonoBehaviour
+    public class BattleManager : SceneSingleton<BattleManager>
     {
-        public static BattleManager Instance { get; private set; }
 
         public enum BattleState { START, PLAYER_TURN, ENEMY_TURN, WON, LOST }
         public BattleState State { get; private set; }
@@ -23,19 +23,15 @@ namespace MyProjectF.Assets.Scripts.Managers
         /// </summary>
         public bool IsPlayerInputLocked { get; private set; } = false;
 
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Debug.LogWarning("Duplicate BattleManager found. Destroying...");
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-        }
-
         private void Start()
         {
+            StartCoroutine(InitRoutine());
+        }
+
+        private IEnumerator InitRoutine()
+        {
+            yield return null;              
+            Time.timeScale = 1f;          
             InitializeReferences();
             StartBattle();
         }
@@ -65,6 +61,7 @@ namespace MyProjectF.Assets.Scripts.Managers
             enemyManager.InitializeEnemies();
 
             DeckManager.Instance.InitializeDeck();
+            Logger.Log($"🔎 After InitializeDeck: draw={DeckManager.Instance.GetDrawPileCount()}, discard={DeckManager.Instance.GetDiscardPileCount()}", this);
             DeckManager.Instance.ShuffleDeck();
             HandManager.Instance.DrawCardsForTurn();
 

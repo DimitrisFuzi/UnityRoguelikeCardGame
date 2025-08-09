@@ -9,25 +9,10 @@ using MyProjectF.Assets.Scripts.Managers;
 /// Manages player initialization, energy usage, and application of card effects.
 /// Singleton for handling player-related actions in the game.
 /// </summary>
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : SceneSingleton<PlayerManager>
 {
-    public static PlayerManager Instance { get; private set; }
 
     [SerializeField] private GameObject playerPrefab;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            //DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Logger.LogWarning("Duplicate PlayerManager detected. Destroying duplicate.", this);
-            Destroy(gameObject);
-        }
-    }
 
     /// <summary>
     /// Initializes the player by instantiating the playerPrefab under PlayerCanvas.

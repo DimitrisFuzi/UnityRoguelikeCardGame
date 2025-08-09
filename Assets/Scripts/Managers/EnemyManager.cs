@@ -7,27 +7,13 @@ using MyProjectF.Assets.Scripts.Managers;
 /// Manages enemy spawning, tracking, and behavior during battle.
 /// Implements singleton pattern for global access.
 /// </summary>
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : SceneSingleton<EnemyManager>
 {
-    public static EnemyManager Instance { get; private set; }
 
     private readonly List<Enemy> activeEnemies = new();
     
     [Header("Enemy Setup")]
     [SerializeField] private GameObject enemyPrefab;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Logger.LogWarning("⚠️ Duplicate EnemyManager detected. Destroying new instance.", this);
-            Destroy(gameObject);
-        }
-    }
 
     /// <summary>
     /// Loads enemies from Resources and spawns them into the scene.

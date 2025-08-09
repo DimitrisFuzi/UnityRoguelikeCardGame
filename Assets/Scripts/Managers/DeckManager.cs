@@ -36,7 +36,9 @@ public class DeckManager : SceneSingleton<DeckManager>
     {
         drawPile = new List<Card>(PlayerDeck.Instance.GetDeck());
         discardPile.Clear();
+        Logger.Log($"🗂️ InitializeDeck: drawPile={drawPile.Count}, discard={discardPile.Count}", this);
     }
+
 
     /// <summary>
     /// Randomly shuffles the draw pile.

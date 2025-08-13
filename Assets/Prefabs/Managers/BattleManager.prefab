@@ -44,8 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed8491a858a642842884eb285d875f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 5110926303824252047, guid: 46b94c8d37a68b949975e91d544e8bda, type: 3}
-  state: 0
-  enemies: []
-  handManager: {fileID: 0}
-  playerEnergy: 3
+  defeatJingle: {fileID: 8300000, guid: babad910c6c949a4f9f4464faf62520f, type: 3}

@@ -148,7 +148,7 @@ public abstract class CharacterStats : MonoBehaviour
     /// <param name="amount">Amount of armor to add.</param>
     public virtual void AddArmor(int amount)
     {
-        Armor += amount;
+        Armor = Mathf.Max(0, Armor + amount);
 
         Logger.Log($"{gameObject.name} gained {amount} Armor.", this);
         OnArmorChanged?.Invoke(Armor);

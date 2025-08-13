@@ -58,6 +58,19 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         void Awake()
         {
+
+            // Ensure EventSystem exists
+                   if (FindFirstObjectByType<EventSystem>() == null)
+                Logger.LogError("[CardMovement] No EventSystem in scene. UI hover will not work.", this);
+            
+                   // Ensure top Image is raycastable
+            var img = GetComponent<Image>();
+                    if (img != null && !img.raycastTarget)
+                        {
+                img.raycastTarget = true;
+                Logger.Log("[CardMovement] Enabled raycastTarget on main Image.", this);
+                        }
+
             rectTransform = GetComponent<RectTransform>();
             canvas = GetComponentInParent<Canvas>();
             canvasRectTransform = canvas?.GetComponent<RectTransform>();

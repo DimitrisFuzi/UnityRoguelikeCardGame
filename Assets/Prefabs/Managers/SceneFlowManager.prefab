@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5586178782137752610}
   - component: {fileID: 6886555127816619491}
+  - component: {fileID: 37242126796391193}
   m_Layer: 0
   m_Name: SceneFlowManager
   m_TagString: Untagged
@@ -44,3 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53eaacc169ad7ca418868c4afcc1b7a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneFlowManager
+--- !u!114 &37242126796391193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51464319379334402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5192bbeaa6d47a04c9f1c5ebac41fb90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleHUDLoader
+  hudPrefab: {fileID: 3572022193490340384, guid: 0bfc4d4c36c952d49916d470c03facb5, type: 3}
+  battlePrefix: Battle

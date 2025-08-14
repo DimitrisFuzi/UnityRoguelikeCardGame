@@ -9,6 +9,8 @@ using MyProjectF.Assets.Scripts.Cards;
 public class PlayerDeck : MonoBehaviour
 {
     public static PlayerDeck Instance { get; private set; }
+    public IReadOnlyList<Card> CurrentDeck => playerDeck;
+
 
     [SerializeField] private List<Card> playerDeck = new List<Card>();
     private Dictionary<string, Card> allCardsDictionary = new();

@@ -14,18 +14,18 @@ public class BattleMusicLossJingle : MonoBehaviour
 
     private void Awake()
     {
-        if (player == null) player = FindObjectOfType<PlayerStats>();
+        if (player == null) player = Object.FindFirstObjectByType<PlayerStats>();
     }
 
     private IEnumerator Start()
     {
         if (player == null)
         {
-            // περίμενε μέχρι να εμφανιστεί ο PlayerStats
+            // Wait until PlayerStats appears
             while (player == null)
             {
-                player = FindObjectOfType<PlayerStats>();
-                if (player != null)
+                player = Object.FindFirstObjectByType<PlayerStats>();
+                if (player != null) 
                 {
                     player.OnDied += OnPlayerDied;
                     break;
@@ -55,7 +55,7 @@ public class BattleMusicLossJingle : MonoBehaviour
         if (am != null) am.StopMusic();
 
         // 2) Hard-stop ANY other looping AudioSources that are currently playing (e.g., Play On Awake BGM)
-        var sources = FindObjectsOfType<AudioSource>(true);
+        var sources = Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
         foreach (var src in sources)
         {
             if (src != null && src.isActiveAndEnabled && src.isPlaying && src.loop)

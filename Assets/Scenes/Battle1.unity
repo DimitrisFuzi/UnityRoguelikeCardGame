@@ -2480,6 +2480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed8491a858a642842884eb285d875f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defeatJingle: {fileID: 0}
 --- !u!4 &964784947150439179
 Transform:
   m_ObjectHideFlags: 0

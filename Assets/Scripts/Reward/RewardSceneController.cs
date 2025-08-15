@@ -48,6 +48,9 @@ public class RewardSceneController : MonoBehaviour
             spawned.Add(card);
         }
 
+        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)cardParent);
+        Canvas.ForceUpdateCanvases();
+
         Debug.Log($"[Reward] candidates: {pool.candidates?.Count}");
     }
 

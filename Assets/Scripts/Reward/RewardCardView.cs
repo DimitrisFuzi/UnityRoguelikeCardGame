@@ -1,4 +1,4 @@
-using UnityEngine;
+ο»Ώusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using MyProjectF.Assets.Scripts.Cards;
@@ -6,10 +6,10 @@ using MyProjectF.Assets.Scripts.Cards;
 public class RewardCardView : MonoBehaviour
 {
     [Header("Hook up your thumbnail prefab & parent")]
-    public Transform thumbnailParent;        // κενό αντικείμενο μέσα στην κάρτα
-    public GameObject cardThumbnailPrefab;   // prefab που περιέχει CardDisplay
+    public Transform thumbnailParent;        // ΞΊΞµΞ½Ο Ξ±Ξ½Ο„ΞΉΞΊΞµΞ―ΞΌΞµΞ½ΞΏ ΞΌΞ­ΟƒΞ± ΟƒΟ„Ξ·Ξ½ ΞΊΞ¬ΟΟ„Ξ±
+    public GameObject cardThumbnailPrefab;   // prefab Ο€ΞΏΟ… Ο€ΞµΟΞΉΞ­Ο‡ΞµΞΉ CardDisplay
     public TMP_Text debugLabel;              // optional label
-    public Button button;                    // κουμπί επιλογής (στο root)
+    public Button button;                    // ΞΊΞΏΟ…ΞΌΟ€Ξ― ΞµΟ€ΞΉΞ»ΞΏΞ³Ξ®Ο‚ (ΟƒΟ„ΞΏ root)
 
     [HideInInspector] public RewardDefinition def;
 
@@ -23,31 +23,74 @@ public class RewardCardView : MonoBehaviour
 
         if (debugLabel) debugLabel.text = def.cardData ? def.cardData.cardName : "(null)";
 
+        // π”§ Root RewardCard: 250x350
+        var rt = GetComponent<RectTransform>();
+        if (rt)
+        {
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.localScale = Vector3.one;
+            rt.sizeDelta = new Vector2(250, 350);
+        }
+
+        // π”§ ThumbnailRoot: stretch Ξ½Ξ± Ξ³ΞµΞΌΞ―Ξ¶ΞµΞΉ Ο„ΞΏ RewardCard
+        if (thumbnailParent is RectTransform tr)
+        {
+            tr.anchorMin = Vector2.zero;
+            tr.anchorMax = Vector2.one;
+            tr.pivot = new Vector2(0.5f, 0.5f);
+            tr.anchoredPosition = Vector2.zero;
+            tr.sizeDelta = Vector2.zero;
+            tr.localScale = Vector3.one;
+        }
+
+        // ΞΞ±ΞΈΞ¬ΟΞΉΟƒΞµ Ο€ΟΞΏΞ·Ξ³ΞΏΟΞΌΞµΞ½ΞΏ thumbnail
         if (spawnedThumb) Destroy(spawnedThumb);
 
         if (cardThumbnailPrefab && thumbnailParent)
         {
-            spawnedThumb = Instantiate(cardThumbnailPrefab, thumbnailParent);
+            // β… instantiate ΞΌΞµ worldPositionStays = false
+            spawnedThumb = Instantiate(cardThumbnailPrefab, thumbnailParent, false);
 
+            // π”§ Stretch ΞΊΞ±ΞΉ Ο„ΞΏ Ξ―Ξ΄ΞΉΞΏ Ο„ΞΏ thumbnail
+            var thumbRT = spawnedThumb.GetComponent<RectTransform>();
+            if (thumbRT)
+            {
+                thumbRT.anchorMin = Vector2.zero;
+                thumbRT.anchorMax = Vector2.one;
+                thumbRT.pivot = new Vector2(0.5f, 0.5f);
+                thumbRT.anchoredPosition = Vector2.zero;
+                thumbRT.sizeDelta = Vector2.zero;
+                thumbRT.localScale = Vector3.one;
+            }
+
+            // Ξ”Ξ­ΟƒΞµ Ο„Ξ± Ξ΄ΞµΞ΄ΞΏΞΌΞ­Ξ½Ξ±
             var display = spawnedThumb.GetComponentInChildren<CardDisplay>(true);
             if (display != null && def.cardData != null)
-            {
-                // Προσαρμόσ’ το αν η μέθοδος ονομάζεται αλλιώς (π.χ. Bind / Init / Apply)
                 display.SetData(def.cardData);
-            }
             else
-            {
-                Debug.LogWarning("[Reward] RewardCardView: Δεν βρέθηκε CardDisplay ή λείπει cardData.");
-            }
+                Debug.LogWarning("[Reward] RewardCardView: Ξ”ΞµΞ½ Ξ²ΟΞ­ΞΈΞ·ΞΊΞµ CardDisplay Ξ® Ξ»ΞµΞ―Ο€ΞµΞΉ cardData.");
         }
 
+        // Overlay button full-rect (ΞΊΞ±ΞΉ ΞµΞ»Ξ±Ο†ΟΟΟ‚ ΞΏΟΞ±Ο„Ο Ξ³ΞΉΞ± debug)
         if (button)
         {
+            var brt = button.GetComponent<RectTransform>();
+            if (brt)
+            {
+                brt.anchorMin = Vector2.zero;
+                brt.anchorMax = Vector2.one;
+                brt.pivot = new Vector2(0.5f, 0.5f);
+                brt.anchoredPosition = Vector2.zero;
+                brt.sizeDelta = Vector2.zero;
+            }
+            var img = button.GetComponent<UnityEngine.UI.Image>();
+            if (img) { var c = img.color; c.a = 0.2f; img.color = c; } // Ο€ΟΞΏΟƒΟ‰ΟΞΉΞ½Ξ¬ Ξ³ΞΉΞ± Ξ½Ξ± Ο†Ξ±Ξ―Ξ½ΞµΟ„Ξ±ΞΉ
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => this.onChosen?.Invoke(this));
             button.interactable = true;
         }
     }
+
 
     public void Interactable(bool value)
     {

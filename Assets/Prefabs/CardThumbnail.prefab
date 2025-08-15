@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 180, y: 260}
+  m_SizeDelta: {x: 250, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6233807982189793339
 MonoBehaviour:
@@ -79,8 +79,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 180
-  m_PreferredHeight: 260
+  m_PreferredWidth: 250
+  m_PreferredHeight: 350
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Fight or Flight
+  m_text: Brace
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3fb42610a38c5ea44b6e422217e1379e, type: 2}
   m_sharedMaterial: {fileID: -5293015429705894655, guid: 3fb42610a38c5ea44b6e422217e1379e, type: 2}
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9228532359aef794aa54d82a61a4d507, type: 2}
   m_sharedMaterial: {fileID: 801408554553963218, guid: 9228532359aef794aa54d82a61a4d507, type: 2}
@@ -533,7 +533,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2866464677855621320, guid: 8d13ff47bfc68144b928d4045948f835, type: 3}
+  m_Sprite: {fileID: -5314158422959602925, guid: 48cffde789c107f44a2b882b7f95018f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -647,7 +647,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8481177166388933822, guid: 31fb0d305c1d6db44a444e667539ffad, type: 3}
+  m_Sprite: {fileID: 8009418507701389807, guid: 5a8c8a81c9e765a489e438c3a100e472, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -723,7 +723,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: descripion text
+  m_text: Gain 12 armor.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d562c46e05200274eb14638dd2def1d9, type: 2}
   m_sharedMaterial: {fileID: 4609558808718256472, guid: d562c46e05200274eb14638dd2def1d9, type: 2}

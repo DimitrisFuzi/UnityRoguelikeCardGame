@@ -173,7 +173,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 250, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9135302536624534802
 MonoBehaviour:
@@ -191,7 +191,9 @@ MonoBehaviour:
   cardThumbnailPrefab: {fileID: 1351165767211745461, guid: 19471eeda3feecc47bf443ddf9074e25, type: 3}
   debugLabel: {fileID: 2078331063686153764}
   button: {fileID: 5946208839640472047}
-  def: {fileID: 0}
+  def:
+    cardData: {fileID: 0}
+    weight: 1
 --- !u!114 &2315400610553426613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,10 +283,10 @@ RectTransform:
   - {fileID: 7934235307162238324}
   m_Father: {fileID: 8032332137344638828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 259, y: 350}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2714428572397897880
 CanvasRenderer:

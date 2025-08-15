@@ -1,21 +1,21 @@
-using UnityEngine;
+ο»Ώusing UnityEngine;
 using System.Collections.Generic;
-using System.Reflection;
+using MyProjectF.Assets.Scripts.Cards;
 
 [CreateAssetMenu(menuName = "Game/Reward Pool")]
 public class RewardPool : ScriptableObject
 {
-    // Τα RewardDefinition εδώ είναι wrappers που δείχνουν στο κανονικό card asset
+    // Ξ¤ΞµΞ»ΞΉΞΊΞ­Ο‚ ΞµΟ€ΞΉΞ»ΞΏΞ³Ξ­Ο‚ (serializable class, ΟΟ‡ΞΉ ScriptableObjects)
     public List<RewardDefinition> candidates = new();
 
     [Header("Rarity weights (relative)")]
     public float commonWeight = 1f;
-    public float rareWeight = 0.35f;
-    public float epicWeight = 0.12f;
+    public float uncommonWeight = 0.35f;
+    public float rareWeight = 0.12f;
     public float legendaryWeight = 0.03f;
 
     [Header("Database (optional)")]
-    public CardDatabase database;
+    public ScriptableObject database;                // Ξ”Ξ•Ξ Ξ±Ξ»Ξ»Ξ¬Ξ¶Ο‰ Ο„ΞΏΞ½ Ο„ΟΟ€ΞΏ ΟƒΞΏΟ… β€” ΞΊΟΞ±Ο„Ξ¬ΞΌΞµ Ο,Ο„ΞΉ Ξ­Ο‡ΞµΞΉΟ‚
     public bool autoPopulateFromDatabaseOnPlay = true;
 
     void OnEnable()
@@ -24,33 +24,55 @@ public class RewardPool : ScriptableObject
             PopulateFromDatabase();
     }
 
-    // Γεμίζει το pool από το CardDatabase (χωρίς περιγραφή/εικονίδιο)
+    /// <summary>
+    /// Ξ“ΞµΞΌΞ―Ξ¶ΞµΞΉ Ο„ΞΏ pool Ξ±Ο€Ο Ο„ΞΏ database.allCards.
+    /// ΞΞ¬Ξ½ΞµΞΉ cast ΟƒΞµ Card ΞΊΞ±ΞΉ Ξ±Ξ³Ξ½ΞΏΞµΞ― ΞΏΟ„ΞΉΞ΄Ξ®Ο€ΞΏΟ„Ξµ Ξ΄ΞµΞ½ ΞµΞ―Ξ½Ξ±ΞΉ Card.
+    /// </summary>
     public void PopulateFromDatabase()
     {
         if (database == null) return;
 
-        candidates.Clear();
-        foreach (var card in database.allCards)
+        // Ξ ΞµΟΞΉΞΌΞ­Ξ½ΞΏΟ…ΞΌΞµ ΟΟ„ΞΉ Ο„ΞΏ database Ξ­Ο‡ΞµΞΉ Ξ­Ξ½Ξ± public Ο€ΞµΞ΄Ξ―ΞΏ/ΞΉΞ΄ΞΉΟΟ„Ξ·Ο„Ξ± "allCards" Ο€ΞΏΟ… ΞµΞ―Ξ½Ξ±ΞΉ IEnumerable
+        var allCardsField = database.GetType().GetField("allCards");
+        var allCardsProp = database.GetType().GetProperty("allCards");
+        IEnumerable<Object> source = null;
+
+        if (allCardsField != null)
+            source = allCardsField.GetValue(database) as IEnumerable<Object>;
+        else if (allCardsProp != null)
+            source = allCardsProp.GetValue(database) as IEnumerable<Object>;
+
+        candidates = new List<RewardDefinition>();
+
+        if (source != null)
         {
-            if (!card) continue;
+            foreach (var so in source)
+            {
+                if (so == null) continue;
+                var card = so as Card;                 // π”‘ ΞµΞ΄Ο Ξ³Ξ―Ξ½ΞµΟ„Ξ±ΞΉ Ο„ΞΏ cast
+                if (card == null) continue;            // Ξ±Ξ³Ξ½ΟΞ·ΟƒΞµ ΞΏΟ„ΞΉΞ΄Ξ®Ο€ΞΏΟ„Ξµ Ξ΄ΞµΞ½ ΞµΞ―Ξ½Ξ±ΞΉ Card
 
-            // Δημιουργούμε runtime RewardDefinition wrapper
-            var def = ScriptableObject.CreateInstance<RewardDefinition>();
-            def.name = "RT_" + card.name;
-            def.cardAsset = card;
-
-            candidates.Add(def);
+                candidates.Add(new RewardDefinition
+                {
+                    cardData = card,
+                    weight = 1
+                });
+            }
         }
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+#endif
+        Debug.Log($"[RewardPool] Populated from DB -> {candidates.Count} candidates.");
     }
 
-    // Weighted επιλογή από ΟΛΟ το pool
+    // Ξ•Ο€ΞΉΞ»ΞΏΞ³Ξ® 3 ΞΊΞ±ΟΟ„ΟΞ½ ΞΌΞµ Ξ²Ξ¬ΟΞ· Ξ²Ξ¬ΟƒΞµΞΉ rarity, Ο‡Ο‰ΟΞ―Ο‚ ΞµΟ€Ξ±Ξ½Ξ¬Ξ»Ξ·ΟΞ·
     public List<RewardDefinition> RollCardChoices(int count, int seed)
         => RollCardChoicesFromSource(candidates, count, new System.Random(seed));
 
-    // Weighted επιλογή χωρίς επανάληψη από συγκεκριμένη λίστα (helper για guaranteed legendary κ.λπ.)
     public List<RewardDefinition> RollCardChoicesFromSource(List<RewardDefinition> source, int count, System.Random rng)
     {
-        var pool = new List<RewardDefinition>(source);
+        var pool = new List<RewardDefinition>(source ?? new List<RewardDefinition>());
         var picked = new List<RewardDefinition>();
 
         for (int i = 0; i < count && pool.Count > 0; i++)
@@ -73,89 +95,23 @@ public class RewardPool : ScriptableObject
         }
 
         if (picked.Count < count)
-            Debug.LogWarning("[Reward] Το pool/υποσύνολο δεν είχε αρκετές μοναδικές επιλογές.");
+            Debug.LogWarning("[Reward] Ξ¤ΞΏ pool Ξ΄ΞµΞ½ ΞµΞ―Ο‡Ξµ Ξ±ΟΞΊΞµΟ„Ξ­Ο‚ ΞΌΞΏΞ½Ξ±Ξ΄ΞΉΞΊΞ­Ο‚ ΞµΟ€ΞΉΞ»ΞΏΞ³Ξ­Ο‚.");
 
         return picked;
     }
 
-    // Υπολογισμός weight από το rarity του card asset
+    // Ξ’Ξ¬ΟΞΏΟ‚ ΞΌΞµ Ξ²Ξ¬ΟƒΞ· Ο„ΞΏ rarity Ο„ΞΏΟ… Card
     float EffectiveWeight(RewardDefinition def)
     {
-        string rar = GetCardRarityName(def.cardAsset);
-        return rar switch
-        {
-            "Common" => commonWeight,
-            "Rare" => rareWeight,
-            "Epic" => epicWeight,
-            "Legendary" => legendaryWeight,
-            _ => commonWeight
-        };
-    }
+        if (def == null || def.cardData == null) return commonWeight;
 
-    // Διαβάζει rarity από το card asset.
-    // Αν το έχεις string (π.χ. "Epic"), το παίρνει ως έχει.
-    // Αν είναι int/enum, επιστρέφει εύλογο όνομα.
-    string GetCardRarityName(ScriptableObject cardAsset)
-    {
-        if (!cardAsset) return "Common";
-        var t = cardAsset.GetType();
-
-        // 1) Προσπάθησε ως string πεδίο "cardRarity"
-        var f = t.GetField("cardRarity", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (f != null)
+        switch (def.cardData.cardRarity)
         {
-            if (f.FieldType == typeof(string))
-            {
-                try { return (string)f.GetValue(cardAsset); } catch { }
-            }
-            else if (f.FieldType.IsEnum)
-            {
-                try { return f.GetValue(cardAsset).ToString(); } catch { }
-            }
-            else if (f.FieldType == typeof(int))
-            {
-                try
-                {
-                    int v = (int)f.GetValue(cardAsset);
-                    // Προσαρμόζεις mapping αν στο project είναι άλλο
-                    return v switch { 0 => "Common", 1 => "Rare", 2 => "Epic", 3 => "Legendary", _ => "Common" };
-                }
-                catch { }
-            }
+            case Card.CardRarity.Common: return commonWeight;
+            case Card.CardRarity.Uncommon: return uncommonWeight;
+            case Card.CardRarity.Rare: return rareWeight;
+            case Card.CardRarity.Legendary: return legendaryWeight;
+            default: return commonWeight;
         }
-
-        // 2) Εναλλακτικό όνομα πεδίου (αν στο project σου λέγεται αλλιώς)
-        var fAlt = t.GetField("rarity", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (fAlt != null)
-        {
-            if (fAlt.FieldType == typeof(string))
-            {
-                try { return (string)fAlt.GetValue(cardAsset); } catch { }
-            }
-            else if (fAlt.FieldType.IsEnum)
-            {
-                try { return fAlt.GetValue(cardAsset).ToString(); } catch { }
-            }
-            else if (fAlt.FieldType == typeof(int))
-            {
-                try
-                {
-                    int v = (int)fAlt.GetValue(cardAsset);
-                    return v switch { 0 => "Common", 1 => "Rare", 2 => "Epic", 3 => "Legendary", _ => "Common" };
-                }
-                catch { }
-            }
-        }
-
-        return "Common";
-    }
-
-    // Optional helpers αν τα χρειαστείς για guaranteed legendary κ.λπ.
-    public List<RewardDefinition> OfRarity(string rarityName)
-    {
-        var list = new List<RewardDefinition>();
-        foreach (var r in candidates)
-            if (GetCardRarityName(r.cardAsset) == rarityName) list.Add(r);
-        return list;
     }
 }

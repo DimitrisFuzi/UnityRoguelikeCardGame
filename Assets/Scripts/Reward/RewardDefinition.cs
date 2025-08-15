@@ -1,16 +1,9 @@
-using UnityEngine;
+using System;
+using MyProjectF.Assets.Scripts.Cards;
 
-[CreateAssetMenu(menuName = "Game/Reward Definition")]
-public class RewardDefinition : ScriptableObject
+[Serializable]
+public class RewardDefinition
 {
-    [Header("Card reference")]
-    public ScriptableObject cardAsset; // το κανονικό Card asset
-
-    public string GetCardName() => cardAsset ? cardAsset.name : "(Missing Card)";
-
-    public RewardOutcome ToOutcome() => new RewardOutcome
-    {
-        type = RewardType.Card,
-        cardName = GetCardName()
-    };
+    public Card cardData;   // το πραγματικό Card asset
+    public int weight = 1;
 }

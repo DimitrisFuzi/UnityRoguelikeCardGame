@@ -1,4 +1,4 @@
-using UnityEngine;
+ο»Ώusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -7,20 +7,31 @@ public class RewardSceneController : MonoBehaviour
 {
     [Header("Setup")]
     public RewardPool pool;
-    public Transform cardParent;      // container με Horizontal/Grid Layout
+    public Transform cardParent;      // container ΞΌΞµ Horizontal/Grid Layout
     public RewardCardView cardPrefab;
     public Button continueButton;
     public TMP_Text headerText;
 
     [Header("Flow")]
-    public SceneType nextSceneAfterReward = SceneType.Victory; // άλλαξέ το αν θες
+    public SceneType nextSceneAfterReward = SceneType.Victory;
 
     private readonly List<RewardCardView> spawned = new();
     private bool choiceMade = false;
 
     void Start()
     {
+        Time.timeScale = 1f;
+
         if (continueButton) continueButton.gameObject.SetActive(false);
+        if (cardParent) cardParent.gameObject.SetActive(true);
+
+        // Ξ±Ξ½ Ο„ΞΏ pool ΞµΞ―Ξ½Ξ±ΞΉ Ξ¬Ξ΄ΞµΞΉΞΏ, Ξ³Ξ­ΞΌΞΉΟƒΞ­ Ο„ΞΏ Ξ±Ο€Ο DB
+        if (pool != null && (pool.candidates == null || pool.candidates.Count == 0))
+        {
+            var before = pool.candidates == null ? 0 : pool.candidates.Count;
+            pool.PopulateFromDatabase();
+            Debug.Log($"[Reward] Pool was empty ({before}); populated from DB -> {pool.candidates?.Count ?? 0}");
+        }
 
         SpawnCards();
     }
@@ -28,7 +39,7 @@ public class RewardSceneController : MonoBehaviour
     void SpawnCards()
     {
         ClearSpawned();
-        int seed = System.Environment.TickCount; // ή πέρασε deterministic seed αν θέλεις
+        int seed = System.Environment.TickCount;
         var defs = pool.RollCardChoices(3, seed);
         foreach (var d in defs)
         {
@@ -38,7 +49,6 @@ public class RewardSceneController : MonoBehaviour
         }
 
         Debug.Log($"[Reward] candidates: {pool.candidates?.Count}");
-
     }
 
     void ClearSpawned()
@@ -55,13 +65,14 @@ public class RewardSceneController : MonoBehaviour
 
         foreach (var c in spawned) c.Interactable(false);
 
-        // outcome: πάντα Card
-        var outcome = chosen.def.ToOutcome();
+        // β… Ξ Ξ±Ξ―ΟΞ½ΞΏΟ…ΞΌΞµ ΞΊΞ±Ο„ΞµΟ…ΞΈΞµΞ―Ξ±Ξ½ Ο„ΞΏ ΟΞ½ΞΏΞΌΞ± Ξ±Ο€Ο Ο„Ξ·Ξ½ ΞΊΞ¬ΟΟ„Ξ±
+        string cardName = (chosen != null && chosen.def != null && chosen.def.cardData != null)
+            ? chosen.def.cardData.cardName
+            : null;
 
+        ApplyCard(cardName);
 
-        ApplyCard(outcome.cardName);
-
-        if (headerText) headerText.text = $"Πήρες: {outcome.cardName}";
+        if (headerText) headerText.text = $"Ξ Ξ®ΟΞµΟ‚: {(!string.IsNullOrEmpty(cardName) ? cardName : "(ΞΊΞ±ΞΌΞ―Ξ±)")}";
 
         if (continueButton)
         {
@@ -71,13 +82,13 @@ public class RewardSceneController : MonoBehaviour
         }
     }
 
+
     void ApplyCard(string cardName)
     {
         if (!string.IsNullOrEmpty(cardName) && PlayerDeck.Instance != null)
             PlayerDeck.Instance.AddCardToDeck(cardName);
         else
-            Debug.LogWarning($"[Reward] Άκυρο cardName ή λείπει PlayerDeck: '{cardName}'");
-
+            Debug.LogWarning($"[Reward] Ξ†ΞΊΟ…ΟΞΏ cardName Ξ® Ξ»ΞµΞ―Ο€ΞµΞΉ PlayerDeck: '{cardName}'");
     }
 
     void GoNext()
@@ -86,5 +97,4 @@ public class RewardSceneController : MonoBehaviour
         if (sf != null) sf.LoadScene(nextSceneAfterReward);
         else UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneAfterReward.ToString());
     }
-
 }

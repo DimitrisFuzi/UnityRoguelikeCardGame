@@ -17,18 +17,18 @@ public class PlayerDeck : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        LoadAllCards();
+        Instance = this;
+        DontDestroyOnLoad(gameObject);   // ✅ κράτα το ζωντανό σε όλες τις σκηνές
+
+        LoadAllCards();                  // αν διαβάζει resources/DB, καλό είναι να το κάνει μία φορά εδώ
     }
+
 
     private void Start()
     {
@@ -62,9 +62,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-           "Blood Rush", "Lashing Out", "Last Resort", "Wide Swing", "Brace", "Gut Reaction",
- "Shift Stance", "Deep Focus", "Fight or Flight", "Focus Breathing", "Snap Decision","Blood Rush", "Lashing Out", "Last Resort", "Wide Swing", "Brace", "Gut Reaction",
- "Shift Stance", "Deep Focus", "Fight or Flight", "Focus Breathing", "Snap Decision"
+           "Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort","Last Resort",
 
         };
 

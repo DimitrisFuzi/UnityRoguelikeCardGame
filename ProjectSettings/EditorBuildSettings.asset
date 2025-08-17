@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Battle1.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Reward1.unity
+    guid: 230156f54e1ae7f46aee6a8fc292c839
+  - enabled: 1
+    path: Assets/Scenes/BattleBoss.unity
+    guid: b7a1633f7c1c85f41b81f644e46a8a42
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

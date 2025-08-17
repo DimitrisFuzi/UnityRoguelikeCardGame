@@ -230,4 +230,46 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         activeEnemies.Clear();
     }
 
+    /// <summary>
+    /// Spawns an enemy at runtime with optional parent, position, and rotation overrides.
+    /// </summary>
+
+    public Enemy SpawnEnemyRuntime(EnemyData enemyData, Transform parentOverride = null, Vector3? pos = null, Quaternion? rot = null)
+    {
+        if (enemyPrefab == null)
+        {
+            Logger.LogError("❌ Enemy prefab is NULL. Assign it in the inspector.", this);
+            return null;
+        }
+
+        Transform finalParent = parentOverride != null ? parentOverride
+                              : GameObject.Find("EnemyCanvas")?.transform;
+
+        if (finalParent == null)
+        {
+            Logger.LogError("❌ Could not find EnemyCanvas as parent for enemy spawn.", this);
+            return null;
+        }
+
+        Vector3 p = pos ?? Vector3.zero;
+        Quaternion r = rot ?? Quaternion.identity;
+
+        GameObject enemyObject = Instantiate(enemyPrefab, p, r, finalParent);
+
+        if (enemyObject.TryGetComponent(out Enemy enemyScript) && enemyObject.TryGetComponent(out EnemyDisplay enemyDisplay))
+        {
+            enemyScript.InitializeEnemy(enemyData, enemyDisplay);
+            activeEnemies.Add(enemyScript);
+            Logger.Log($"🌱 Runtime-spawned enemy: {enemyData.enemyName}", this);
+            return enemyScript;
+        }
+        else
+        {
+            Logger.LogError("❌ Enemy prefab must contain both Enemy and EnemyDisplay components!", enemyObject);
+            Destroy(enemyObject);
+            return null;
+        }
+    }
+
+
 }

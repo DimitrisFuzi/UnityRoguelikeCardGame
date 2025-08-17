@@ -332,7 +332,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleSetup
   enemies:
-  - {fileID: 11400000, guid: 8adb607cd9f755e4b95f540379604d0e, type: 2}
+  - {fileID: 11400000, guid: f505d588a19d8624f82e716277710ef9, type: 2}
+  - {fileID: 11400000, guid: b891eb07d14c4fc42a3a0447ef3ef04a, type: 2}
+  - {fileID: 11400000, guid: e8e4ac51902ff924abb9404d098fc795, type: 2}
   spawnPoints: []
 --- !u!4 &88581197
 Transform:

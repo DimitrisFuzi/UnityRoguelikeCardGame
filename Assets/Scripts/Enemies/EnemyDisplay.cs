@@ -151,6 +151,33 @@ public class EnemyDisplay : MonoBehaviour
     }
 
     /// <summary>
+    /// Shows a heal popup with the specified amount.
+    /// </summary>
+    public void ShowHealPopup(int amount)
+    {
+        if (floatingDamageTextPrefab == null || textSpawnAnchor == null) return;
+
+        GameObject go = Instantiate(floatingDamageTextPrefab, textSpawnAnchor);
+        var rect = go.GetComponent<RectTransform>();
+        var group = go.GetComponent<CanvasGroup>();
+        var text = go.GetComponentInChildren<TMPro.TMP_Text>();
+
+        if (text != null)
+        {
+            text.text = $"+{amount}";
+            text.color = Color.green;
+        }
+
+        rect.localScale = Vector3.one * 1.3f;
+
+        var seq = DG.Tweening.DOTween.Sequence();
+        seq.Append(rect.DOScale(1.0f, 0.2f));
+        seq.Append(rect.DOAnchorPosY(rect.anchoredPosition.y + 70f, 0.6f).SetEase(Ease.OutCubic))
+           .Join(group.DOFade(0f, 0.6f))
+           .AppendCallback(() => Destroy(go));
+    }
+
+    /// <summary>
     /// Plays the death animation for the enemy.
     /// </summary> 
     public void PlayDeathAnimation(System.Action onComplete = null)

@@ -66,28 +66,40 @@ public class Enemy : CharacterStats
     {
         switch (aiType)
         {
-            case EnemyAIType.Wolf1:
-                EnemyAI = gameObject.AddComponent<Wolf1AI>();
+            case EnemyAIType.Wolf1: EnemyAI = gameObject.AddComponent<Wolf1AI>(); break;
+            case EnemyAIType.Wolf2: EnemyAI = gameObject.AddComponent<Wolf2AI>(); break;
+            case EnemyAIType.ForestGuardian:
+                EnemyAI = gameObject.AddComponent<ForestGuardianAI>();
                 break;
-            case EnemyAIType.Wolf2:
-                EnemyAI = gameObject.AddComponent<Wolf2AI>();
-                break;
-            case EnemyAIType.None:
+            case EnemyAIType.WispLeft:
+                {
+                    var w = gameObject.AddComponent<WispAI>();
+                    w.SetSide(WispAI.MinionSide.Left);
+                    EnemyAI = w;
+                    break;
+                }
+            case EnemyAIType.WispRight:
+                {
+                    var w = gameObject.AddComponent<WispAI>();
+                    w.SetSide(WispAI.MinionSide.Right);
+                    EnemyAI = w;
+                    break;
+                }
             default:
-                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Default AI will be used.");
+                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Using default.", this);
                 break;
         }
 
         if (EnemyAI != null)
         {
+            // Προσαρμόσου στο API σου: τα περισσότερα από αυτά ήδη τα καλείς.
             EnemyAI.SetPlayerStats(PlayerStats.Instance);
             EnemyAI.SetIntentIcons(enemyData.attackIntentIcon, enemyData.buffIntentIcon);
-            EnemyAI.InitializeAI(); // This call will cause the AI to predict its first intent.
-
-            // NEW: Pass the EnemyDisplay reference to the AI, now that IEnemyAI has this method
-            EnemyAI.SetEnemyDisplay(display); // MODIFIED: Simplified this call
+            EnemyAI.InitializeAI();
+            EnemyAI.SetEnemyDisplay(display);
         }
     }
+
 
     /// <summary>
     /// Retrieves the current predicted intent from the AI and passes it to EnemyDisplay.

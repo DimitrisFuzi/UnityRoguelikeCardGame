@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e219b9e21910468498357c89c8645f6c
+guid: 44c496ce93b956543846b1fd99033f1d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -752170532092345068
-    second: Forest Beast_0
+      213: -4493590007624933022
+    second: wisp_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Forest Beast_0
+      name: wisp_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 9
-        width: 338
-        height: 680
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4158e10e2e0cf85f0800000000000000
-      internalID: -752170532092345068
+      spriteID: 261654532bf83a1c0800000000000000
+      internalID: -4493590007624933022
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Forest Beast_0: -752170532092345068
+      wisp_0: -4493590007624933022
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

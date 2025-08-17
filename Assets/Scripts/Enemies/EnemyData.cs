@@ -46,5 +46,8 @@ public enum EnemyAIType
 {
     None,
     Wolf1,
-    Wolf2
+    Wolf2,
+    ForestGuardian,     
+    WispLeft,      
+    WispRight
 }

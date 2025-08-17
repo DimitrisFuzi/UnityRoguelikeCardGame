@@ -10,7 +10,7 @@ public enum SceneType
     MainMenu,
     Battle1,
     Reward1,
-    BattleBoss,
+    BattleBoss1,
     Victory
 }
 
@@ -39,8 +39,8 @@ public class SceneFlowManager : MonoBehaviour
         sceneFlowMap = new Dictionary<SceneType, SceneType>
         {
             { SceneType.Battle1, SceneType.Reward1 },
-            { SceneType.Reward1, SceneType.BattleBoss },
-            { SceneType.BattleBoss, SceneType.Victory }
+            { SceneType.Reward1, SceneType.BattleBoss1 },
+            { SceneType.BattleBoss1, SceneType.Victory }
         };
     }
 
@@ -69,7 +69,23 @@ public class SceneFlowManager : MonoBehaviour
         }
     }
 
+    public void RetryCurrentScene()
+    {
+        Time.timeScale = 1f;
+        var active = SceneManager.GetActiveScene();
+        // Αν το όνομα της σκηνής αντιστοιχεί στο enum σου, μπορείς να μείνεις συνεπής:
+        if (System.Enum.TryParse(active.name, out SceneType current))
+        {
+            LoadScene(current); // διατηρεί το flow API σου
+        }
+        else
+        {
+            // fallback: φόρτωσε με όνομα
+            SceneManager.LoadScene(active.name);
+        }
+    }
+
     // Optional helpers
-    public void LoadRetry() => LoadScene(SceneType.Battle1);
+    public void LoadRetry() => RetryCurrentScene();
     public void LoadMainMenu() => LoadScene(SceneType.MainMenu);
 }

@@ -44,7 +44,7 @@ public class GameOverUIManager : MonoBehaviour
     public void OnRetryClicked()
     {
         HideGameOver();
-        SceneFlowManager.Instance.LoadRetry();
+        SceneFlowManager.Instance.RetryCurrentScene();
     }
 
     public void OnMainMenuClicked()

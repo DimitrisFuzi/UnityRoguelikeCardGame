@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using MyProjectF.Assets.Scripts.Cards;
 
 public class RewardSceneController : MonoBehaviour
 {
@@ -11,9 +12,6 @@ public class RewardSceneController : MonoBehaviour
     public RewardCardView cardPrefab;
     public Button continueButton;
     public TMP_Text headerText;
-
-    [Header("Flow")]
-    public SceneType nextSceneAfterReward = SceneType.Victory;
 
     private readonly List<RewardCardView> spawned = new();
     private bool choiceMade = false;
@@ -68,15 +66,11 @@ public class RewardSceneController : MonoBehaviour
 
         foreach (var c in spawned) c.Interactable(false);
 
-        // ✅ Παίρνουμε κατευθείαν το όνομα από την κάρτα
-        string cardName = (chosen != null && chosen.def != null && chosen.def.cardData != null)
-            ? chosen.def.cardData.cardName
-            : null;
-
+        // ⬇️ πάρε το όνομα
+        string cardName = chosen?.def?.cardData ? chosen.def.cardData.cardName : null;
         ApplyCard(cardName);
 
-        if (headerText) headerText.text = $"Πήρες: {(!string.IsNullOrEmpty(cardName) ? cardName : "(καμία)")}";
-
+        if (headerText) headerText.text = $"Πήρες: {cardName}";
         if (continueButton)
         {
             continueButton.gameObject.SetActive(true);
@@ -86,18 +80,40 @@ public class RewardSceneController : MonoBehaviour
     }
 
 
+
+
     void ApplyCard(string cardName)
     {
-        if (!string.IsNullOrEmpty(cardName) && PlayerDeck.Instance != null)
-            PlayerDeck.Instance.AddCardToDeck(cardName);
-        else
-            Debug.LogWarning($"[Reward] Άκυρο cardName ή λείπει PlayerDeck: '{cardName}'");
+        if (string.IsNullOrEmpty(cardName))
+        {
+            Debug.LogWarning("[Reward] Άκυρο cardName.");
+            return;
+        }
+
+        var deck = PlayerDeck.Instance ?? FindAnyObjectByType<PlayerDeck>();
+        if (deck == null)
+        {
+            Debug.LogError("[Reward] PlayerDeck λείπει. Κάνε το persistent (DontDestroyOnLoad) ή βάλε ένα PlayerDeck στη Reward1 για testing.");
+            return;
+        }
+
+        deck.AddCardToDeck(cardName);  // ✅ ταιριάζει με την υπάρχουσα υπογραφή
     }
+
+
 
     void GoNext()
     {
         var sf = FindAnyObjectByType<SceneFlowManager>();
-        if (sf != null) sf.LoadScene(nextSceneAfterReward);
-        else UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneAfterReward.ToString());
+        if (sf != null)
+        {
+            sf.LoadNextAfterBattle();   // χρησιμοποίησε το flow map
+        }
+        else
+        {
+            Debug.LogWarning("[Reward] SceneFlowManager not found, loading Victory as fallback.");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(SceneType.Victory.ToString());
+        }
     }
+
 }

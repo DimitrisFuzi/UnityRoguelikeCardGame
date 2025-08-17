@@ -17,18 +17,18 @@ public class PlayerDeck : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        LoadAllCards();
+        Instance = this;
+        DontDestroyOnLoad(gameObject);   // ✅ κράτα το ζωντανό σε όλες τις σκηνές
+
+        LoadAllCards();                  // αν διαβάζει resources/DB, καλό είναι να το κάνει μία φορά εδώ
     }
+
 
     private void Start()
     {

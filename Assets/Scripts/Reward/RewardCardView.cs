@@ -51,6 +51,14 @@ public class RewardCardView : MonoBehaviour
             // ✅ instantiate με worldPositionStays = false
             spawnedThumb = Instantiate(cardThumbnailPrefab, thumbnailParent, false);
 
+
+            if (button) button.transform.SetAsLastSibling();
+
+            // 🛡️ κλείσε όλα τα raycasts στα γραφικά του thumbnail
+            var graphics = spawnedThumb.GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
+            for (int i = 0; i < graphics.Length; i++) graphics[i].raycastTarget = false;
+
+
             // 🔧 Stretch και το ίδιο το thumbnail
             var thumbRT = spawnedThumb.GetComponent<RectTransform>();
             if (thumbRT)

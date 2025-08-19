@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction

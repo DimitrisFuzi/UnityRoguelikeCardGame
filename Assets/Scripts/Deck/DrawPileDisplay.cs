@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Handles the UI display of the draw pile count.
+/// Handles the UI display of the 
+/// pile count.
 /// Listens to draw pile changes and updates the UI accordingly.
 /// </summary>
 public class DrawPileUI : MonoBehaviour

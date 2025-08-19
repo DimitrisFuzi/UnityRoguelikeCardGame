@@ -66,7 +66,7 @@ namespace MyProjectF.Assets.Scripts.Managers
             DeckManager.Instance.InitializeDeck();
             Logger.Log($"🔎 After InitializeDeck: draw={DeckManager.Instance.GetDrawPileCount()}, discard={DeckManager.Instance.GetDiscardPileCount()}", this);
             DeckManager.Instance.ShuffleDeck();
-            HandManager.Instance.DrawCardsForTurn();
+            
 
             turnManager.StartPlayerTurn();
         }

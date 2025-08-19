@@ -63,7 +63,7 @@ public class RewardPool : ScriptableObject
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(this);
 #endif
-        Debug.Log($"[RewardPool] Populated from DB -> {candidates.Count} candidates.");
+
     }
 
     // Επιλογή 3 καρτών με βάρη βάσει rarity, χωρίς επανάληψη

@@ -8,6 +8,7 @@ public enum IntentType
 {
     Attack,
     Buff,
+    Special, // For unique actions like summoning or healing
     // Add other types as needed, e.g., Defense, Heal, Special
 }
 

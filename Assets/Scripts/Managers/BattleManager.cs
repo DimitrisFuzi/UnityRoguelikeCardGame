@@ -61,7 +61,7 @@ namespace MyProjectF.Assets.Scripts.Managers
             SetBattleState(BattleState.START);
 
             playerManager.InitializePlayer();
-            enemyManager.InitializeEnemies();
+            enemyManager.InitializeFromScene();
 
             DeckManager.Instance.InitializeDeck();
             Logger.Log($"🔎 After InitializeDeck: draw={DeckManager.Instance.GetDrawPileCount()}, discard={DeckManager.Instance.GetDiscardPileCount()}", this);

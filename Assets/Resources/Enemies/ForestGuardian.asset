@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8de1608aad44e9d4290828b5378a2f7c, type: 3}
+  m_Name: ForestGuardian
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: ForestGuardian
+  health: 20
+  enemySprite: {fileID: 3543293819214416110, guid: 59ae480c1da16b544ba964b8ad399cc7, type: 3}
+  position: {x: -200, y: -20}
+  size: {x: 400, y: 400}
+  enemyAIType: 3
+  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
+  buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  summonLeftData: {fileID: 11400000, guid: e8e4ac51902ff924abb9404d098fc795, type: 2}
+  summonRightData: {fileID: 11400000, guid: b891eb07d14c4fc42a3a0447ef3ef04a, type: 2}

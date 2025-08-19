@@ -10,6 +10,9 @@ public class Enemy : CharacterStats
 
     public EnemyDisplay enemyDisplay; // Reference to the UI component
     public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
+    public EnemyData Data { get; private set; }   // NEW
+    public EnemyAIType AiType { get; private set; } 
+
 
     /// <summary>
     /// Performs the enemy's AI-defined action.
@@ -38,6 +41,8 @@ public class Enemy : CharacterStats
     /// <param name="enemyDisplay">The EnemyDisplay component for UI updates.</param>
     public void InitializeEnemy(EnemyData enemyData, EnemyDisplay enemyDisplay)
     {
+        Data = enemyData;              
+        AiType = enemyData.enemyAIType;     
         enemyName = enemyData.enemyName;
 
         InitializeStats(enemyData.health);
@@ -66,15 +71,34 @@ public class Enemy : CharacterStats
     {
         switch (aiType)
         {
-            case EnemyAIType.Wolf1:
-                EnemyAI = gameObject.AddComponent<Wolf1AI>();
-                break;
-            case EnemyAIType.Wolf2:
-                EnemyAI = gameObject.AddComponent<Wolf2AI>();
-                break;
-            case EnemyAIType.None:
+            case EnemyAIType.Wolf1: EnemyAI = gameObject.AddComponent<Wolf1AI>(); break;
+            case EnemyAIType.Wolf2: EnemyAI = gameObject.AddComponent<Wolf2AI>(); break;
+
+            case EnemyAIType.ForestGuardian:
+                {
+                    var fg = gameObject.AddComponent<ForestGuardianAI>();
+                    // ΠΕΡΝΑΜΕ τα EnemyData των minions από το EnemyData του boss
+                    fg.Configure(enemyData.summonLeftData, enemyData.summonRightData);
+                    EnemyAI = fg;
+                    break;
+                }
+
+            case EnemyAIType.WispLeft:
+                {
+                    var w = gameObject.AddComponent<WispAI>();
+                    w.SetSide(WispAI.MinionSide.Left);
+                    EnemyAI = w;
+                    break;
+                }
+            case EnemyAIType.WispRight:
+                {
+                    var w = gameObject.AddComponent<WispAI>();
+                    w.SetSide(WispAI.MinionSide.Right);
+                    EnemyAI = w;
+                    break;
+                }
             default:
-                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Default AI will be used.");
+                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Using default.", this);
                 break;
         }
 
@@ -82,12 +106,11 @@ public class Enemy : CharacterStats
         {
             EnemyAI.SetPlayerStats(PlayerStats.Instance);
             EnemyAI.SetIntentIcons(enemyData.attackIntentIcon, enemyData.buffIntentIcon);
-            EnemyAI.InitializeAI(); // This call will cause the AI to predict its first intent.
-
-            // NEW: Pass the EnemyDisplay reference to the AI, now that IEnemyAI has this method
-            EnemyAI.SetEnemyDisplay(display); // MODIFIED: Simplified this call
+            EnemyAI.InitializeAI();
+            EnemyAI.SetEnemyDisplay(display);
         }
     }
+
 
     /// <summary>
     /// Retrieves the current predicted intent from the AI and passes it to EnemyDisplay.

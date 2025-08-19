@@ -162,4 +162,24 @@ public abstract class CharacterStats : MonoBehaviour
     {
         OnDied?.Invoke(); // Notify listeners that the character has died
     }
+
+    /// <summary>
+    /// Directly gains health without any checks.
+    /// </summary>  
+    public virtual int GainHealthDirect(int amount)
+    {
+        if (amount <= 0) return 0;
+
+        int before = CurrentHealth;
+        int after = Mathf.Min(MaxHealth, CurrentHealth + amount);
+        int healed = after - before;
+
+        if (healed > 0)
+        {
+            CurrentHealth = after;
+        }
+
+        return healed;
+    }
+
 }

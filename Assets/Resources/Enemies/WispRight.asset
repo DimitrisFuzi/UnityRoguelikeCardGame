@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de1608aad44e9d4290828b5378a2f7c, type: 3}
   m_Name: WispRight
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: WispLeft
-  health: 30
+  enemyName: WispRight
+  health: 5
   enemySprite: {fileID: -4493590007624933022, guid: 44c496ce93b956543846b1fd99033f1d, type: 3}
   position: {x: -100, y: 100}
   size: {x: 50, y: 50}
   enemyAIType: 5
   attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  summonLeftData: {fileID: 0}
+  summonRightData: {fileID: 0}

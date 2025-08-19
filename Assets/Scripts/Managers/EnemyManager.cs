@@ -169,20 +169,23 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         StartCoroutine(PerformEnemyActionsCoroutine());
     }
 
-    private IEnumerator PerformEnemyActionsCoroutine()
+    public IEnumerator PerformEnemyActionsCoroutine()
     {
-        foreach (var enemy in activeEnemies)
-        {
-            if (BattleManager.Instance.IsBattleOver())
-            {
-                Logger.Log("⚠️ Skipping enemy actions: battle ended.", this);
-                yield break;
-            }
+        // snapshot της λίστας στην αρχή του enemy turn
+        List<Enemy> currentTurnEnemies = new List<Enemy>(activeEnemies);
 
+        foreach (Enemy enemy in currentTurnEnemies)
+        {
+            if (enemy == null) continue;
+
+            yield return new WaitForSeconds(0.5f);
             enemy.PerformAction();
-            yield return new WaitForSeconds(1f);
+
+            // λίγο delay για animation clarity
+            yield return new WaitForSeconds(0.5f);
         }
     }
+
 
     /// <summary>
     /// Removes a defeated enemy from the list and destroys its GameObject.
@@ -254,11 +257,32 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         Vector3 p = pos ?? Vector3.zero;
         Quaternion r = rot ?? Quaternion.identity;
 
+        // ✅ χρησιμοποίησε το ίδιο pipeline με το SpawnEnemyAt
         GameObject enemyObject = Instantiate(enemyPrefab, p, r, finalParent);
 
         if (enemyObject.TryGetComponent(out Enemy enemyScript) && enemyObject.TryGetComponent(out EnemyDisplay enemyDisplay))
         {
             enemyScript.InitializeEnemy(enemyData, enemyDisplay);
+
+            // === AI wiring όπως στο SpawnEnemyAt ===
+            var ai = enemyObject.GetComponent<IEnemyAI>();
+            if (ai != null)
+            {
+                var playerStats = PlayerStats.Instance;
+                if (playerStats == null)
+                {
+                    Logger.LogError("❌ EnemyManager: PlayerStats.Instance is null (player not spawned yet).", this);
+                }
+                else
+                {
+                    ai.SetPlayerStats(playerStats);
+                }
+
+                ai.SetEnemyDisplay(enemyDisplay);
+                ai.InitializeAI();
+            }
+            // ===============================
+
             activeEnemies.Add(enemyScript);
             Logger.Log($"🌱 Runtime-spawned enemy: {enemyData.enemyName}", this);
             return enemyScript;
@@ -270,6 +294,7 @@ public class EnemyManager : SceneSingleton<EnemyManager>
             return null;
         }
     }
+
 
 
 }

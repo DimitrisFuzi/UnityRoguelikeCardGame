@@ -37,6 +37,10 @@ public class EnemyData : ScriptableObject
     [Tooltip("Sprite for the buff intent.")]
     public Sprite buffIntentIcon;
 
+    [Header("Boss Summon Config (optional)")]
+    public EnemyData summonLeftData;   // ð.÷. WispLeft.asset
+    public EnemyData summonRightData;  // ð.÷. WispRight.asset
+
 }
 
 /// <summary>

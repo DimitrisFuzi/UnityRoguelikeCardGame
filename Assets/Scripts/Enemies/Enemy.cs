@@ -10,6 +10,9 @@ public class Enemy : CharacterStats
 
     public EnemyDisplay enemyDisplay; // Reference to the UI component
     public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
+    public EnemyData Data { get; private set; }   // NEW
+    public EnemyAIType AiType { get; private set; } 
+
 
     /// <summary>
     /// Performs the enemy's AI-defined action.
@@ -38,6 +41,8 @@ public class Enemy : CharacterStats
     /// <param name="enemyDisplay">The EnemyDisplay component for UI updates.</param>
     public void InitializeEnemy(EnemyData enemyData, EnemyDisplay enemyDisplay)
     {
+        Data = enemyData;              
+        AiType = enemyData.enemyAIType;     
         enemyName = enemyData.enemyName;
 
         InitializeStats(enemyData.health);
@@ -68,9 +73,16 @@ public class Enemy : CharacterStats
         {
             case EnemyAIType.Wolf1: EnemyAI = gameObject.AddComponent<Wolf1AI>(); break;
             case EnemyAIType.Wolf2: EnemyAI = gameObject.AddComponent<Wolf2AI>(); break;
+
             case EnemyAIType.ForestGuardian:
-                EnemyAI = gameObject.AddComponent<ForestGuardianAI>();
-                break;
+                {
+                    var fg = gameObject.AddComponent<ForestGuardianAI>();
+                    // ΠΕΡΝΑΜΕ τα EnemyData των minions από το EnemyData του boss
+                    fg.Configure(enemyData.summonLeftData, enemyData.summonRightData);
+                    EnemyAI = fg;
+                    break;
+                }
+
             case EnemyAIType.WispLeft:
                 {
                     var w = gameObject.AddComponent<WispAI>();
@@ -92,7 +104,6 @@ public class Enemy : CharacterStats
 
         if (EnemyAI != null)
         {
-            // Προσαρμόσου στο API σου: τα περισσότερα από αυτά ήδη τα καλείς.
             EnemyAI.SetPlayerStats(PlayerStats.Instance);
             EnemyAI.SetIntentIcons(enemyData.attackIntentIcon, enemyData.buffIntentIcon);
             EnemyAI.InitializeAI();

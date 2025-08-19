@@ -3,8 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MyProjectF.Assets.Scripts.Managers;
 using MyProjectF.Assets.Scripts.Player;
-using MyProjectF.Assets.Scripts.Effects; // για DamageEffect
-// Προσαρμόσου στο namespace του project σου αν χρειάζεται
+using MyProjectF.Assets.Scripts.Effects; // DamageEffect
 
 public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 {
@@ -18,34 +17,24 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     [SerializeField] private Sprite attackIcon;
     [SerializeField] private Sprite specialIcon; // για Awaken/Summon
 
-    // ---- Minion data & slots (σύρε τα στο Inspector του Boss prefab)
-    [Header("Summons")]
-    [SerializeField] private EnemyData wispLeftData;
-    [SerializeField] private EnemyData wispRightData;
-    [SerializeField] private Transform wispLeftSlot;
-    [SerializeField] private Transform wispRightSlot;
-
     // ---- Tunables (fixed numbers)
     [Header("Boss Damage")]
     [SerializeField] private int baseAttack = 10;       // σταθερό
     [SerializeField] private int rampPerTurn = 1;       // +1/γύρο
 
-    //[Header("Minion Stats (display only)")]
-    //[SerializeField] private int minionHeal = 6;        // Phase1
-    //[SerializeField] private int minionAttack = 4;      // Phase1
-    //[SerializeField] private int minionHealAwaken = 8;  // μετά το Awaken
-    //[SerializeField] private int minionAttackAwaken = 5;
-
     [Header("Summon Timing")]
     [SerializeField] private int p1SummonEveryTurns = 3;
+
+    private EnemyData wispLeftData;
+    private EnemyData wispRightData;
 
     // ---- State
     private int ramp = 0;                   // αυξάνεται στην αρχή κάθε boss turn
     private int absorbBonus = 0;            // μόνιμο +damage από consume
-    private bool awakened = false;          // έγινε Awaken;
-    private bool awakenTelegraphed = false; // intent έχει δείξει Awaken
+    private bool awakened = false;           // έγινε Awaken;
+    private bool awakenTelegraphed = false;  // intent έχει δείξει Awaken
     private bool doubleSummonNextTurn = false;
-    private bool canSummonFurther = true;   // κλειδώνει μετά το Awaken
+    private bool canSummonFurther = true;    // κλειδώνει μετά το Awaken
     private int p1SummonCounter = 0;
 
     public bool IsAwakened => awakened;
@@ -65,8 +54,20 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         specialIcon = buffOrSpecial;
     }
 
+    public void Configure(EnemyData left, EnemyData right)
+    {
+        wispLeftData = left;
+        wispRightData = right;
+    }
+
     public void InitializeAI()
     {
+        if ((wispLeftData == null || wispRightData == null) && boss != null && boss.Data != null)
+        {
+            if (wispLeftData == null) wispLeftData = boss.Data.summonLeftData;
+            if (wispRightData == null) wispRightData = boss.Data.summonRightData;
+            Debug.Log($"[ForestGuardianAI] Auto-config from EnemyData → left={(wispLeftData != null)} right={(wispRightData != null)}", this);
+        }
         PredictNextIntent();
     }
 
@@ -78,7 +79,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         // Scheduled double-summon after Awaken with 0 summons
         if (doubleSummonNextTurn)
         {
-            SpawnUntilFull(2);
+            SpawnUntilFull();
             doubleSummonNextTurn = false;
             canSummonFurther = false; // δεν ξανακάνει summons μετά
             PredictNextIntent();
@@ -91,7 +92,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             p1SummonCounter++;
             if (p1SummonCounter >= p1SummonEveryTurns && AliveMinionsCount() < 2)
             {
-                SummonOneInFirstEmptySlot();
+                SummonOneInFirstEmptyType();
                 p1SummonCounter = 0;
                 PredictNextIntent();
                 return; // το summon καταναλώνει το γύρο
@@ -198,34 +199,31 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
     private List<Enemy> GetAliveMinions()
     {
-        var all = EnemyManager.Instance.GetActiveEnemies();
-        return all.Where(e => e != null && e != boss && e.EnemyAI is WispAI).ToList();
+        return EnemyManager.Instance.GetActiveEnemies()
+            .Where(e => e != null && e != boss && (e.Data == wispLeftData || e.Data == wispRightData))
+            .ToList();
     }
 
-    private void SummonOneInFirstEmptySlot()
+    private bool HasMinionData(EnemyData data)
     {
-        // Προτίμησε Left πρώτα, μετά Right
-        bool hasLeft = GetAliveMinions().Any(e => (e.EnemyAI as WispAI)?.Side == WispAI.MinionSide.Left);
-        bool hasRight = GetAliveMinions().Any(e => (e.EnemyAI as WispAI)?.Side == WispAI.MinionSide.Right);
-
-        if (!hasLeft && wispLeftData != null && wispLeftSlot != null)
-            EnemyManager.Instance.SpawnEnemyRuntime(wispLeftData, wispLeftSlot);
-        else if (!hasRight && wispRightData != null && wispRightSlot != null)
-            EnemyManager.Instance.SpawnEnemyRuntime(wispRightData, wispRightSlot);
-        else
-            Debug.LogWarning("[ForestGuardianAI] No free slot or missing Wisp data/slot.");
+        return EnemyManager.Instance.GetActiveEnemies()
+            .Any(e => e != null && e != boss && e.Data == data);
     }
 
-    private void SpawnUntilFull(int targetCount)
+    private void SummonOneInFirstEmptyType()
     {
-        // Γέμισε και τα δύο slots
-        bool hasLeft = GetAliveMinions().Any(e => (e.EnemyAI as WispAI)?.Side == WispAI.MinionSide.Left);
-        bool hasRight = GetAliveMinions().Any(e => (e.EnemyAI as WispAI)?.Side == WispAI.MinionSide.Right);
+        bool hasLeft = HasMinionData(wispLeftData);
+        bool hasRight = HasMinionData(wispRightData);
 
-        if (!hasLeft && wispLeftData != null && wispLeftSlot != null)
-            EnemyManager.Instance.SpawnEnemyRuntime(wispLeftData, wispLeftSlot);
+        if (!hasLeft && wispLeftData != null) { EnemyManager.Instance.SpawnEnemyRuntime(wispLeftData); return; }
+        if (!hasRight && wispRightData != null) { EnemyManager.Instance.SpawnEnemyRuntime(wispRightData); return; }
 
-        if (!hasRight && wispRightData != null && wispRightSlot != null)
-            EnemyManager.Instance.SpawnEnemyRuntime(wispRightData, wispRightSlot);
+        Debug.LogWarning($"[ForestGuardianAI] Summon failed: hasLeft={hasLeft}, hasRight={hasRight}, leftData={(wispLeftData != null)}, rightData={(wispRightData != null)}");
+    }
+
+    private void SpawnUntilFull()
+    {
+        if (!HasMinionData(wispLeftData) && wispLeftData != null) EnemyManager.Instance.SpawnEnemyRuntime(wispLeftData);
+        if (!HasMinionData(wispRightData) && wispRightData != null) EnemyManager.Instance.SpawnEnemyRuntime(wispRightData);
     }
 }

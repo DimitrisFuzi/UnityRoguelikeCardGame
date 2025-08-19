@@ -62,7 +62,7 @@ public class PlayerDeck : MonoBehaviour
 
         string[] selectedCards =
         {
-           "Blood Rush","Blood Rush","Blood Rush","Blood Rush","Blood Rush","Shift Stance","Shift Stance","Shift Stance","Shift Stance","Shift Stance"
+           "Blood Rush","Blood Rush","Blood Rush","Blood Rush","Blood Rush","Last Resort","Last Resort","Last Resort"
 
         };
 

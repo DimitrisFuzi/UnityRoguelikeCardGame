@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: ForestGuardian
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: ForestGuardian
-  health: 100
+  health: 20
   enemySprite: {fileID: 3543293819214416110, guid: 59ae480c1da16b544ba964b8ad399cc7, type: 3}
   position: {x: -200, y: -20}
   size: {x: 400, y: 400}
   enemyAIType: 3
   attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  summonLeftData: {fileID: 11400000, guid: e8e4ac51902ff924abb9404d098fc795, type: 2}
+  summonRightData: {fileID: 11400000, guid: b891eb07d14c4fc42a3a0447ef3ef04a, type: 2}

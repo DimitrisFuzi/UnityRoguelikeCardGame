@@ -14,6 +14,14 @@ public class LoseHealthEffect : EffectData
     {
         target.LoseHealthDirect(healthLoss);
         Debug.Log($"[Effect] {target.name} lost {healthLoss} HP (ignoring armor).");
+
+        if (healthLoss > 0)
+        {
+            if (target is Enemy)
+                GameSession.Instance?.AddDamageDealt(healthLoss);
+            else
+                GameSession.Instance?.AddDamageTaken(healthLoss);
+        }
     }
 
 }

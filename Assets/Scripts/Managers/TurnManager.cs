@@ -116,6 +116,9 @@ public class TurnManager : SceneSingleton<TurnManager>
         Debug.Log("👿 Enemy Turn Ended!");
         OnEnemyTurnEnd?.Invoke();
 
+        if (GameSession.Instance != null)
+            GameSession.Instance.turnsTaken++;
+
         // Step 3: Start player's turn
         StartPlayerTurn();
     }

@@ -186,6 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerDeck: []
+  startingDeckData: {fileID: 11400000, guid: 24cf7139bd7a71b4293a93f1403478fe, type: 2}
 --- !u!4 &52168166
 Transform:
   m_ObjectHideFlags: 0

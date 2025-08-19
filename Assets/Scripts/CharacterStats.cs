@@ -148,7 +148,7 @@ public abstract class CharacterStats : MonoBehaviour
     /// <param name="amount">Amount of armor to add.</param>
     public virtual void AddArmor(int amount)
     {
-        Armor += amount;
+        Armor = Mathf.Max(0, Armor + amount);
 
         Logger.Log($"{gameObject.name} gained {amount} Armor.", this);
         OnArmorChanged?.Invoke(Armor);
@@ -162,4 +162,24 @@ public abstract class CharacterStats : MonoBehaviour
     {
         OnDied?.Invoke(); // Notify listeners that the character has died
     }
+
+    /// <summary>
+    /// Directly gains health without any checks.
+    /// </summary>  
+    public virtual int GainHealthDirect(int amount)
+    {
+        if (amount <= 0) return 0;
+
+        int before = CurrentHealth;
+        int after = Mathf.Min(MaxHealth, CurrentHealth + amount);
+        int healed = after - before;
+
+        if (healed > 0)
+        {
+            CurrentHealth = after;
+        }
+
+        return healed;
+    }
+
 }

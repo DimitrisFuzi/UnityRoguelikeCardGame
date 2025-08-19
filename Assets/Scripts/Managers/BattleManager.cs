@@ -23,6 +23,9 @@ namespace MyProjectF.Assets.Scripts.Managers
         /// </summary>
         public bool IsPlayerInputLocked { get; private set; } = false;
 
+        [Header("Audio")]
+        [SerializeField] private AudioClip defeatJingle;
+
         private void Start()
         {
             StartCoroutine(InitRoutine());
@@ -58,12 +61,12 @@ namespace MyProjectF.Assets.Scripts.Managers
             SetBattleState(BattleState.START);
 
             playerManager.InitializePlayer();
-            enemyManager.InitializeEnemies();
+            enemyManager.InitializeFromScene();
 
             DeckManager.Instance.InitializeDeck();
             Logger.Log($"🔎 After InitializeDeck: draw={DeckManager.Instance.GetDrawPileCount()}, discard={DeckManager.Instance.GetDiscardPileCount()}", this);
             DeckManager.Instance.ShuffleDeck();
-            HandManager.Instance.DrawCardsForTurn();
+            
 
             turnManager.StartPlayerTurn();
         }
@@ -106,6 +109,12 @@ namespace MyProjectF.Assets.Scripts.Managers
             {
                 SetBattleState(BattleState.LOST);
                 Logger.Log("🏳️ Player defeat handled. Loading Lose scene...", this);
+               
+                AudioManager.Instance?.StopMusic();
+                if (defeatJingle != null)
+                    AudioManager.Instance?.PlayJingle(defeatJingle, 1f);
+                Logger.Log("🏳️ Player defeat handled. Loading Lose scene...", this);
+
                 GameOverUIManager.Instance.ShowGameOver();
 
             }

@@ -9,24 +9,30 @@ using MyProjectF.Assets.Scripts.Cards;
 public class PlayerDeck : MonoBehaviour
 {
     public static PlayerDeck Instance { get; private set; }
+    public IReadOnlyList<Card> CurrentDeck => playerDeck;
+
 
     [SerializeField] private List<Card> playerDeck = new List<Card>();
     private Dictionary<string, Card> allCardsDictionary = new();
 
+    [Header("Starting Deck (asset)")]
+    [SerializeField] private StartingDeckData startingDeckData;
+
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        LoadAllCards();
+        Instance = this;
+        DontDestroyOnLoad(gameObject);   // ✅ κράτα το ζωντανό σε όλες τις σκηνές
+
+        LoadAllCards();                  // αν διαβάζει resources/DB, καλό είναι να το κάνει μία φορά εδώ
+        GameSession.Instance?.RegisterDeck(this);
     }
+
 
     private void Start()
     {
@@ -52,31 +58,46 @@ public class PlayerDeck : MonoBehaviour
     }
 
     /// <summary>
-    /// Initializes the player's starting deck with a predefined list of card names.
+    /// Initializes the player's starting deck using StartingDeck.asset (or falls back).
     /// </summary>
     public void InitializeStartingDeck()
     {
         playerDeck.Clear();
 
-        string[] selectedCards =
+        // 1) Αν υπάρχει asset + λίστα, χρησιμοποίησέ τα
+        if (startingDeckData != null && startingDeckData.startingCards != null && startingDeckData.startingCards.Count > 0)
         {
-           "Blood Rush", "Lashing Out", "Last Resort", "Wide Swing", "Brace", "Gut Reaction",
- "Shift Stance", "Deep Focus", "Fight or Flight", "Focus Breathing", "Snap Decision"
-
-        };
-
-        foreach (string cardName in selectedCards)
-        {
-            if (allCardsDictionary.TryGetValue(cardName, out Card card))
+            foreach (var cardName in startingDeckData.startingCards)
             {
-                playerDeck.Add(card);
+                if (allCardsDictionary.TryGetValue(cardName, out Card card))
+                {
+                    playerDeck.Add(card);
+                }
+                else
+                {
+                    Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
+                }
             }
-            else
-            {
-                Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
-            }
+            Logger.Log("[PlayerDeck] Deck initialized from StartingDeck asset.", this);
+            return;
         }
 
+        // 2) Fallback: η παλιά hardcoded λίστα (αν λείπει asset)
+        string[] defaultCards =
+        {
+            "Blood Rush","Blood Rush","Blood Rush","Blood Rush","Blood Rush",
+            "Last Resort","Last Resort","Last Resort"
+        };
+
+        foreach (var cardName in defaultCards)
+        {
+            if (allCardsDictionary.TryGetValue(cardName, out Card card))
+                playerDeck.Add(card);
+            else
+                Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
+        }
+
+        Logger.Log("[PlayerDeck] Deck initialized from fallback defaults.", this);
     }
 
     /// <summary>

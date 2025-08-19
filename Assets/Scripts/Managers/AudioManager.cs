@@ -121,6 +121,40 @@ public class AudioManager : MonoBehaviour
     {
         SetCategoryVolume("Gameplay", volume);
     }
+
+    /// <summary>
+    /// Plays background music with optional looping.
+    /// </summary>
+    public void PlayMusic(AudioClip clip, bool loop = true, float volume = 1f)
+    {
+        if (musicSource == null || clip == null) return;
+        musicSource.loop = loop;
+        musicSource.clip = clip;
+        musicSource.volume = Mathf.Clamp01(volume);
+        musicSource.Play();
+    }
+
+    /// <summary>
+    /// Stops background music playback (if any).
+    /// </summary>
+    public void StopMusic()
+    {
+            if (musicSource != null) musicSource.Stop();
+    }
+
+    /// <summary>
+    /// Plays a short, non-looping music jingle (e.g., defeat/victory) on the music channel.
+    /// It force-stops any currently playing music before starting the jingle.
+    /// </summary>
+    public void PlayJingle(AudioClip clip, float volume = 1f)
+    {
+        if (musicSource == null || clip == null) return;
+        musicSource.Stop();                 // hard cut battle music immediately
+        musicSource.loop = false;           // jingle should not loop
+        musicSource.clip = clip;
+        musicSource.volume = Mathf.Clamp01(volume);
+        musicSource.Play();
+    }
 }
 
 [System.Serializable]

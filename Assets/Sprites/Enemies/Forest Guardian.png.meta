@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: b7020d78e909b01438e399231fb2419e
+guid: 59ae480c1da16b544ba964b8ad399cc7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3873087697204469031
-    second: spider_0
+      213: 3543293819214416110
+    second: Forest Guardian_0
+  - first:
+      213: 5817851867277373752
+    second: Forest Guardian_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +99,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spider_0
+      name: Forest Guardian_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 9
-        width: 495
-        height: 483
+        x: 60
+        y: 46
+        width: 845
+        height: 952
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +118,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 72ddec77db8ffb530800000000000000
-      internalID: 3873087697204469031
+      spriteID: ee8cc1594fe4c2130800000000000000
+      internalID: 3543293819214416110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Forest Guardian_1
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 63
+        width: 53
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83139e0f2792db050800000000000000
+      internalID: 5817851867277373752
       vertices: []
       indices: 
       edges: []
@@ -148,7 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      spider_0: 3873087697204469031
+      Forest Guardian_0: 3543293819214416110
+      Forest Guardian_1: 5817851867277373752
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

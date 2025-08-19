@@ -35,7 +35,7 @@ public class CardDisplay : MonoBehaviour
         // Show error if cardData is not assigned
         if (cardData == null)
         {
-            Debug.LogError($"❌ cardData is NULL on CardDisplay ({gameObject.name}) on start!");
+            Debug.LogWarning($"⚠️ cardData is NULL on CardDisplay ({gameObject.name}) on start.");
         }
         else
         {
@@ -45,27 +45,47 @@ public class CardDisplay : MonoBehaviour
     }
 
     /// <summary>
+    /// Public API for external callers (e.g., RewardCardView) to set data and redraw.
+    /// </summary>
+    public void SetData(Card card)
+    {
+        cardData = card;
+        UpdateCardDisplay();
+    }
+
+    /// <summary>
+    /// Alias for tools that expect a Refresh() call.
+    /// </summary>
+    public void Refresh()
+    {
+        UpdateCardDisplay();
+    }
+
+    /// <summary>
     /// Updates all card-related UI fields with current data from cardData.
     /// </summary>
     public void UpdateCardDisplay()
     {
-        if (cardData != null)
+        if (cardData == null) return;
+
+        // Basic UI data
+        if (nameText) nameText.text = cardData.cardName;
+        if (manaCostText) manaCostText.text = cardData.energyCost.ToString();
+
+        // Prepare to fill placeholders like {damage} or {armor}
+        int damage = 0;
+        int armor = 0;
+        int cards = 0;
+        int energy = 0;
+        int hpLost = 0;
+        int aoeDamage = 0;
+        int healthSet = 0;
+
+        // ✅ Read and parse card effects to extract values
+        var effects = cardData.GetCardEffects();
+        if (effects != null)
         {
-            // Basic UI data
-            nameText.text = cardData.cardName;
-            manaCostText.text = cardData.energyCost.ToString();
-
-            // Prepare to fill placeholders like {damage} or {armor}
-            int damage = 0;
-            int armor = 0;
-            int cards = 0;
-            int energy = 0;
-            int hpLost = 0;
-            int aoeDamage = 0;
-            int healthSet = 0;
-
-            // ✅ Read and parse card effects to extract values
-            foreach (EffectData effect in cardData.GetCardEffects())
+            foreach (EffectData effect in effects)
             {
                 if (effect is DamageEffect damageEffect)
                 {
@@ -96,25 +116,24 @@ public class CardDisplay : MonoBehaviour
                     healthSet = setHealthEffect.newHealth;
                 }
             }
-
-            // ✅ Replace placeholders in the description with actual values
-            string finalDescription = cardData.cardDescription;
-            finalDescription = finalDescription.Replace("{damage}", damage > 0 ? damage.ToString() : "-");
-            finalDescription = finalDescription.Replace("{armor}", armor > 0 ? armor.ToString() : "-");
-            finalDescription = finalDescription.Replace("{cards}", cards > 0 ? cards.ToString() : "-");
-            finalDescription = finalDescription.Replace("{energy}", energy > 0 ? energy.ToString() : "-");
-            finalDescription = finalDescription.Replace("{hpLost}", hpLost > 0 ? hpLost.ToString() : "-");
-            finalDescription = finalDescription.Replace("{aoeDamage}", aoeDamage > 0 ? aoeDamage.ToString() : "-");
-            finalDescription = finalDescription.Replace("{healthSet}", healthSet > 0 ? healthSet.ToString() : "-");
-
-            // Update UI elements with card data
-            descriptionText.text = finalDescription;
-            CardImage.sprite = cardData.cardSprite;
-
-            // Dynamically assign the correct sprites for card type and rarity
-            UpdateCardCoverImage();
-            UpdateRarityGemImage();
         }
+
+        // ✅ Replace placeholders in the description with actual values
+        string finalDescription = cardData.cardDescription ?? string.Empty;
+        finalDescription = finalDescription.Replace("{damage}", damage > 0 ? damage.ToString() : "-");
+        finalDescription = finalDescription.Replace("{armor}", armor > 0 ? armor.ToString() : "-");
+        finalDescription = finalDescription.Replace("{cards}", cards > 0 ? cards.ToString() : "-");
+        finalDescription = finalDescription.Replace("{energy}", energy > 0 ? energy.ToString() : "-");
+        finalDescription = finalDescription.Replace("{hpLost}", hpLost > 0 ? hpLost.ToString() : "-");
+        finalDescription = finalDescription.Replace("{aoeDamage}", aoeDamage > 0 ? aoeDamage.ToString() : "-");
+        finalDescription = finalDescription.Replace("{healthSet}", healthSet > 0 ? healthSet.ToString() : "-");
+
+        if (descriptionText) descriptionText.text = finalDescription;
+        if (CardImage) CardImage.sprite = cardData.cardSprite;
+
+        // Dynamically assign the correct sprites for card type and rarity
+        UpdateCardCoverImage();
+        UpdateRarityGemImage();
     }
 
     /// <summary>
@@ -122,7 +141,7 @@ public class CardDisplay : MonoBehaviour
     /// </summary>
     private void UpdateCardCoverImage()
     {
-        if (CardCoverImage == null) return;
+        if (CardCoverImage == null || cardData == null) return;
 
         switch (cardData.cardType)
         {
@@ -146,7 +165,7 @@ public class CardDisplay : MonoBehaviour
     /// </summary>
     private void UpdateRarityGemImage()
     {
-        if (RarityGemImage == null) return;
+        if (RarityGemImage == null || cardData == null) return;
 
         switch (cardData.cardRarity)
         {
@@ -167,4 +186,15 @@ public class CardDisplay : MonoBehaviour
                 break;
         }
     }
+
+#if UNITY_EDITOR
+    // Optional: ανανεώνει live στο Editor όταν αλλάζει το asset
+    private void OnValidate()
+    {
+        if (!Application.isPlaying && cardData != null)
+        {
+            UpdateCardDisplay();
+        }
+    }
+#endif
 }

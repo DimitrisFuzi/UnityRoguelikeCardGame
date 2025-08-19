@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Managers;
+using MyProjectF.Assets.Scripts.Player;
 
 /// <summary>
 /// Manages enemy spawning, tracking, and behavior during battle.
@@ -9,14 +10,64 @@ using MyProjectF.Assets.Scripts.Managers;
 /// </summary>
 public class EnemyManager : SceneSingleton<EnemyManager>
 {
-
     private readonly List<Enemy> activeEnemies = new();
-    
+
     [Header("Enemy Setup")]
     [SerializeField] private GameObject enemyPrefab;
 
+    private bool _initialized;
+
+    // =========================
+    // NEW: Dynamic initialize from scene
+    // =========================
     /// <summary>
-    /// Loads enemies from Resources and spawns them into the scene.
+    /// Initializes enemies based on a BattleSetup component found in the scene.
+    /// Requires a valid BattleSetup; otherwise spawns nothing.
+    /// </summary>
+    public void InitializeFromScene()
+    {
+        if (_initialized)
+        {
+            Logger.LogWarning("⚠️ EnemyManager already initialized — skipping duplicate init.", this);
+            return;
+        }
+
+        var setup = Object.FindFirstObjectByType<BattleSetup>();
+        if (setup == null || setup.enemies == null || setup.enemies.Count == 0)
+        {
+            Logger.LogError("❌ BattleSetup missing or empty. No enemies will spawn.", this);
+            return; // <-- STOP: no fallback
+        }
+
+        ClearExistingEnemiesIfAny();
+
+        for (int i = 0; i < setup.enemies.Count; i++)
+        {
+            var data = setup.enemies[i];
+            Transform parent = GameObject.Find("EnemyCanvas")?.transform;
+            Vector3 pos = Vector3.zero;
+            Quaternion rot = Quaternion.identity;
+
+            if (setup.spawnPoints != null && i < setup.spawnPoints.Count && setup.spawnPoints[i] != null)
+            {
+                pos = setup.spawnPoints[i].position;
+                rot = setup.spawnPoints[i].rotation;
+                // parent = setup.spawnPoints[i].parent ?? parent; // optional
+            }
+
+            SpawnEnemyAt(data, parent, pos, rot);
+        }
+
+        _initialized = true;
+        Logger.Log($"✅ EnemyManager initialized from scene. Spawned: {activeEnemies.Count}", this);
+    }
+
+
+    // =========================
+    // LEGACY: Hardcoded wolves (kept for backwards compatibility)
+    // =========================
+    /// <summary>
+    /// Legacy initializer that loads enemies from Resources and spawns them.
     /// </summary>
     public void InitializeEnemies()
     {
@@ -31,11 +82,23 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         SpawnEnemy(wolf2);
     }
 
+    // =========================
+    // SPAWN HELPERS
+    // =========================
+
     /// <summary>
-    /// Spawns a single enemy and adds it to the active list.
+    /// Spawns a single enemy (legacy method). Parent defaults to EnemyCanvas.
     /// </summary>
-    /// <param name="enemyData">The enemy data to initialize the enemy with.</param>
     private void SpawnEnemy(EnemyData enemyData)
+    {
+        Transform parent = GameObject.Find("EnemyCanvas")?.transform;
+        SpawnEnemyAt(enemyData, parent, Vector3.zero, Quaternion.identity);
+    }
+
+    /// <summary>
+    /// NEW: Spawns a single enemy at a given position/rotation/parent.
+    /// </summary>
+    private void SpawnEnemyAt(EnemyData enemyData, Transform parent, Vector3 pos, Quaternion rot)
     {
         if (enemyPrefab == null)
         {
@@ -43,11 +106,41 @@ public class EnemyManager : SceneSingleton<EnemyManager>
             return;
         }
 
-        GameObject enemyObject = Instantiate(enemyPrefab, GameObject.Find("EnemyCanvas").transform, false);
+        Transform finalParent = parent != null ? parent : GameObject.Find("EnemyCanvas")?.transform;
+        if (finalParent == null)
+        {
+            Logger.LogError("❌ Could not find EnemyCanvas as parent for enemy spawn.", this);
+            return;
+        }
+
+        GameObject enemyObject = Instantiate(enemyPrefab, pos, rot, finalParent);
 
         if (enemyObject.TryGetComponent(out Enemy enemyScript) && enemyObject.TryGetComponent(out EnemyDisplay enemyDisplay))
         {
             enemyScript.InitializeEnemy(enemyData, enemyDisplay);
+
+            // --- AI wiring (μετά το InitializeEnemy) ---
+            var ai = enemyObject.GetComponent<IEnemyAI>();
+            if (ai != null)
+            {
+                // ✅ ΠΑΝΤΑ πάρε το target από τον PlayerManager
+                var playerStats = PlayerStats.Instance;
+                if (playerStats == null)
+                {
+                    Logger.LogError("❌ EnemyManager: PlayerStats.Instance is null (player not spawned yet).", this);
+                }
+                else
+                {
+                    ai.SetPlayerStats(playerStats);
+                }
+
+
+                ai.SetEnemyDisplay(enemyDisplay);
+                ai.InitializeAI();
+            }
+
+            // ------------------------------------------
+
             activeEnemies.Add(enemyScript);
             Logger.Log($"👾 Spawned enemy: {enemyData.enemyName}", this);
         }
@@ -56,6 +149,8 @@ public class EnemyManager : SceneSingleton<EnemyManager>
             Logger.LogError("❌ Enemy prefab must contain both Enemy and EnemyDisplay components!", enemyObject);
             Destroy(enemyObject);
         }
+
+
     }
 
     /// <summary>
@@ -74,25 +169,27 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         StartCoroutine(PerformEnemyActionsCoroutine());
     }
 
-    private IEnumerator PerformEnemyActionsCoroutine()
+    public IEnumerator PerformEnemyActionsCoroutine()
     {
-        foreach (var enemy in activeEnemies)
-        {
-            if (BattleManager.Instance.IsBattleOver())
-            {
-                Logger.Log("⚠️ Skipping enemy actions: battle ended.", this);
-                yield break;
-            }
+        // snapshot της λίστας στην αρχή του enemy turn
+        List<Enemy> currentTurnEnemies = new List<Enemy>(activeEnemies);
 
+        foreach (Enemy enemy in currentTurnEnemies)
+        {
+            if (enemy == null) continue;
+
+            yield return new WaitForSeconds(0.5f);
             enemy.PerformAction();
-            yield return new WaitForSeconds(1f);
+
+            // λίγο delay για animation clarity
+            yield return new WaitForSeconds(0.5f);
         }
     }
+
 
     /// <summary>
     /// Removes a defeated enemy from the list and destroys its GameObject.
     /// </summary>
-    /// <param name="enemy">The enemy to remove.</param>
     public void RemoveEnemy(Enemy enemy)
     {
         if (!activeEnemies.Contains(enemy)) return;
@@ -101,6 +198,12 @@ public class EnemyManager : SceneSingleton<EnemyManager>
         Destroy(enemy.gameObject);
 
         Logger.Log($"☠️ {enemy.enemyName} has been defeated and removed.", this);
+
+        if (enemy.Data != null && enemy.Data.enemyAIType == EnemyAIType.ForestGuardian)
+        {
+            Logger.Log("👑 Boss defeated → Battle won!", this);
+            BattleManager.Instance.HandleBattleVictory();
+        }
 
         if (activeEnemies.Count == 0)
         {
@@ -112,8 +215,6 @@ public class EnemyManager : SceneSingleton<EnemyManager>
     /// <summary>
     /// Applies damage directly to a specific enemy.
     /// </summary>
-    /// <param name="targetEnemy">The enemy to damage.</param>
-    /// <param name="damage">Amount of damage.</param>
     public void ApplyDamageToEnemy(Enemy targetEnemy, int damage)
     {
         if (targetEnemy == null)
@@ -127,4 +228,79 @@ public class EnemyManager : SceneSingleton<EnemyManager>
     }
 
     public List<Enemy> Enemies => activeEnemies;
+
+    // =========================
+    // UTILS
+    // =========================
+    private void ClearExistingEnemiesIfAny()
+    {
+        foreach (var e in activeEnemies)
+            if (e != null) Destroy(e.gameObject);
+        activeEnemies.Clear();
+    }
+
+    /// <summary>
+    /// Spawns an enemy at runtime with optional parent, position, and rotation overrides.
+    /// </summary>
+
+    public Enemy SpawnEnemyRuntime(EnemyData enemyData, Transform parentOverride = null, Vector3? pos = null, Quaternion? rot = null)
+    {
+        if (enemyPrefab == null)
+        {
+            Logger.LogError("❌ Enemy prefab is NULL. Assign it in the inspector.", this);
+            return null;
+        }
+
+        Transform finalParent = parentOverride != null ? parentOverride
+                              : GameObject.Find("EnemyCanvas")?.transform;
+
+        if (finalParent == null)
+        {
+            Logger.LogError("❌ Could not find EnemyCanvas as parent for enemy spawn.", this);
+            return null;
+        }
+
+        Vector3 p = pos ?? Vector3.zero;
+        Quaternion r = rot ?? Quaternion.identity;
+
+        // ✅ χρησιμοποίησε το ίδιο pipeline με το SpawnEnemyAt
+        GameObject enemyObject = Instantiate(enemyPrefab, p, r, finalParent);
+
+        if (enemyObject.TryGetComponent(out Enemy enemyScript) && enemyObject.TryGetComponent(out EnemyDisplay enemyDisplay))
+        {
+            enemyScript.InitializeEnemy(enemyData, enemyDisplay);
+
+            // === AI wiring όπως στο SpawnEnemyAt ===
+            var ai = enemyObject.GetComponent<IEnemyAI>();
+            if (ai != null)
+            {
+                var playerStats = PlayerStats.Instance;
+                if (playerStats == null)
+                {
+                    Logger.LogError("❌ EnemyManager: PlayerStats.Instance is null (player not spawned yet).", this);
+                }
+                else
+                {
+                    ai.SetPlayerStats(playerStats);
+                }
+
+                ai.SetEnemyDisplay(enemyDisplay);
+                ai.InitializeAI();
+            }
+            // ===============================
+
+            activeEnemies.Add(enemyScript);
+            Logger.Log($"🌱 Runtime-spawned enemy: {enemyData.enemyName}", this);
+            return enemyScript;
+        }
+        else
+        {
+            Logger.LogError("❌ Enemy prefab must contain both Enemy and EnemyDisplay components!", enemyObject);
+            Destroy(enemyObject);
+            return null;
+        }
+    }
+
+
+
 }

@@ -46,6 +46,7 @@ public class DamageEffect : EffectData
             {
                 if (realDamage > 0)
                 {
+                    GameSession.Instance?.AddDamageTaken(realDamage);
                     AudioManager.Instance?.PlaySFX("Player_Hit");
                     playerTarget.playerDisplay.ShowDamagePopup(realDamage);
                 }
@@ -88,6 +89,10 @@ public class DamageEffect : EffectData
 
             if (enemyTarget != null && enemyTarget.enemyDisplay != null)
             {
+                
+                GameSession.Instance?.AddDamageDealt(damageAmount);
+
+                // ✅ Show damage popup on enemy display
                 enemyTarget.enemyDisplay.ShowDamagePopup(damageAmount);
 
                 // ✅ Play enemy hit sound effect

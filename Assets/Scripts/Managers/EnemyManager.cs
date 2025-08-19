@@ -199,6 +199,12 @@ public class EnemyManager : SceneSingleton<EnemyManager>
 
         Logger.Log($"☠️ {enemy.enemyName} has been defeated and removed.", this);
 
+        if (enemy.Data != null && enemy.Data.enemyAIType == EnemyAIType.ForestGuardian)
+        {
+            Logger.Log("👑 Boss defeated → Battle won!", this);
+            BattleManager.Instance.HandleBattleVictory();
+        }
+
         if (activeEnemies.Count == 0)
         {
             Logger.Log("🎉 All enemies defeated! Battle won!", this);

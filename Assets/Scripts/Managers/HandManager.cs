@@ -238,5 +238,51 @@ private void OnValidate()
         RemoveCardFromHand(card); // Περιλαμβάνει το Destroy
     }
 
+    public IEnumerator DiscardHandRoutine(bool animated = true)
+    {
+        // snapshot για ασφαλή iterate
+        var snapshot = new List<GameObject>(cardsInHand);
+
+        if (animated && discardPileAnchor != null)
+        {
+            // με animation (παράλληλα)
+            foreach (var card in snapshot)
+            {
+                if (card != null)
+                    StartCoroutine(AnimateDiscardAndRemoveCard(card));
+            }
+            // μικρό wait ώστε να προλάβουν τα tweens (ίδιο με το duration στο AnimateDiscardAndRemoveCard)
+            yield return new WaitForSeconds(0.55f);
+        }
+        else
+        {
+            // άμεσο discard χωρίς animation
+            foreach (var card in snapshot)
+            {
+                if (card != null)
+                    RemoveCardFromHand(card);
+            }
+            yield return null;
+        }
+
+        UpdateHandLayout();
+    }
+
+    public void DiscardEntireHandInstant()
+    {
+        var snapshot = new List<GameObject>(cardsInHand);
+        foreach (var card in snapshot)
+        {
+            if (card != null)
+                RemoveCardFromHand(card);
+        }
+        UpdateHandLayout();
+    }
+
+    public void DiscardHand()
+    {
+        // animated discard όλoυ του χεριού (ή άλλαξε σε false για instant)
+        StartCoroutine(DiscardHandRoutine(animated: true));
+    }
 
 }

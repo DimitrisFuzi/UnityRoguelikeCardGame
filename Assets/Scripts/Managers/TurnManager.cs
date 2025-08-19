@@ -32,7 +32,7 @@ public class TurnManager : SceneSingleton<TurnManager>
         if (playerManager == null)
             playerManager = FindFirstObjectByType<PlayerManager>();
 
-        StartPlayerTurn();
+        //StartPlayerTurn();
     }
 
     /// <summary>
@@ -46,6 +46,7 @@ public class TurnManager : SceneSingleton<TurnManager>
         BattleManager.Instance.UnlockPlayerInput();
 
         OnPlayerTurnStart?.Invoke();
+        HandManager.Instance.DrawCardsForTurn();
     }
 
     /// <summary>
@@ -57,6 +58,7 @@ public class TurnManager : SceneSingleton<TurnManager>
         IsPlayerTurn = false;
 
         BattleManager.Instance.LockPlayerInput();
+        HandManager.Instance.DiscardHand();
 
         OnPlayerTurnEnd?.Invoke();
 
@@ -115,6 +117,9 @@ public class TurnManager : SceneSingleton<TurnManager>
 
         Debug.Log("👿 Enemy Turn Ended!");
         OnEnemyTurnEnd?.Invoke();
+
+        if (GameSession.Instance != null)
+            GameSession.Instance.turnsTaken++;
 
         // Step 3: Start player's turn
         StartPlayerTurn();

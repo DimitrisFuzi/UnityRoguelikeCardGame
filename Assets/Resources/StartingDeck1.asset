@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Deep Focus
-  - Deep Focus
-  - Deep Focus
-  - Deep Focus
-  - Deep Focus
-  - Deep Focus
-  - Wide Swing
-  - Wide Swing
+  - Snap Decision
+  - Snap Decision
+  - Blood Rush
+  - Blood Rush
+  - Blood Rush
+  - Blood Rush
+  - Blood Rush
+  - Blood Rush

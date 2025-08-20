@@ -87,7 +87,8 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         }
 
         // Phase 1 summon timer (αν δεν έχει awaken & επιτρέπονται summons)
-        if (!awakened && canSummonFurther)
+        // ✅ ΜΗΝ κάνεις summon αν έχει ήδη τηλεγραφηθεί Awaken — δώσε προτεραιότητα στο Awaken.
+        if (!awakened && canSummonFurther && !awakenTelegraphed)
         {
             p1SummonCounter++;
             if (p1SummonCounter >= p1SummonEveryTurns && AliveMinionsCount() < 2)
@@ -144,6 +145,10 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         // Αν θα κάνει Awaken
         if (!awakened && (awakenTelegraphed || boss.CurrentHealth <= boss.MaxHealth / 2))
         {
+            // ✅ schedule το Awaken αν πέρασε το threshold, ώστε να ΜΗΝ χαθεί επειδή έγινε early return αλλού
+            if (!awakenTelegraphed && boss.CurrentHealth <= boss.MaxHealth / 2)
+                awakenTelegraphed = true;
+
             nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, specialIcon);
             return nextIntent;
         }

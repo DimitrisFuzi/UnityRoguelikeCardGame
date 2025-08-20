@@ -136,24 +136,25 @@ private void OnValidate()
     /// Removes a card GameObject from the hand, discards it, and destroys the GameObject.
     /// </summary>
     /// <param name="cardObject">The card GameObject to remove.</param>
-    public void RemoveCardFromHand(GameObject cardObject)
+    public void RemoveCardFromHand(GameObject cardObject, bool destroyGO = true)
     {
         if (cardObject != null && cardsInHand.Contains(cardObject))
         {
             cardsInHand.Remove(cardObject);
 
-            // Disable CardMovement to prevent hover/drag during destroy delay
-            var cm = cardObject.GetComponent<CardMovement>();
-            if (cm != null) cm.enabled = false;
+            if (destroyGO)
+            {
+                var cm = cardObject.GetComponent<CardMovement>();
+                if (cm != null) cm.enabled = false;
+            }
 
-            // Discard the card data if not exhausted
             var cd = cardObject.GetComponent<CardDisplay>();
             if (cd != null)
             {
                 if (cd.cardData.exhaustAfterUse)
                 {
                     Debug.Log($"[HandManager] '{cd.cardData.cardName}' was exhausted.");
-                    // Skip discard
+                    // exhaust → δεν πάει στη discard εδώ
                 }
                 else
                 {
@@ -161,25 +162,20 @@ private void OnValidate()
                 }
             }
 
-
-            // ✅ Kill all active DOTween tweens (position, scale, etc.)
             var rect = cardObject.GetComponent<RectTransform>();
-            if (rect != null)
-            {
-                rect.DOKill(); // Stop all tweens targeting this RectTransform
-            }
+            if (rect != null) rect.DOKill();
 
-            // Update hand layout
             UpdateHandLayout();
 
-            // Destroy the GameObject after a tiny delay
-            Destroy(cardObject, 0.01f);
+            if (destroyGO)
+                Destroy(cardObject, 0.01f);
         }
         else
         {
             Logger.LogWarning("Tried to remove null or not found card", this);
         }
     }
+
 
     // NEW: Force-discard helper που αγνοεί το exhaustAfterUse (για END TURN / unplayed)
     private void RemoveCardFromHandToDiscard(GameObject cardObject)

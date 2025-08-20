@@ -536,15 +536,56 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         private IEnumerator ApplyEffectsInSequence()
         {
-            var effects = cardData.GetCardEffects();
+            // 1) Πλήρωσε energy πριν κάνεις οτιδήποτε
+            PlayerManager.Instance.UseCard(cardData);
 
+            // 2) Βγάλε ΑΜΕΣΑ την κάρτα από το hand (χωρίς destroy για να συνεχίσουν τα effects)
+            HandManager.Instance.RemoveCardFromHand(this.gameObject, destroyGO: false);
+
+            // 3) Κρύψε εντελώς την κάρτα τώρα (χωρίς να σταματήσει η coroutine)
+            isInHand = false;
+            currentState = 0;
+
+            // Σβήσε οπτικά βοηθήματα
+            if (playArrow != null) playArrow.SetActive(false);
+            if (glowEffect != null)
+            {
+                var glowImg = glowEffect.GetComponent<Image>();
+                if (glowImg != null) DOTween.Kill(glowImg, complete: true);
+                glowEffect.SetActive(false);
+            }
+
+            // Σκότωσε ό,τι tween τρέχει πάνω στο GO
+            DOTween.Kill(gameObject, complete: true);
+
+            // Μην ξαναδέχεται raycasts
+            var selfImg = GetComponent<Image>();
+            if (selfImg != null) selfImg.raycastTarget = false;
+
+            // CanvasGroup για αόρατο/μη-κλικάμπλ
+            var cg = GetComponent<CanvasGroup>();
+            if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
+
+            // Προληπτικά μηδένισε scale ώστε να μην “αναβοσβήσει” ποτέ
+            var rt = GetComponent<RectTransform>();
+            if (rt != null) rt.localScale = Vector3.zero;
+
+            // (προαιρετικό) Απενεργοποίησε όλα τα child Graphics για σιγουριά
+            var gfx = GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
+            for (int i = 0; i < gfx.Length; i++) gfx[i].enabled = false;
+
+            // 4) Τρέξε τα effects ΣΕΙΡΙΑΚΑ (όχι StartCoroutine γύρω από το yield)
+            var effects = cardData.GetCardEffects();
             foreach (EffectData effect in effects)
             {
                 CharacterStats target = ResolveTargetForEffect(effect.targetType);
 
                 if (effect is ICoroutineEffect coroutineEffect)
                 {
-                    yield return StartCoroutine(coroutineEffect.ApplyEffectRoutine(PlayerStats.Instance, target));
+                    yield return coroutineEffect.ApplyEffectRoutine(PlayerStats.Instance, target);
                 }
                 else
                 {
@@ -552,10 +593,10 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
             }
 
-            PlayerManager.Instance.UseCard(cardData);
-            TransitionToIdle();
-            HandManager.Instance.RemoveCardFromHand(this.gameObject);
+            // 5) Τώρα μπορεί να φύγει οριστικά το GameObject
+            Destroy(this.gameObject);
         }
+
 
 
     }

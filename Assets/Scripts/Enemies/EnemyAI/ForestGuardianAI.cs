@@ -15,7 +15,11 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     // ---- Intent preview
     private EnemyIntent nextIntent;
     [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite specialIcon; // για Awaken/Summon
+    [SerializeField] private Sprite specialIcon;        // Summon icon
+    [SerializeField] private Sprite awakenIntentIcon;   // Awaken icon (ΝΕΟ)
+
+    // προαιρετικό public setter αν θέλεις να το περνάς από αλλού
+    public void SetAwakenIcon(Sprite s) => awakenIntentIcon = s;
 
     // ---- Tunables (fixed numbers)
     [Header("Boss Damage")]
@@ -48,6 +52,8 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     // ===== IEnemyAI =====
     public void SetPlayerStats(CharacterStats playerStats) => player = playerStats;
     public void SetEnemyDisplay(EnemyDisplay enemyDisplay) => display = enemyDisplay;
+
+    // attack = attack icon, buffOrSpecial = summon icon
     public void SetIntentIcons(Sprite attack, Sprite buffOrSpecial)
     {
         attackIcon = attack;
@@ -62,12 +68,23 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
     public void InitializeAI()
     {
+        // auto-config των wisp data από το EnemyData του boss αν δεν έχουν οριστεί
         if ((wispLeftData == null || wispRightData == null) && boss != null && boss.Data != null)
         {
             if (wispLeftData == null) wispLeftData = boss.Data.summonLeftData;
             if (wispRightData == null) wispRightData = boss.Data.summonRightData;
             Debug.Log($"[ForestGuardianAI] Auto-config from EnemyData → left={(wispLeftData != null)} right={(wispRightData != null)}", this);
         }
+
+        // φόρτωσε icons από EnemyData αν δεν έχουν ήδη οριστεί
+        var data = (boss != null) ? boss.Data : null;
+        if (data != null)
+        {
+            if (attackIcon == null) attackIcon = data.attackIntentIcon;
+            if (specialIcon == null) specialIcon = data.buffIntentIcon;      // Summon icon
+            if (awakenIntentIcon == null) awakenIntentIcon = data.awakenIntentIcon;    // Awaken icon
+        }
+
         PredictNextIntent();
     }
 
@@ -87,7 +104,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         }
 
         // Phase 1 summon timer (αν δεν έχει awaken & επιτρέπονται summons)
-        // ✅ ΜΗΝ κάνεις summon αν έχει ήδη τηλεγραφηθεί Awaken — δώσε προτεραιότητα στο Awaken.
+        // ΜΗΝ κάνεις summon αν έχει ήδη τηλεγραφηθεί Awaken — δώσε προτεραιότητα στο Awaken.
         if (!awakened && canSummonFurther && !awakenTelegraphed)
         {
             p1SummonCounter++;
@@ -115,7 +132,6 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             if (boss.CurrentHealth <= boss.MaxHealth / 2)
             {
                 awakenTelegraphed = true;
-                // Δεν κάνει κάτι τώρα – μόνο telegraph. Εκτέλεση στον επόμενο enemy γύρο.
                 PredictNextIntent();
                 return;
             }
@@ -142,14 +158,14 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             return nextIntent;
         }
 
-        // Αν θα κάνει Awaken
+        // Αν θα κάνει Awaken (με ξεχωριστό icon)
         if (!awakened && (awakenTelegraphed || boss.CurrentHealth <= boss.MaxHealth / 2))
         {
-            // ✅ schedule το Awaken αν πέρασε το threshold, ώστε να ΜΗΝ χαθεί επειδή έγινε early return αλλού
             if (!awakenTelegraphed && boss.CurrentHealth <= boss.MaxHealth / 2)
                 awakenTelegraphed = true;
 
-            nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, specialIcon);
+            var icon = (awakenIntentIcon != null) ? awakenIntentIcon : specialIcon;
+            nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, icon);
             return nextIntent;
         }
 

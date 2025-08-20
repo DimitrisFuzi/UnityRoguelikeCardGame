@@ -84,8 +84,8 @@ public class TurnManager : SceneSingleton<TurnManager>
             yield break;
         }
 
-        // Step 1: Perform enemy actions
-        enemyManager.PerformEnemyActions();
+        // Step 1: Perform enemy actions (wait until ALL finish)
+        yield return StartCoroutine(enemyManager.PerformEnemyActionsCoroutine());
 
         yield return new WaitForSeconds(1f); // Small delay before next intent setup
 

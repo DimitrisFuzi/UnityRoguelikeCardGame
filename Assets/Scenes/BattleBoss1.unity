@@ -2591,7 +2591,7 @@ MonoBehaviour:
   cardSpacing: 175
   verticalSpacing: 100
   maxHandSize: 8
-  startingHandSize: 8
+  startingHandSize: 5
   discardPileAnchor: {fileID: 894121366}
 --- !u!224 &6128613881901255266
 RectTransform:

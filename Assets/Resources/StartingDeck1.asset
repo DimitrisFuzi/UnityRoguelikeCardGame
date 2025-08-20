@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Shift Stance
-  - Shift Stance
-  - Shift Stance
-  - Deep Focus
-  - Deep Focus
-  - Deep Focus
-  - Brace
-  - Brace
-  - Brace
+  - Snap Decision
+  - Snap Decision
+  - Snap Decision
+  - Snap Decision
+  - Wide Swing
+  - Wide Swing
+  - Wide Swing
+  - Wide Swing

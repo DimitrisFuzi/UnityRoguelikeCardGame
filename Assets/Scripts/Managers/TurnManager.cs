@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Managers;
+using MyProjectF.Assets.Scripts.Player;
 
 
 /// <summary>
@@ -42,6 +43,13 @@ public class TurnManager : SceneSingleton<TurnManager>
     {
         Debug.Log("🎮 Player Turn Started!");
         IsPlayerTurn = true;
+
+        // ✅ Reset player energy & armor στην αρχή κάθε γύρου
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.ResetEnergy();
+            PlayerStats.Instance.ResetArmor();
+        }
 
         BattleManager.Instance.UnlockPlayerInput();
 

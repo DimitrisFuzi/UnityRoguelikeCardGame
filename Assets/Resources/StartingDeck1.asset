@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Lashing Out
-  - Lashing Out
-  - Lashing Out
-  - Gut Reaction
-  - Gut Reaction
-  - Gut Reaction
-  - Focus Breathing
-  - Focus Breathing
+  - Shift Stance
+  - Shift Stance
+  - Shift Stance
+  - Deep Focus
+  - Deep Focus
+  - Deep Focus
+  - Brace
+  - Brace
+  - Brace

@@ -181,6 +181,38 @@ private void OnValidate()
         }
     }
 
+    // NEW: Force-discard helper που αγνοεί το exhaustAfterUse (για END TURN / unplayed)
+    private void RemoveCardFromHandToDiscard(GameObject cardObject)
+    {
+        if (cardObject != null && cardsInHand.Contains(cardObject))
+        {
+            cardsInHand.Remove(cardObject);
+
+            // Disable CardMovement για να μην έχουμε hover/drag κατά την απομάκρυνση
+            var cm = cardObject.GetComponent<CardMovement>();
+            if (cm != null) cm.enabled = false;
+
+            // ΠΑΝΤΑ discard για unplayed κάρτες στο τέλος γύρου
+            var cd = cardObject.GetComponent<CardDisplay>();
+            if (cd != null)
+            {
+                DeckManager.Instance?.DiscardCard(cd.cardData);
+            }
+
+            // Kill τυχόν DOTweens
+            var rect = cardObject.GetComponent<RectTransform>();
+            if (rect != null) rect.DOKill();
+
+            UpdateHandLayout();
+            Destroy(cardObject, 0.01f);
+        }
+        else
+        {
+            Logger.LogWarning("Tried to remove null or not found card (ToDiscard)", this);
+        }
+    }
+
+
     /// <summary>
     /// Returns the next available card slot position in the hand layout.
     /// </summary> 
@@ -235,7 +267,8 @@ private void OnValidate()
 
         yield return new WaitForSeconds(duration);
 
-        RemoveCardFromHand(card); // Περιλαμβάνει το Destroy
+        RemoveCardFromHandToDiscard(card); // ✅ ΠΑΝΤΑ discard στο end turn
+
     }
 
     public IEnumerator DiscardHandRoutine(bool animated = true)
@@ -260,7 +293,7 @@ private void OnValidate()
             foreach (var card in snapshot)
             {
                 if (card != null)
-                    RemoveCardFromHand(card);
+                    RemoveCardFromHandToDiscard(card);
             }
             yield return null;
         }
@@ -274,7 +307,7 @@ private void OnValidate()
         foreach (var card in snapshot)
         {
             if (card != null)
-                RemoveCardFromHand(card);
+                RemoveCardFromHandToDiscard(card);
         }
         UpdateHandLayout();
     }

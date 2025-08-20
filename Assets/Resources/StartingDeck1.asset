@@ -13,14 +13,11 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Shift Stance
-  - Shift Stance
-  - Shift Stance
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Blood Rush
-  - Blood Rush
-  - Blood Rush
-  - Blood Rush
-  - Blood Rush
+  - Lashing Out
+  - Lashing Out
+  - Lashing Out
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
+  - Focus Breathing
+  - Focus Breathing

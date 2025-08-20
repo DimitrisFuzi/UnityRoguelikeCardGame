@@ -182,8 +182,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// </summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!isInHand || !enabled || BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn)
-                return;
+            if (Blocked() || !enabled) return;
+            
 
             if (currentState == 0)
             {
@@ -232,7 +232,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// </summary>
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
+            if (Blocked() || !enabled) return;
 
             if (currentState == 1)
             {
@@ -248,7 +248,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// </summary>
         public void OnDrag(PointerEventData eventData)
         {
-            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
+            if (Blocked() || !enabled) return;
+
 
             if (currentState == 2)
             {
@@ -286,7 +287,8 @@ namespace MyProjectF.Assets.Scripts.Cards
         /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (BattleManager.Instance.IsPlayerInputLocked || !TurnManager.Instance.IsPlayerTurn) return;
+            if (Blocked()) return;
+
 
             if (cardData == null)
             {
@@ -595,6 +597,15 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             // 5) Τώρα μπορεί να φύγει οριστικά το GameObject
             Destroy(this.gameObject);
+        }
+
+        private bool Blocked()
+        {
+            if (BattleManager.Instance != null && BattleManager.Instance.IsPlayerInputLocked) return true;
+            if (TurnManager.Instance != null && !TurnManager.Instance.IsPlayerTurn) return true;
+            if (HandManager.Instance != null && HandManager.Instance.IsDrawing) return true; // << νέο
+            if (!isInHand) return true;
+            return false;
         }
 
 

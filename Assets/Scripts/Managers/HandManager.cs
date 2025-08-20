@@ -27,6 +27,7 @@ public class HandManager : SceneSingleton<HandManager>
     public int MaxHandSize => maxHandSize;
     public int StartingHandSize => startingHandSize;
     public int CurrentHandSize => cardsInHand.Count;
+    public bool IsDrawing { get; private set; }
 
     private readonly List<GameObject> cardsInHand = new();
 
@@ -45,24 +46,18 @@ private void OnValidate()
 }
 #endif
 
-    private IEnumerator DrawStartingCardsCoroutine()
+    public IEnumerator DrawCardsRoutine(int count)
     {
-        Debug.Log($"🃏 Starting hand: current={CurrentHandSize}, starting={startingHandSize}, max={MaxHandSize}");
+        if (count <= 0) yield break;
 
-        int cardsToDraw = Mathf.Min(startingHandSize, MaxHandSize - CurrentHandSize);
-
-        for (int i = 0; i < cardsToDraw; i++)
-        {
-            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
-        }
-    }
-
-    private IEnumerator DrawMultipleCards(int count)
-    {
+        IsDrawing = true;
         for (int i = 0; i < count; i++)
-        {
             yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
-        }
+
+        // δώσε 1 frame ώστε να “κάτσουν” τα GO
+        yield return null;
+        UpdateHandLayout();
+        IsDrawing = false;
     }
 
 
@@ -75,11 +70,8 @@ private void OnValidate()
         int cardsToDraw = Mathf.Min(startingHandSize, spaceLeft);
 
         if (cardsToDraw > 0)
-            StartCoroutine(DrawMultipleCards(cardsToDraw));
+            StartCoroutine(DrawCardsRoutine(cardsToDraw));
     }
-
-
-
 
     /// <summary>
     /// Adds a new card GameObject to the hand and rearranges.

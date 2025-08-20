@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Handles the functionality of the End Turn button, including enabling/disabling
@@ -37,6 +38,19 @@ public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             DisableButton();
     }
 
+    private void Update()
+    {
+        bool allow =
+            TurnManager.Instance != null && TurnManager.Instance.IsPlayerTurn &&
+            !(BattleManager.Instance?.IsPlayerInputLocked ?? true) &&
+            !(TurnManager.Instance?.IsEndingTurn ?? false);   // ✅ ΧΩΡΙΣ IsDrawing
+
+        if (allow && !isInteractable) EnableButton();
+        else if (!allow && isInteractable) DisableButton();
+    }
+
+
+
     private void OnDestroy()
     {
         if (TurnManager.Instance != null)
@@ -48,9 +62,10 @@ public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     private void EndTurn()
     {
-        Debug.Log("⏭️ End Turn Button Pressed");
+        if (!isInteractable) return;          // debounce
+        DisableButton();                      // ✅ σβήστο αμέσως στο πάτημα (όχι κατά το draw)
         AudioManager.Instance?.PlaySFX("End_Turn");
-        TurnManager.Instance?.EndPlayerTurn();
+        TurnManager.Instance?.EndPlayerTurn();// θα περιμένει το draw μόνος του
     }
 
     private void EnableButton()

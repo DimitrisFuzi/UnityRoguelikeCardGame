@@ -30,6 +30,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
     // Intent state
     private EnemyIntent nextIntent;
     private bool doHealNext = true; // εναλλάξ Heal → Attack → Heal...
+    private bool plannedHealThisTurn = false;
 
     private void Awake()
     {
@@ -84,39 +85,56 @@ public class WispAI : MonoBehaviour, IEnemyAI
         int heal = awakened ? healAmountAwaken : healAmountP1;
         int atk = awakened ? attackAmountAwaken : attackAmountP1;
 
-        if (doHealNext && boss.CurrentHealth < boss.MaxHealth)
+        // ΤΩΡΙΝΗ κατάσταση του boss στην αρχή του enemy phase
+        bool bossWoundedNow = boss != null && boss.CurrentHealth < boss.MaxHealth;
+
+        // ΘΑ κάνουμε heal μόνο αν ήταν σειρά μας για heal ΚΑΙ υπάρχει κάτι να γιατρέψουμε
+        bool shouldHeal = doHealNext && bossWoundedNow;
+
+        if (shouldHeal)
         {
             var healFx = new HealEffect { healAmount = heal };
             healFx.ApplyEffect(self, boss);
+
+            // Μετά από επιτυχημένο heal → επόμενος γύρος Attack
+            doHealNext = false;
         }
         else
         {
             var dmgFx = new DamageEffect { damageAmount = atk };
             dmgFx.ApplyEffect(self, player);
+
+            // Μετά από Attack → επόμενος γύρος θα προσπαθήσει Heal
+            doHealNext = true;
         }
 
-        doHealNext = !doHealNext;
+        // Υπολόγισε από τώρα το επόμενο preview (εκτός player turn, άρα ΟΚ)
         PredictNextIntent();
     }
 
+
+
     public EnemyIntent PredictNextIntent()
     {
-        // icons απευθείας από EnemyData (source of truth), με fallback στα πεδία αν λείπουν
+        // Αν είμαστε στο player turn, ΜΗΝ αλλάζεις το σχέδιο/preview
+        if (TurnManager.Instance != null && TurnManager.Instance.IsPlayerTurn && nextIntent != null)
+            return nextIntent;
+
+        // icons από EnemyData με fallback
         Sprite atkIcon = (self != null ? self.Data?.attackIntentIcon : null) ?? attackIcon;
         Sprite healIco = (self != null ? self.Data?.healIntentIcon : null) ?? healIcon;
 
-        if (bossAI == null)
-        {
-            nextIntent = new EnemyIntent(IntentType.Special, "Heal", 0, healIco);
-            return nextIntent;
-        }
-
-        bool awakened = bossAI.IsAwakened;
+        bool awakened = bossAI != null && bossAI.IsAwakened;
         int heal = awakened ? healAmountAwaken : healAmountP1;
         int atk = awakened ? attackAmountAwaken : attackAmountP1;
 
-        if (doHealNext && boss != null && boss.CurrentHealth < boss.MaxHealth)
-            nextIntent = new EnemyIntent(IntentType.Special, $"+{heal}", 0, healIco);   // ✅ heal icon
+        bool bossWounded = boss != null && boss.CurrentHealth < boss.MaxHealth;
+
+        // NEW: κλειδώνουμε το σχέδιο που θα εκτελεστεί στο enemy phase
+        plannedHealThisTurn = doHealNext && bossWounded;
+
+        if (plannedHealThisTurn)
+            nextIntent = new EnemyIntent(IntentType.Special, $"+{heal}", 0, healIco); // heal preview
         else
             nextIntent = new EnemyIntent(IntentType.Attack, atk.ToString(), atk, atkIcon);
 

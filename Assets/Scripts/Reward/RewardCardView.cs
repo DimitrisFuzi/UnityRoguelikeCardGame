@@ -92,7 +92,7 @@ public class RewardCardView : MonoBehaviour
                 brt.sizeDelta = Vector2.zero;
             }
             var img = button.GetComponent<UnityEngine.UI.Image>();
-            if (img) { var c = img.color; c.a = 0.2f; img.color = c; } // προσωρινά για να φαίνεται
+            if (img) { var c = img.color; c.a = 0f; img.color = c; }
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => this.onChosen?.Invoke(this));
             button.interactable = true;

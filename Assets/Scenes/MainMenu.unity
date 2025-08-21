@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8ba1cd6a327ab4bbe5b3e4f3f9f56b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreenFader
-  defaultDuration: 1.5
+  defaultDuration: 1.3
 --- !u!4 &80464362
 Transform:
   m_ObjectHideFlags: 0
@@ -2052,7 +2052,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StartupFadeController
   backgroundVideo: {fileID: 181972246}
-  fadeInDuration: 2.5
+  fadeInDuration: 2
 --- !u!4 &2071047775
 Transform:
   m_ObjectHideFlags: 0

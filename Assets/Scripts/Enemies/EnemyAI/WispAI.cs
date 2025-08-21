@@ -85,18 +85,13 @@ public class WispAI : MonoBehaviour, IEnemyAI
         int heal = awakened ? healAmountAwaken : healAmountP1;
         int atk = awakened ? attackAmountAwaken : attackAmountP1;
 
-        // ΤΩΡΙΝΗ κατάσταση του boss στην αρχή του enemy phase
-        bool bossWoundedNow = boss != null && boss.CurrentHealth < boss.MaxHealth;
-
-        // ΘΑ κάνουμε heal μόνο αν ήταν σειρά μας για heal ΚΑΙ υπάρχει κάτι να γιατρέψουμε
-        bool shouldHeal = doHealNext && bossWoundedNow;
-
-        if (shouldHeal)
+        // ✅ ΜΗΝ ξαναποφασίζεις εδώ. Εκτέλεσε αυτό που είχε κλειδωθεί στο preview:
+        if (plannedHealThisTurn)
         {
             var healFx = new HealEffect { healAmount = heal };
             healFx.ApplyEffect(self, boss);
 
-            // Μετά από επιτυχημένο heal → επόμενος γύρος Attack
+            // Μετά από Heal → επόμενος κύκλος θα πάει σε Attack
             doHealNext = false;
         }
         else
@@ -104,13 +99,14 @@ public class WispAI : MonoBehaviour, IEnemyAI
             var dmgFx = new DamageEffect { damageAmount = atk };
             dmgFx.ApplyEffect(self, player);
 
-            // Μετά από Attack → επόμενος γύρος θα προσπαθήσει Heal
+            // Μετά από Attack → επόμενος κύκλος θα «προσπαθήσει» Heal
             doHealNext = true;
         }
 
-        // Υπολόγισε από τώρα το επόμενο preview (εκτός player turn, άρα ΟΚ)
+        // Υπολόγισε & κλείδωσε από τώρα το επόμενο intent (εκτός player turn)
         PredictNextIntent();
     }
+
 
 
 

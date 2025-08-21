@@ -100,9 +100,10 @@ public class DeckManager : SceneSingleton<DeckManager>
             TaskCompletionSource<bool> tcs = new();
             
             Sequence drawSeq = DOTween.Sequence();
-            drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.25f).SetEase(Ease.OutQuad));
-            drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.25f).SetEase(Ease.InQuad));
-            drawSeq.Join(cardRect.DOScale(1f, 0.3f));
+            drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.20f).SetEase(Ease.OutCubic));
+            //drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.20f).SetEase(Ease.OutQuad));
+            drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.20f).SetEase(Ease.InCubic));
+            drawSeq.Join(cardRect.DOScale(1f, 0.25f));
             drawSeq.OnComplete(() =>
             {
                 HandManager.Instance.AddCardToHand(newCardObject);

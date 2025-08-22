@@ -36,6 +36,10 @@ public class EnemyData : ScriptableObject
     public Sprite attackIntentIcon;
     [Tooltip("Sprite for the buff intent.")]
     public Sprite buffIntentIcon;
+    [Tooltip("Sprite for the heal intent.")]
+    public Sprite healIntentIcon;
+    [Tooltip("Sprite for the awaken intent.")]
+    public Sprite awakenIntentIcon;
 
     [Header("Boss Summon Config (optional)")]
     public EnemyData summonLeftData;   // ð.÷. WispLeft.asset

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Managers;
+using MyProjectF.Assets.Scripts.Player;
 
 
 /// <summary>
@@ -18,6 +19,10 @@ public class TurnManager : SceneSingleton<TurnManager>
     [Header("References")]
     [SerializeField] private EnemyManager enemyManager;
     [SerializeField] private PlayerManager playerManager;
+
+    private bool _endingTurn;
+
+    public bool IsEndingTurn => _endingTurn;
 
     /// <summary>
     /// Returns true if it's currently the player's turn.
@@ -43,6 +48,13 @@ public class TurnManager : SceneSingleton<TurnManager>
         Debug.Log("🎮 Player Turn Started!");
         IsPlayerTurn = true;
 
+        // ✅ Reset player energy & armor στην αρχή κάθε γύρου
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.ResetEnergy();
+            PlayerStats.Instance.ResetArmor();
+        }
+
         BattleManager.Instance.UnlockPlayerInput();
 
         OnPlayerTurnStart?.Invoke();
@@ -54,15 +66,41 @@ public class TurnManager : SceneSingleton<TurnManager>
     /// </summary>
     public void EndPlayerTurn()
     {
+        // Μη ξεκινάς δεύτερο end-turn αν ήδη τρέχει
+        if (_endingTurn) return;
+        StartCoroutine(EndPlayerTurnRoutine());
+    }
+
+
+    /// <summary>
+    /// Ends the player's turn with a coroutine, ensuring all actions are complete.
+    /// </summary>
+    private IEnumerator EndPlayerTurnRoutine()
+    {
+        _endingTurn = true;
+
+        // Κλείδωσε input αμέσως για να μη γίνουν άλλα clicks/plays
+        BattleManager.Instance.LockPlayerInput();
+
+        // Αν τραβάμε κάρτες (start-of-turn ή mid-turn effect), περίμενε να τελειώσει
+        if (HandManager.Instance != null)
+        {
+            while (HandManager.Instance.IsDrawing)
+                yield return null; // 1 frame
+        }
+
         Debug.Log("🎮 Player Turn Ended!");
         IsPlayerTurn = false;
 
-        BattleManager.Instance.LockPlayerInput();
-        HandManager.Instance.DiscardHand();
+        // Περίμενε να αδειάσει το χέρι (ώστε να μην πέσουν animations πάνω στον enemy γύρο)
+        yield return StartCoroutine(HandManager.Instance.DiscardHandRoutine(animated: true));
 
         OnPlayerTurnEnd?.Invoke();
 
-        StartCoroutine(EnemyTurn());
+        // Τώρα ξεκινά ο enemy γύρος
+        yield return StartCoroutine(EnemyTurn());
+
+        _endingTurn = false;
     }
 
     /// <summary>
@@ -84,8 +122,8 @@ public class TurnManager : SceneSingleton<TurnManager>
             yield break;
         }
 
-        // Step 1: Perform enemy actions
-        enemyManager.PerformEnemyActions();
+        // Step 1: Perform enemy actions (wait until ALL finish)
+        yield return StartCoroutine(enemyManager.PerformEnemyActionsCoroutine());
 
         yield return new WaitForSeconds(1f); // Small delay before next intent setup
 

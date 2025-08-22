@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 /// <summary>
 /// Enum for all known scenes used in scene flow.
@@ -46,8 +47,7 @@ public class SceneFlowManager : MonoBehaviour
 
     public void LoadScene(SceneType scene)
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(scene.ToString());
+        StartCoroutine(LoadSceneWithFade(scene.ToString()));
     }
 
     public void LoadNextAfterBattle()
@@ -67,6 +67,39 @@ public class SceneFlowManager : MonoBehaviour
         {
             Debug.LogError($"❌ Current scene '{SceneManager.GetActiveScene().name}' is not mapped in SceneType enum.");
         }
+    }
+
+    private IEnumerator LoadSceneWithFade(string sceneName)
+    {
+        // φτιάξε (αν λείπει) τον fader
+        if (ScreenFader.Instance == null)
+            new GameObject("ScreenFader").AddComponent<ScreenFader>();
+
+        // Fade out
+        yield return ScreenFader.Instance.FadeOut();
+
+        // Async φόρτωμα χωρίς άμεση ενεργοποίηση
+        var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+        op.allowSceneActivation = false;
+
+        while (op.progress < 0.9f)
+            yield return null;
+
+        // Προαιρετικό: 1 frame για να “κάτσουν” τα αντικείμενα
+        yield return null;
+
+        // Ενεργοποίησε τη σκηνή
+        op.allowSceneActivation = true;
+        while (!op.isDone) yield return null;
+
+        // ✅ φέρε σίγουρα μπροστά το overlay στη ΝΕΑ σκηνή
+        ScreenFader.Instance?.BringToFront();
+
+        // ✅ δώσε ένα frame να “κάτσει” το UI της μάχης
+        yield return null;
+
+        // Fade in
+        yield return ScreenFader.Instance.FadeIn();
     }
 
     public void RetryCurrentScene()

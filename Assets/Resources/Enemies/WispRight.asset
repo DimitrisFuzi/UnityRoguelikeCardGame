@@ -20,5 +20,7 @@ MonoBehaviour:
   enemyAIType: 5
   attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  healIntentIcon: {fileID: -1278845700038102061, guid: 6f617f4c095b9d44dae91d4f1512daa1, type: 3}
+  awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}
   summonRightData: {fileID: 0}

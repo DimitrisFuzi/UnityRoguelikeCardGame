@@ -16,8 +16,15 @@ public class RewardSceneController : MonoBehaviour
     private readonly List<RewardCardView> spawned = new();
     private bool choiceMade = false;
 
+    [SerializeField] private RectTransform selectedAnchor;
+    [SerializeField] private float disappearDuration = 0.25f;
+    [SerializeField] private float moveDuration = 0.35f;
+    [SerializeField] private float zoomScale = 1.15f;
+
+
     void Start()
     {
+        AudioManager.Instance?.StopMusic();
         Time.timeScale = 1f;
 
         if (continueButton) continueButton.gameObject.SetActive(false);
@@ -66,7 +73,17 @@ public class RewardSceneController : MonoBehaviour
 
         foreach (var c in spawned) c.Interactable(false);
 
-        // ⬇️ πάρε το όνομα
+        // ➜ κάνε fade-out/καταστροφή στις υπόλοιπες
+        foreach (var c in spawned)
+        {
+            if (c != chosen && c != null)
+                StartCoroutine(FadeAndDestroy(c.gameObject, disappearDuration));
+        }
+
+        // ➜ animate την επιλεγμένη προς κέντρο + zoom-in
+        StartCoroutine(AnimateChosenToCenter(chosen));
+
+        // business logic ως έχει
         string cardName = chosen?.def?.cardData ? chosen.def.cardData.cardName : null;
         ApplyCard(cardName);
 
@@ -79,8 +96,96 @@ public class RewardSceneController : MonoBehaviour
         }
     }
 
+    System.Collections.IEnumerator FadeAndDestroy(GameObject go, float duration)
+    {
+        if (!go) yield break;
+        var cg = go.GetComponent<CanvasGroup>();
+        if (!cg) cg = go.AddComponent<CanvasGroup>();
+        float t = 0f;
+        float start = cg.alpha;
 
+        // προαιρετικά: κλείσε raycasts
+        cg.blocksRaycasts = false;
+        cg.interactable = false;
 
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            cg.alpha = Mathf.Lerp(start, 0f, t / duration);
+            yield return null;
+        }
+        cg.alpha = 0f;
+        Destroy(go);
+    }
+
+    System.Collections.IEnumerator AnimateChosenToCenter(RewardCardView chosen)
+    {
+        if (chosen == null) yield break;
+
+        // 1) Απενεργοποίησε προσωρινά το layout του container
+        var h = cardParent.GetComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+        var g = cardParent.GetComponent<UnityEngine.UI.GridLayoutGroup>();
+        bool hadH = h && h.enabled;
+        bool hadG = g && g.enabled;
+        if (h) h.enabled = false;
+        if (g) g.enabled = false;
+
+        var rt = chosen.transform as RectTransform;
+
+        // 2) Βεβαιώσου ότι έχουμε CanvasGroup για smooth fade/hold
+        var cg = chosen.GetComponent<CanvasGroup>();
+        if (!cg) cg = chosen.gameObject.AddComponent<CanvasGroup>();
+        cg.blocksRaycasts = false; // ήδη μη-interactive
+
+        // 3) Υπολόγισε στόχο (anchor αν δώσεις, αλλιώς κέντρο root canvas)
+        RectTransform rootCanvasRt = null;
+        var canvas = GetComponentInParent<Canvas>();
+        if (!canvas) canvas = FindAnyObjectByType<Canvas>();
+        if (canvas) rootCanvasRt = canvas.transform as RectTransform;
+
+        // Κρατάμε αρχικές τιμές για smooth lerp
+        Vector3 startPos = rt.position;
+        Vector3 startScale = rt.localScale;
+
+        Vector3 targetPos;
+        Transform originalParent = rt.parent;
+
+        if (selectedAnchor != null)
+        {
+            // Βάλε το chosen στον ίδιο parent με το anchor για απλό position tween στο ίδιο space
+            rt.SetParent(selectedAnchor.parent, worldPositionStays: true);
+            targetPos = selectedAnchor.position;
+        }
+        else if (rootCanvasRt != null)
+        {
+            // Χωρίς anchor: στόχος το κέντρο του καμβά
+            rt.SetParent(rootCanvasRt, worldPositionStays: true);
+            targetPos = rootCanvasRt.TransformPoint(rootCanvasRt.rect.center);
+        }
+        else
+        {
+            // Fallback: μικρό κέντρο οθόνης
+            targetPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
+        }
+
+        // 4) Tween θέση/κλίμακα
+        float t = 0f;
+        while (t < moveDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / moveDuration));
+            rt.position = Vector3.Lerp(startPos, targetPos, k);
+            rt.localScale = Vector3.Lerp(startScale, Vector3.one * zoomScale, k);
+            yield return null;
+        }
+        rt.position = targetPos;
+        rt.localScale = Vector3.one * zoomScale;
+
+        // 5) (προαιρετικό) Αν θες να μείνει στο anchor layout-free, μην το επιστρέψεις στον αρχικό parent.
+        // Αν θέλεις να ξαναενεργοποιηθεί το layout για τα υπόλοιπα UI, μπορείς τώρα:
+        if (h && hadH) h.enabled = true;
+        if (g && hadG) g.enabled = true;
+    }
 
     void ApplyCard(string cardName)
     {

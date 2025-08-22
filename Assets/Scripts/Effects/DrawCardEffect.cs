@@ -13,10 +13,6 @@ public class DrawCardEffect : EffectData, ICoroutineEffect
 
     public IEnumerator ApplyEffectRoutine(CharacterStats source, CharacterStats target)
     {
-        for (int i = 0; i < cardsToDraw; i++)
-        {
-            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
-
-        }
+        yield return HandManager.Instance.DrawCardsRoutine(cardsToDraw);
     }
 }

@@ -27,6 +27,7 @@ public class HandManager : SceneSingleton<HandManager>
     public int MaxHandSize => maxHandSize;
     public int StartingHandSize => startingHandSize;
     public int CurrentHandSize => cardsInHand.Count;
+    public bool IsDrawing { get; private set; }
 
     private readonly List<GameObject> cardsInHand = new();
 
@@ -45,24 +46,18 @@ private void OnValidate()
 }
 #endif
 
-    private IEnumerator DrawStartingCardsCoroutine()
+    public IEnumerator DrawCardsRoutine(int count)
     {
-        Debug.Log($"🃏 Starting hand: current={CurrentHandSize}, starting={startingHandSize}, max={MaxHandSize}");
+        if (count <= 0) yield break;
 
-        int cardsToDraw = Mathf.Min(startingHandSize, MaxHandSize - CurrentHandSize);
-
-        for (int i = 0; i < cardsToDraw; i++)
-        {
-            yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
-        }
-    }
-
-    private IEnumerator DrawMultipleCards(int count)
-    {
+        IsDrawing = true;
         for (int i = 0; i < count; i++)
-        {
             yield return DeckManager.Instance.DrawCardAsync().AsCoroutine();
-        }
+
+        // δώσε 1 frame ώστε να “κάτσουν” τα GO
+        yield return null;
+        UpdateHandLayout();
+        IsDrawing = false;
     }
 
 
@@ -75,11 +70,8 @@ private void OnValidate()
         int cardsToDraw = Mathf.Min(startingHandSize, spaceLeft);
 
         if (cardsToDraw > 0)
-            StartCoroutine(DrawMultipleCards(cardsToDraw));
+            StartCoroutine(DrawCardsRoutine(cardsToDraw));
     }
-
-
-
 
     /// <summary>
     /// Adds a new card GameObject to the hand and rearranges.
@@ -136,24 +128,25 @@ private void OnValidate()
     /// Removes a card GameObject from the hand, discards it, and destroys the GameObject.
     /// </summary>
     /// <param name="cardObject">The card GameObject to remove.</param>
-    public void RemoveCardFromHand(GameObject cardObject)
+    public void RemoveCardFromHand(GameObject cardObject, bool destroyGO = true)
     {
         if (cardObject != null && cardsInHand.Contains(cardObject))
         {
             cardsInHand.Remove(cardObject);
 
-            // Disable CardMovement to prevent hover/drag during destroy delay
-            var cm = cardObject.GetComponent<CardMovement>();
-            if (cm != null) cm.enabled = false;
+            if (destroyGO)
+            {
+                var cm = cardObject.GetComponent<CardMovement>();
+                if (cm != null) cm.enabled = false;
+            }
 
-            // Discard the card data if not exhausted
             var cd = cardObject.GetComponent<CardDisplay>();
             if (cd != null)
             {
                 if (cd.cardData.exhaustAfterUse)
                 {
                     Debug.Log($"[HandManager] '{cd.cardData.cardName}' was exhausted.");
-                    // Skip discard
+                    // exhaust → δεν πάει στη discard εδώ
                 }
                 else
                 {
@@ -161,25 +154,52 @@ private void OnValidate()
                 }
             }
 
-
-            // ✅ Kill all active DOTween tweens (position, scale, etc.)
             var rect = cardObject.GetComponent<RectTransform>();
-            if (rect != null)
-            {
-                rect.DOKill(); // Stop all tweens targeting this RectTransform
-            }
+            if (rect != null) rect.DOKill();
 
-            // Update hand layout
             UpdateHandLayout();
 
-            // Destroy the GameObject after a tiny delay
-            Destroy(cardObject, 0.01f);
+            if (destroyGO)
+                Destroy(cardObject, 0.01f);
         }
         else
         {
             Logger.LogWarning("Tried to remove null or not found card", this);
         }
     }
+
+
+    // NEW: Force-discard helper που αγνοεί το exhaustAfterUse (για END TURN / unplayed)
+    private void RemoveCardFromHandToDiscard(GameObject cardObject)
+    {
+        if (cardObject != null && cardsInHand.Contains(cardObject))
+        {
+            cardsInHand.Remove(cardObject);
+
+            // Disable CardMovement για να μην έχουμε hover/drag κατά την απομάκρυνση
+            var cm = cardObject.GetComponent<CardMovement>();
+            if (cm != null) cm.enabled = false;
+
+            // ΠΑΝΤΑ discard για unplayed κάρτες στο τέλος γύρου
+            var cd = cardObject.GetComponent<CardDisplay>();
+            if (cd != null)
+            {
+                DeckManager.Instance?.DiscardCard(cd.cardData);
+            }
+
+            // Kill τυχόν DOTweens
+            var rect = cardObject.GetComponent<RectTransform>();
+            if (rect != null) rect.DOKill();
+
+            UpdateHandLayout();
+            Destroy(cardObject, 0.01f);
+        }
+        else
+        {
+            Logger.LogWarning("Tried to remove null or not found card (ToDiscard)", this);
+        }
+    }
+
 
     /// <summary>
     /// Returns the next available card slot position in the hand layout.
@@ -235,7 +255,8 @@ private void OnValidate()
 
         yield return new WaitForSeconds(duration);
 
-        RemoveCardFromHand(card); // Περιλαμβάνει το Destroy
+        RemoveCardFromHandToDiscard(card); // ✅ ΠΑΝΤΑ discard στο end turn
+
     }
 
     public IEnumerator DiscardHandRoutine(bool animated = true)
@@ -260,7 +281,7 @@ private void OnValidate()
             foreach (var card in snapshot)
             {
                 if (card != null)
-                    RemoveCardFromHand(card);
+                    RemoveCardFromHandToDiscard(card);
             }
             yield return null;
         }
@@ -274,7 +295,7 @@ private void OnValidate()
         foreach (var card in snapshot)
         {
             if (card != null)
-                RemoveCardFromHand(card);
+                RemoveCardFromHandToDiscard(card);
         }
         UpdateHandLayout();
     }

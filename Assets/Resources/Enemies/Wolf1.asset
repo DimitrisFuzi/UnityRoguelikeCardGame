@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: Wolf1
   m_EditorClassIdentifier: 
   enemyName: Wolf1
-  health: 30
+  health: 1
   enemySprite: {fileID: -7182203434520209011, guid: fda09dbcb3f912d46b4176509c07651d, type: 3}
   position: {x: -600, y: -60}
   size: {x: 200, y: 200}
   enemyAIType: 1
   attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  healIntentIcon: {fileID: 0}
+  awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}
   summonRightData: {fileID: 0}

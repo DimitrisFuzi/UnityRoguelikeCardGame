@@ -15,7 +15,11 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     // ---- Intent preview
     private EnemyIntent nextIntent;
     [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite specialIcon; // για Awaken/Summon
+    [SerializeField] private Sprite specialIcon;        // Summon icon
+    [SerializeField] private Sprite awakenIntentIcon;   // Awaken icon (ΝΕΟ)
+
+    // προαιρετικό public setter αν θέλεις να το περνάς από αλλού
+    public void SetAwakenIcon(Sprite s) => awakenIntentIcon = s;
 
     // ---- Tunables (fixed numbers)
     [Header("Boss Damage")]
@@ -24,6 +28,10 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
     [Header("Summon Timing")]
     [SerializeField] private int p1SummonEveryTurns = 3;
+
+    // --- ΝΕΑ πεδία για "1 γύρο latency" στο Awaken
+    private int enemyTurnIndex = 0;         // μετρητής γύρων του boss
+    private int awakenTelegraphTurn = -1;   // σε ποιο enemyTurnIndex τηλεγραφήθηκε
 
     private EnemyData wispLeftData;
     private EnemyData wispRightData;
@@ -48,6 +56,8 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     // ===== IEnemyAI =====
     public void SetPlayerStats(CharacterStats playerStats) => player = playerStats;
     public void SetEnemyDisplay(EnemyDisplay enemyDisplay) => display = enemyDisplay;
+
+    // attack = attack icon, buffOrSpecial = summon icon
     public void SetIntentIcons(Sprite attack, Sprite buffOrSpecial)
     {
         attackIcon = attack;
@@ -62,32 +72,71 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
     public void InitializeAI()
     {
+        // auto-config των wisp data από το EnemyData του boss αν δεν έχουν οριστεί
         if ((wispLeftData == null || wispRightData == null) && boss != null && boss.Data != null)
         {
             if (wispLeftData == null) wispLeftData = boss.Data.summonLeftData;
             if (wispRightData == null) wispRightData = boss.Data.summonRightData;
             Debug.Log($"[ForestGuardianAI] Auto-config from EnemyData → left={(wispLeftData != null)} right={(wispRightData != null)}", this);
         }
+
+        // φόρτωσε icons από EnemyData αν δεν έχουν ήδη οριστεί
+        var data = (boss != null) ? boss.Data : null;
+        if (data != null)
+        {
+            if (attackIcon == null) attackIcon = data.attackIntentIcon;
+            if (specialIcon == null) specialIcon = data.buffIntentIcon;      // Summon icon
+            if (awakenIntentIcon == null) awakenIntentIcon = data.awakenIntentIcon;    // Awaken icon
+        }
+
         PredictNextIntent();
     }
 
     public void ExecuteTurn()
     {
-        // 1) Start of boss turn: ramp, scheduled spawns
+        // Φρέσκο preview για UI (χωρίς side-effects)
+        var previewNow = PredictNextIntent();
+        display?.SetIntent(previewNow);
+
+        // Μετρητής γύρων boss
+        enemyTurnIndex++;
+
+        // 1) Start-of-turn ramp
         ramp += rampPerTurn;
 
-        // Scheduled double-summon after Awaken with 0 summons
+        // 2) Awaken με 1 γύρο latency (πρώτα από όλα, ώστε να μπλοκάρει Summon στον γύρο τηλεγράφησης)
+        if (!awakened)
+        {
+            // Αν έχει τηλεγραφηθεί σε ΠΡΟΗΓΟΥΜΕΝΟ enemy γύρο → τώρα εκτέλεσέ το
+            if (awakenTelegraphed && enemyTurnIndex > awakenTelegraphTurn)
+            {
+                DoAwaken();
+                PredictNextIntent();
+                return;
+            }
+
+            // Αν τώρα είναι ≤50% και δεν έχει τηλεγραφηθεί → ΤΩΡΑ τηλεγράφησέ το (εκτέλεση από τον επόμενο γύρο)
+            if (!awakenTelegraphed && boss.CurrentHealth <= boss.MaxHealth / 2)
+            {
+                awakenTelegraphed = true;
+                awakenTelegraphTurn = enemyTurnIndex;
+                PredictNextIntent();
+                // δεν κάνουμε return — αυτός ο γύρος θα είναι Attack, ΟΧΙ Summon
+            }
+        }
+
+        // 3) Scheduled double-summon αμέσως μετά από Awaken χωρίς minions
         if (doubleSummonNextTurn)
         {
             SpawnUntilFull();
             doubleSummonNextTurn = false;
             canSummonFurther = false; // δεν ξανακάνει summons μετά
             PredictNextIntent();
-            return; // η κίνηση αυτόν τον γύρο είναι μόνο summon
+            return;
         }
 
-        // Phase 1 summon timer (αν δεν έχει awaken & επιτρέπονται summons)
-        if (!awakened && canSummonFurther)
+        // 4) Phase-1 Summon timer — ΜΟΝΟ αν ΔΕΝ έχει τηλεγραφηθεί Awaken
+        if (!awakened && canSummonFurther && !awakenTelegraphed)
         {
             p1SummonCounter++;
             if (p1SummonCounter >= p1SummonEveryTurns && AliveMinionsCount() < 2)
@@ -99,60 +148,42 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             }
         }
 
-        // 2) Awaken trigger/execute
-        if (!awakened)
-        {
-            // Αν έχει telegraph-άρει Awaken από προηγούμενο Predict → εκτέλεσέ το
-            if (awakenTelegraphed)
-            {
-                DoAwaken();
-                PredictNextIntent();
-                return;
-            }
-
-            // Μόλις πέσει ≤ 50% → telegraph Awaken για τον επόμενο enemy γύρο
-            if (boss.CurrentHealth <= boss.MaxHealth / 2)
-            {
-                awakenTelegraphed = true;
-                // Δεν κάνει κάτι τώρα – μόνο telegraph. Εκτέλεση στον επόμενο enemy γύρο.
-                PredictNextIntent();
-                return;
-            }
-        }
-
-        // 3) Κανονικό Attack
+        // 5) Κανονικό Attack
         DoAttack(BaseDamage());
         PredictNextIntent();
     }
 
+
     public EnemyIntent PredictNextIntent()
     {
-        // Αν έχει προγραμματιστεί double-summon
+        // 1) Αν έχει προγραμματιστεί double-summon
         if (doubleSummonNextTurn)
         {
             nextIntent = new EnemyIntent(IntentType.Special, "Summon x2", 0, specialIcon);
             return nextIntent;
         }
 
-        // Αν θα summon-άρει αυτό το turn (P1 κάθε 3 γύρους)
+        // 2) Awaken PREVIEW έχει προτεραιότητα στο UI
+        if (!awakened && (awakenTelegraphed || boss.CurrentHealth <= boss.MaxHealth / 2))
+        {
+            var icon = (awakenIntentIcon != null) ? awakenIntentIcon : specialIcon;
+            nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, icon);
+            return nextIntent;
+        }
+
+        // 3) Διαφορετικά, δείξε Summon αν έρχεται αυτό (P1 timer)
         if (!awakened && canSummonFurther && p1SummonCounter + 1 >= p1SummonEveryTurns && AliveMinionsCount() < 2)
         {
             nextIntent = new EnemyIntent(IntentType.Special, "Summon", 0, specialIcon);
             return nextIntent;
         }
 
-        // Αν θα κάνει Awaken
-        if (!awakened && (awakenTelegraphed || boss.CurrentHealth <= boss.MaxHealth / 2))
-        {
-            nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, specialIcon);
-            return nextIntent;
-        }
-
-        // Αλλιώς Attack preview
+        // 4) Αλλιώς Attack preview
         int preview = BaseDamage();
         nextIntent = new EnemyIntent(IntentType.Attack, preview.ToString(), preview, attackIcon);
         return nextIntent;
     }
+
 
     public EnemyIntent GetCurrentIntent() => nextIntent;
 

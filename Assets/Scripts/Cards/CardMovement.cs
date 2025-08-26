@@ -538,8 +538,10 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         private IEnumerator ApplyEffectsInSequence()
         {
+
             // 1) Πλήρωσε energy πριν κάνεις οτιδήποτε
             PlayerManager.Instance.UseCard(cardData);
+            Debug.Log($"[CardMovement] Played {cardData.cardName}, cost={cardData.energyCost}, remaining energy={PlayerStats.Instance.energy}");
 
             // 2) Βγάλε ΑΜΕΣΑ την κάρτα από το hand (χωρίς destroy για να συνεχίσουν τα effects)
             HandManager.Instance.RemoveCardFromHand(this.gameObject, destroyGO: false);

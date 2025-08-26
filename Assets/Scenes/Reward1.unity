@@ -868,8 +868,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonPulseScaleOnly
   pulse: 1
-  pulseScale: 1.2
-  pulsePeriod: 1
+  pulseScale: 1.1
+  pulsePeriod: 1.5
   respectInteractable: 1
 --- !u!1 &2147130010
 GameObject:

@@ -2052,7 +2052,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StartupFadeController
   backgroundVideo: {fileID: 181972246}
-  fadeInDuration: 2
+  fadeInDuration: 1.5
 --- !u!4 &2071047775
 Transform:
   m_ObjectHideFlags: 0

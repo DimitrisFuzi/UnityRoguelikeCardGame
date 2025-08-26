@@ -1,15 +1,15 @@
 fileFormatVersion: 2
-guid: 3dc0f3c77d897894bab4f292e5802a9c
+guid: 37debca2fd9708e44b3c39431749a093
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5442635144408253225
-    second: MCNew7_0
+      213: -5837093477335089392
+    second: BattleBackground2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MCNew7_0
+      name: BattleBackground2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 554
-        height: 1520
+        width: 1536
+        height: 864
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 923c288d3df188b40800000000000000
-      internalID: 5442635144408253225
+      spriteID: 01f31ba986a7efea0800000000000000
+      internalID: -5837093477335089392
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MCNew7_0: 5442635144408253225
+      BattleBackground2_0: -5837093477335089392
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -87,7 +87,7 @@ public class RewardSceneController : MonoBehaviour
         string cardName = chosen?.def?.cardData ? chosen.def.cardData.cardName : null;
         ApplyCard(cardName);
 
-        if (headerText) headerText.text = $"Πήρες: {cardName}";
+        if (headerText) headerText.text = $"{cardName} was added to the deck";
         if (continueButton)
         {
             continueButton.gameObject.SetActive(true);

@@ -18,8 +18,8 @@ MonoBehaviour:
   position: {x: -600, y: -160}
   size: {x: 170, y: 120}
   enemyAIType: 1
-  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
-  buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  attackIntentIcon: {fileID: 8442774558652979393, guid: 8e8493d63fef06d4f8dd4904b06d0ded, type: 3}
+  buffIntentIcon: {fileID: -1513563777638607941, guid: 8275e2a5e0ef3434f8df0dc949f82e47, type: 3}
   healIntentIcon: {fileID: 0}
   awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}

@@ -130,7 +130,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
         plannedHealThisTurn = doHealNext && bossWounded;
 
         if (plannedHealThisTurn)
-            nextIntent = new EnemyIntent(IntentType.Special, $"+{heal}", 0, healIco); // heal preview
+            nextIntent = new EnemyIntent(IntentType.Special, $"{heal}", 0, healIco); // heal preview
         else
             nextIntent = new EnemyIntent(IntentType.Attack, atk.ToString(), atk, atkIcon);
 

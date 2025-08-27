@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: WispLeft
   health: 5
-  enemySprite: {fileID: 6117860120341732597, guid: 8ab6d5e6db664434b891a68eaf03e796, type: 3}
+  enemySprite: {fileID: -5833361484094264668, guid: a94dba0b6f80dba4d838593e1b5ecc0a, type: 3}
   position: {x: -540, y: 180}
   size: {x: 100, y: 100}
   enemyAIType: 4
-  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
+  attackIntentIcon: {fileID: 8442774558652979393, guid: 8e8493d63fef06d4f8dd4904b06d0ded, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
-  healIntentIcon: {fileID: -1278845700038102061, guid: 6f617f4c095b9d44dae91d4f1512daa1, type: 3}
+  healIntentIcon: {fileID: 5435552896162202266, guid: 851711ba4c021f04b99affb8dcbba5f1, type: 3}
   awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}
   summonRightData: {fileID: 0}

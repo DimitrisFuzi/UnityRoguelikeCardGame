@@ -86,6 +86,18 @@ public class EnemyDisplay : MonoBehaviour
 
         // Initialize health display using the HealthBar script
         UpdateDisplay(enemy.CurrentHealth, enemy.MaxHealth);
+
+        // EnemyDisplay.cs  (μέσα στο Setup, στο τέλος του method – μετά τα UpdateDisplay/σκιά)
+        if (enemyData.enemyAIType == EnemyAIType.WispLeft || enemyData.enemyAIType == EnemyAIType.WispRight)
+        {
+            var floaty = gameObject.GetComponent<WispFloatMotion>();
+            if (floaty == null) floaty = gameObject.AddComponent<WispFloatMotion>();
+
+            // Optional: λίγες διαφορές ανά instance
+            floaty.amplitude = Random.Range(5f, 8f); // canvas units
+            floaty.speed = Random.Range(1.6f, 2.4f);
+        }
+
     }
 
     /// <summary>

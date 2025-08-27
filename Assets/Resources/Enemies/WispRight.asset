@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: WispRight
   health: 5
-  enemySprite: {fileID: -4493590007624933022, guid: 44c496ce93b956543846b1fd99033f1d, type: 3}
-  position: {x: -100, y: 100}
-  size: {x: 50, y: 50}
+  enemySprite: {fileID: 6117860120341732597, guid: 8ab6d5e6db664434b891a68eaf03e796, type: 3}
+  position: {x: -170, y: 185}
+  size: {x: 100, y: 100}
   enemyAIType: 5
   attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
   buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}

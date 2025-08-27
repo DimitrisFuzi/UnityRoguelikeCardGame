@@ -1,13 +1,19 @@
 fileFormatVersion: 2
-guid: 59ae480c1da16b544ba964b8ad399cc7
+guid: 8ab6d5e6db664434b891a68eaf03e796
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3543293819214416110
-    second: Forest Guardian_0
+      213: 6117860120341732597
+    second: wisp3_0
   - first:
-      213: 5817851867277373752
-    second: Forest Guardian_1
+      213: 3602701614245145912
+    second: wisp3_1
+  - first:
+      213: -8290228739951939495
+    second: wisp3_2
+  - first:
+      213: -4342280742972478351
+    second: wisp3_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Forest Guardian_0
+      name: wisp3_0
       rect:
         serializedVersion: 2
-        x: 60
-        y: 46
-        width: 845
-        height: 952
+        x: 0
+        y: 0
+        width: 463
+        height: 463
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,19 +124,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ee8cc1594fe4c2130800000000000000
-      internalID: 3543293819214416110
+      spriteID: 5fc5f7a9d5107e450800000000000000
+      internalID: 6117860120341732597
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Forest Guardian_1
+      name: wisp3_1
       rect:
         serializedVersion: 2
-        x: 908
-        y: 63
-        width: 53
+        x: 21
+        y: 0
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83deeccb70e5ff130800000000000000
+      internalID: 3602701614245145912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wisp3_2
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 0
+        width: 6
         height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -140,8 +168,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 83139e0f2792db050800000000000000
-      internalID: 5817851867277373752
+      spriteID: 9503e6072e033fc80800000000000000
+      internalID: -8290228739951939495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wisp3_3
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17c2b10bbae1db3c0800000000000000
+      internalID: -4342280742972478351
       vertices: []
       indices: 
       edges: []
@@ -160,8 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Forest Guardian_0: 3543293819214416110
-      Forest Guardian_1: 5817851867277373752
+      wisp3_0: 6117860120341732597
+      wisp3_1: 3602701614245145912
+      wisp3_2: -8290228739951939495
+      wisp3_3: -4342280742972478351
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -51,6 +51,13 @@ namespace MyProjectF.Assets.Scripts.Cards
         [SerializeField] private float playPositionXMultiplier = 1f;
         [SerializeField] private bool needUpdatePlayPosition = false;
 
+        [Header("Drag Threshold Tuning")]
+        [SerializeField] private float playThresholdOffsetPx = -90f; // αρνητικό = κατεβάζει το όριο
+        [SerializeField] private float hysteresisPx = 24f;           // σταθερότητα (προαιρετικό)
+
+        private float EnterPlayY => cardPlay.y + playThresholdOffsetPx;
+        private float ExitPlayY => EnterPlayY - hysteresisPx;
+
         /// <summary>
         /// Reference to the data object for this card.
         /// </summary>
@@ -255,7 +262,7 @@ namespace MyProjectF.Assets.Scripts.Cards
             {
                 if (cardData.targetType == Card.TargetType.SingleEnemy)
                 {
-                    if (Input.mousePosition.y > cardPlay.y)
+                    if (Input.mousePosition.y > EnterPlayY)
                     {
                         currentState = 3;
                         playArrow.SetActive(true);
@@ -268,7 +275,7 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
                 else
                 {
-                    if (Input.mousePosition.y > cardPlay.y)
+                    if (Input.mousePosition.y > EnterPlayY)
                     {
                         currentState = 3;
                      
@@ -306,7 +313,7 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
 
             // Ensure the card was dragged high enough to be considered 'played'
-            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < cardPlay.y)
+            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < EnterPlayY)
             {
                 TransitionToIdle();
                 return;
@@ -437,7 +444,7 @@ namespace MyProjectF.Assets.Scripts.Cards
             rectTransform.localPosition = playPosition;
             rectTransform.localRotation = Quaternion.identity;
 
-            if (Input.mousePosition.y < cardPlay.y)
+            if (Input.mousePosition.y < ExitPlayY)
             {
                 currentState = 2;
                 playArrow.SetActive(false);

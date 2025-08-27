@@ -46,6 +46,44 @@ public class EnemyDisplay : MonoBehaviour
             Logger.LogWarning("[EnemyDisplay] RectTransform component missing!", this);
         }
 
+        var shadowTr = transform.Find("Shadow");
+        if (shadowTr)
+        {
+            var fitter = shadowTr.GetComponent<EnemyShadowFitter>();
+            if (!fitter) fitter = shadowTr.gameObject.AddComponent<EnemyShadowFitter>();
+
+            // Target = το οπτικό μέγεθος του εχθρού
+            fitter.target = enemyImage.rectTransform;
+
+            // Apply από τα EnemyData
+            switch (enemyData.shadowMode)  // από EnemyData.cs  :contentReference[oaicite:1]{index=1}
+            {
+                case ShadowMode.None:
+                    shadowTr.gameObject.SetActive(false);
+                    break;
+
+                case ShadowMode.Manual:
+                    shadowTr.gameObject.SetActive(true);
+                    fitter.mode = EnemyShadowFitter.Mode.Manual;
+                    fitter.ApplyFromData(ShadowMode.Manual,
+                                         enemyData.shadowWidthMultiplier,
+                                         enemyData.shadowHeightToWidth,
+                                         enemyData.shadowOffset,
+                                         enemyData.manualShadowSize);
+                    break;
+
+                default: // Auto
+                    shadowTr.gameObject.SetActive(true);
+                    fitter.mode = EnemyShadowFitter.Mode.Auto;
+                    fitter.ApplyFromData(ShadowMode.Auto,
+                                         enemyData.shadowWidthMultiplier,
+                                         enemyData.shadowHeightToWidth,
+                                         enemyData.shadowOffset,
+                                         Vector2.zero);
+                    break;
+            }
+        }
+
         // Initialize health display using the HealthBar script
         UpdateDisplay(enemy.CurrentHealth, enemy.MaxHealth);
     }

@@ -24,3 +24,8 @@ MonoBehaviour:
   awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}
   summonRightData: {fileID: 0}
+  shadowMode: 2
+  shadowWidthMultiplier: 0.75
+  shadowHeightToWidth: 0.2
+  shadowOffset: {x: 80, y: 10}
+  manualShadowSize: {x: 140, y: 20}

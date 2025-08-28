@@ -60,16 +60,6 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
             rage.ApplyEffect(stats, stats);
             Debug.Log($"{stats.enemyName} becomes enraged!");
 
-            // NEW: Set enraged visual for Wolf1AI
-            if (enemyDisplay != null)
-            {
-                enemyDisplay.SetEnragedVisual(true);
-                Debug.Log($"🎨 Called SetEnragedVisual(true) for {stats.enemyName} (Wolf1AI).");
-            }
-            else
-            {
-                Debug.LogWarning("EnemyDisplay reference is null in Wolf1AI. Cannot set enraged visual.");
-            }
         }
         else
         {

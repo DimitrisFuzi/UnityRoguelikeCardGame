@@ -161,4 +161,15 @@ public class Enemy : CharacterStats
 
         }
     }
+
+    /// <summary>
+    /// Sets the enraged state and updates visual effects.
+    /// </summary>
+    public void SetEnraged(bool value)
+    {
+        IsEnraged = value;
+        if (enemyDisplay != null)
+            enemyDisplay.SetEnragedVisual(value);
+    }
+
 }

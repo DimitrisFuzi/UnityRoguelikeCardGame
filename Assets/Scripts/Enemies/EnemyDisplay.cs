@@ -12,7 +12,7 @@ public class EnemyDisplay : MonoBehaviour
     [SerializeField] private IntentDisplay intentDisplay; // Reference to the IntentDisplay component
     [SerializeField] private Transform textSpawnAnchor;
     [SerializeField] private GameObject floatingDamageTextPrefab;
-
+    [SerializeField] private Image enragedImage;
 
 
     private RectTransform enemyRect;
@@ -31,6 +31,12 @@ public class EnemyDisplay : MonoBehaviour
         }
 
         enemyImage.sprite = enemyData.enemySprite;
+
+        if (enragedImage != null)
+        {
+            var c = enragedImage.color; c.a = 0f; enragedImage.color = c;
+        }
+
         enemyRect = GetComponent<RectTransform>();
 
         if (enemyRect != null)
@@ -143,24 +149,24 @@ public class EnemyDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Changes the enemy sprite's color to visually indicate enraged state.
+    /// Sets or resets the enraged visual effect.
     /// </summary>
     /// <param name="isEnraged">True to set enraged color, false to reset to normal.</param>
     public void SetEnragedVisual(bool isEnraged)
     {
-        if (enemyImage == null) return;
-
-        if (isEnraged)
+        if (enragedImage != null)
         {
-            // Set an enraged color (e.g., red tint)
-            // FF2F3B in hex is R=255, G=47, B=59
-            // Divide by 255 for Unity's Color (0-1f) format
-            enemyImage.color = new Color(1f, 47f / 255f, 59f / 255f, 1f);
+            enragedImage.DOKill();
+            enragedImage.DOFade(isEnraged ? 1f : 0f, 0.2f);
+
+            // Βεβαιώσου ότι το βασικό sprite μένει "καθαρό"
+            if (enemyImage != null) enemyImage.color = Color.white;
         }
         else
         {
-            // Reset to normal color (white)
-            enemyImage.color = Color.white;
+            // Fallback (όπως πριν) αν δεν έχεις δώσει enragedImage:
+            if (enemyImage == null) return;
+            enemyImage.color = isEnraged ? new Color(1f, 47f / 255f, 59f / 255f, 1f) : Color.white;
         }
     }
 
@@ -230,6 +236,7 @@ public class EnemyDisplay : MonoBehaviour
     /// <summary>
     /// Plays the death animation for the enemy.
     /// </summary> 
+    // EnemyDisplay.cs
     public void PlayDeathAnimation(System.Action onComplete = null)
     {
         if (enemyImage == null)
@@ -238,11 +245,21 @@ public class EnemyDisplay : MonoBehaviour
             return;
         }
 
-        enemyImage.DOFade(0f, 1f)
-                  .SetEase(Ease.InOutQuad)
-                  .OnComplete(() => {
-                      onComplete?.Invoke();
-                      gameObject.SetActive(false);
-                  });
+        // Σβήσε τυχόν loops/tweens στο overlay
+        enragedImage?.DOKill();
+        enemyImage.DOKill();
+
+        var seq = DOTween.Sequence()
+            .Join(enemyImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
+        if (enragedImage != null)
+            seq.Join(enragedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
+        seq.OnComplete(() =>
+        {
+            onComplete?.Invoke();
+            gameObject.SetActive(false);
+        });
     }
+
 }

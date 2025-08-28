@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace MyProjectF.Assets.Scripts.Effects
@@ -10,10 +10,10 @@ namespace MyProjectF.Assets.Scripts.Effects
         {
             if (target is Enemy enemy)
             {
-                enemy.IsEnraged = true;
+                enemy.SetEnraged(true); // ✅ αντί για enemy.IsEnraged = true;
                 AudioManager.Instance?.PlaySFX("Rage_Effect");
-
             }
         }
+
     }
 }

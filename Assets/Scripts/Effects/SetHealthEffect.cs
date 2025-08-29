@@ -16,7 +16,10 @@ public class SetHealthEffect : EffectData
         if (source != null)
         {
             source.SetCurrentHealth(newHealth);
-            Debug.Log($"[Effect] Set {source.name}'s health to {newHealth}.");
+            //Debug.Log($"[Effect] Set {source.name}'s health to {newHealth}.");
+            Debug.Log($"[Effect RUN] {GetType().Name}: source={source.name}, target={target.name}, health(before)={target.CurrentHealth}");
+
+
         }
     }
 }

@@ -42,6 +42,22 @@ namespace MyProjectF.Assets.Scripts.Player
             }
         }
 
+        // ✅ Override SetCurrentHealth ώστε να περνάει από NotifyUI
+        // PlayerStats.cs
+        public override void SetCurrentHealth(int value)
+        {
+            base.SetCurrentHealth(value);   // καλεί το CharacterStats clamp logic
+            NotifyUI();                     // σήκωσε event για το PlayerDisplay
+        }
+
+
+        // ✅ Override LoseHealthDirect ώστε να περνάει από NotifyUI
+        public override void LoseHealthDirect(int amount)
+        {
+            base.LoseHealthDirect(amount);
+            NotifyUI();
+        }
+
         /// <summary>
         /// Override for CurrentHealth to notify UI whenever it changes.
         /// </summary>
@@ -52,8 +68,8 @@ namespace MyProjectF.Assets.Scripts.Player
             {
                 base.CurrentHealth = value;
                 NotifyUI();
-            }
-        }
+              }
+          }
 
         /// <summary>
         /// Resets the player's energy to initial value and notifies listeners.

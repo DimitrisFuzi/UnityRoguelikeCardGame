@@ -13,7 +13,9 @@ public class LoseHealthEffect : EffectData
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
         target.LoseHealthDirect(healthLoss);
-        Debug.Log($"[Effect] {target.name} lost {healthLoss} HP (ignoring armor).");
+        //Debug.Log($"[Effect] {target.name} lost {healthLoss} HP (ignoring armor).");
+        Debug.Log($"[Effect RUN] {GetType().Name}: source={source.name}, target={target.name}, health(before)={target.CurrentHealth}");
+
 
         if (healthLoss > 0)
         {

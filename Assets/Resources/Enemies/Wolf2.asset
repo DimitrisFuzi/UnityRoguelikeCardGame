@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wolf2
   m_EditorClassIdentifier: 
   enemyName: Wolf2
-  health: 1
+  health: 100
   enemySprite: {fileID: 8043684245823414713, guid: 56c9e23399c43c24793622dba93921d1, type: 3}
   position: {x: -330, y: -200}
   size: {x: 170, y: 120}

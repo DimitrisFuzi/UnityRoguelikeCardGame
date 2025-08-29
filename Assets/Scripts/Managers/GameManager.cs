@@ -10,7 +10,11 @@ public class GameManager : MonoBehaviour
 
     public OptionsManager OptionsManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
-    //public DeckManager DeckManager { get; private set; }
+
+    [Header("Cursor Settings")]
+    [SerializeField] private Texture2D cursorTexture;
+    [SerializeField] private Vector2 hotspot = Vector2.zero;
+    [SerializeField] private CursorMode cursorMode = CursorMode.Auto;
 
     private void Awake()
     {
@@ -25,6 +29,14 @@ public class GameManager : MonoBehaviour
         {
             Logger.LogWarning("⚠️ Duplicate GameManager found. Destroying extra instance.", this);
             Destroy(gameObject);
+        }
+        // Set custom cursor
+
+        if (cursorTexture != null)
+        {
+            Cursor.SetCursor(cursorTexture, hotspot, cursorMode);
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 

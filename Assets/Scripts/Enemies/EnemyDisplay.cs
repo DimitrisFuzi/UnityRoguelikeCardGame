@@ -13,6 +13,7 @@ public class EnemyDisplay : MonoBehaviour
     [SerializeField] private Transform textSpawnAnchor;
     [SerializeField] private GameObject floatingDamageTextPrefab;
     [SerializeField] private Image enragedImage;
+    [SerializeField] private Image awakenedImage;
 
 
     private RectTransform enemyRect;
@@ -36,6 +37,12 @@ public class EnemyDisplay : MonoBehaviour
         {
             var c = enragedImage.color; c.a = 0f; enragedImage.color = c;
         }
+
+        if (awakenedImage != null) // 🔴 κρύψε το awakened overlay στην αρχή
+        {
+            var c2 = awakenedImage.color; c2.a = 0f; awakenedImage.color = c2;
+        }
+
 
         enemyRect = GetComponent<RectTransform>();
 
@@ -168,6 +175,22 @@ public class EnemyDisplay : MonoBehaviour
             if (enemyImage == null) return;
             enemyImage.color = isEnraged ? new Color(1f, 47f / 255f, 59f / 255f, 1f) : Color.white;
         }
+    }
+
+    /// <summary>
+    /// Awakened visual effect.
+    /// </summary>
+    public void SetAwakenVisual(bool on)
+    {
+        if (awakenedImage == null) return;
+
+        awakenedImage.DOKill();
+        var t = on ? 1.2f : 0.25f;
+        awakenedImage.DOFade(on ? 1f : 0f, t);
+
+        // optional “impact” στο trigger
+        if (on && enemyImage != null)
+            enemyImage.rectTransform.DOPunchScale(Vector3.one * 0.12f, 0.28f, 6, 0.6f);
     }
 
     public void ShowDamagePopup(int damage)

@@ -216,7 +216,8 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
             // μετά το consume → δεν ξανακάνει summons
             canSummonFurther = false;
-            // Προαιρετικά: display.SetAwakenVisual(true);
+
+            display?.SetAwakenVisual(true);
             return;
         }
 

@@ -128,6 +128,7 @@ RectTransform:
   - {fileID: 5649490490150827553}
   - {fileID: 4549856237908017644}
   - {fileID: 6601709568886059977}
+  - {fileID: 3787359912826829486}
   m_Father: {fileID: 6767169461657931637}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -166,6 +167,81 @@ MonoBehaviour:
   m_Sprite: {fileID: 8043684245823414713, guid: 56c9e23399c43c24793622dba93921d1, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7236785362267410109
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3787359912826829486}
+  - component: {fileID: 6137529969067870467}
+  - component: {fileID: 7774386141858296153}
+  m_Layer: 5
+  m_Name: AwakenedImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3787359912826829486
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7236785362267410109}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3428980254169565311}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6137529969067870467
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7236785362267410109}
+  m_CullTransparentMesh: 1
+--- !u!114 &7774386141858296153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7236785362267410109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 470965987600262945, guid: ed2b443e0f5b7934b9738cb6d2182438, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -336,7 +412,6 @@ GameObject:
   - component: {fileID: 3780893247390748819}
   - component: {fileID: 3911588373252659996}
   - component: {fileID: 4837050038522909619}
-  - component: {fileID: 328318260687101419}
   m_Layer: 5
   m_Name: EnemyPrefab
   m_TagString: Untagged
@@ -400,6 +475,7 @@ MonoBehaviour:
   textSpawnAnchor: {fileID: 4549856237908017644}
   floatingDamageTextPrefab: {fileID: 6435819573051269018, guid: a6e93f96d12bca54e8ec9156c88b6eab, type: 3}
   enragedImage: {fileID: 7256997907407712257}
+  awakenedImage: {fileID: 7774386141858296153}
 --- !u!61 &4837050038522909619
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -446,22 +522,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &328318260687101419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8474511923833054955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc52a526f91ed504e99d9a72a5b0208a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnrageSpriteCrossfade
-  baseImage: {fileID: 1006496098490049519}
-  enragedImage: {fileID: 7256997907407712257}
-  fadeTime: 0.2
-  punchScale: 1.12
 --- !u!1 &8633060327394467756
 GameObject:
   m_ObjectHideFlags: 0

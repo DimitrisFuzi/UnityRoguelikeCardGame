@@ -14,10 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
   - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
-  - Last Resort
+  - Fight or Flight
+  - Blood Rush

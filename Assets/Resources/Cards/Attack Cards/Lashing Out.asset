@@ -30,4 +30,4 @@ MonoBehaviour:
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetType: 0
-        damageAmount: 5
+        damageAmount: 6

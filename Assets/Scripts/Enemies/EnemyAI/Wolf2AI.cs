@@ -17,7 +17,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     private Sprite buffIcon;
 
     [Header("Combat Stats")]
-    [SerializeField] private int baseDamageAmount = 8;
+    [SerializeField] private int baseDamageAmount = 12;
 
     private CharacterStats playerStats;
     private EnemyDisplay enemyDisplay; // Reference to the EnemyDisplay

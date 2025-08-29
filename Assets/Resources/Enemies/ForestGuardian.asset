@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ForestGuardian
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: ForestGuardian
-  health: 20
+  health: 100
   enemySprite: {fileID: -7491795078641249071, guid: 9529f3a1e2c05f247b64196fb6922c04, type: 3}
   position: {x: -270, y: -40}
   size: {x: 270, y: 350}

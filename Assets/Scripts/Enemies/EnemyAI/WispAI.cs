@@ -12,7 +12,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
     public MinionSide Side => side;
 
     [Header("Numbers (Phase1 / Awakened)")]
-    [SerializeField] private int healAmountP1 = 6;
+    [SerializeField] private int healAmountP1 = 4;
     [SerializeField] private int attackAmountP1 = 4;
     [SerializeField] private int healAmountAwaken = 8;
     [SerializeField] private int attackAmountAwaken = 5;

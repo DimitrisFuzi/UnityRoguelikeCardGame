@@ -12,7 +12,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     private CharacterStats player;            // στόχος για attack
     private EnemyDisplay display;             // για intents/visuals
 
-    // ---- Intent preview
+    // ---- Intent preview (LOCKED per upcoming enemy turn)
     private EnemyIntent nextIntent;
     [SerializeField] private Sprite attackIcon;
     [SerializeField] private Sprite specialIcon;        // Summon icon
@@ -23,13 +23,13 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
     // ---- Tunables (fixed numbers)
     [Header("Boss Damage")]
-    [SerializeField] private int baseAttack = 10;       // σταθερό
+    [SerializeField] private int baseAttack = 7;       // σταθερό
     [SerializeField] private int rampPerTurn = 1;       // +1/γύρο
 
     [Header("Summon Timing")]
     [SerializeField] private int p1SummonEveryTurns = 3;
 
-    // --- ΝΕΑ πεδία για "1 γύρο latency" στο Awaken
+    // --- Awaken timing (1 γύρο latency)
     private int enemyTurnIndex = 0;         // μετρητής γύρων του boss
     private int awakenTelegraphTurn = -1;   // σε ποιο enemyTurnIndex τηλεγραφήθηκε
 
@@ -44,6 +44,9 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
     private bool doubleSummonNextTurn = false;
     private bool canSummonFurther = true;    // κλειδώνει μετά το Awaken
     private int p1SummonCounter = 0;
+
+    // 🔒 Κλειδωμένο πλάνο για τον **επόμενο** enemy turn
+    private bool plannedSummonNextTurn = false;
 
     public bool IsAwakened => awakened;
     public int AbsorbBonus => absorbBonus;
@@ -89,14 +92,17 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             if (awakenIntentIcon == null) awakenIntentIcon = data.awakenIntentIcon;    // Awaken icon
         }
 
-        PredictNextIntent();
+        // 🔒 Σχεδίασε και κλείδωσε το πλάνο για τον **πρώτο** enemy turn
+        PlanNextEnemyTurn();
+        display?.SetIntent(nextIntent);
     }
 
     public void ExecuteTurn()
     {
-        // Φρέσκο preview για UI (χωρίς side-effects)
-        var previewNow = PredictNextIntent();
-        display?.SetIntent(previewNow);
+        if (BattleManager.Instance.State == BattleManager.BattleState.LOST) return;
+
+        // Δείξε το ΗΔΗ κλειδωμένο preview (ΔΕΝ ξαναϋπολογίζουμε στην αρχή του enemy turn)
+        display?.SetIntent(nextIntent);
 
         // Μετρητής γύρων boss
         enemyTurnIndex++;
@@ -104,24 +110,16 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         // 1) Start-of-turn ramp
         ramp += rampPerTurn;
 
-        // 2) Awaken με 1 γύρο latency (πρώτα από όλα, ώστε να μπλοκάρει Summon στον γύρο τηλεγράφησης)
+        // 2) Awaken με 1 γύρο latency (εκτελείται αν τηλεγραφήθηκε σε προηγούμενο enemy γύρο)
         if (!awakened)
         {
-            // Αν έχει τηλεγραφηθεί σε ΠΡΟΗΓΟΥΜΕΝΟ enemy γύρο → τώρα εκτέλεσέ το
             if (awakenTelegraphed && enemyTurnIndex > awakenTelegraphTurn)
             {
                 DoAwaken();
-                PredictNextIntent();
+                // Μετά το Awaken, κλείδωσε νέο πλάνο για τον ΕΠΟΜΕΝΟ enemy turn
+                PlanNextEnemyTurn();
+                display?.SetIntent(nextIntent);
                 return;
-            }
-
-            // Αν τώρα είναι ≤50% και δεν έχει τηλεγραφηθεί → ΤΩΡΑ τηλεγράφησέ το (εκτέλεση από τον επόμενο γύρο)
-            if (!awakenTelegraphed && boss.CurrentHealth <= boss.MaxHealth / 2)
-            {
-                awakenTelegraphed = true;
-                awakenTelegraphTurn = enemyTurnIndex;
-                PredictNextIntent();
-                // δεν κάνουμε return — αυτός ο γύρος θα είναι Attack, ΟΧΙ Summon
             }
         }
 
@@ -131,36 +129,52 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
             SpawnUntilFull();
             doubleSummonNextTurn = false;
             canSummonFurther = false; // δεν ξανακάνει summons μετά
-            PredictNextIntent();
+            // Κλείδωσε το πλάνο για τον επόμενο enemy turn
+            PlanNextEnemyTurn();
+            display?.SetIntent(nextIntent);
             return;
         }
 
-        // 4) Phase-1 Summon timer — ΜΟΝΟ αν ΔΕΝ έχει τηλεγραφηθεί Awaken
-        if (!awakened && canSummonFurther && !awakenTelegraphed)
+        // 4) Εκτέλεση ΚΛΕΙΔΩΜΕΝΟΥ πλάνου για αυτόν τον enemy turn
+        if (!awakened && canSummonFurther && plannedSummonNextTurn)
         {
-            p1SummonCounter++;
-            if (p1SummonCounter >= p1SummonEveryTurns && AliveMinionsCount() < 2)
-            {
-                SummonOneInFirstEmptyType();
-                p1SummonCounter = 0;
-                PredictNextIntent();
-                return; // το summon καταναλώνει το γύρο
-            }
+            // Summon ήταν προγραμματισμένο για ΤΩΡΑ
+            plannedSummonNextTurn = false; // καταναλώθηκε
+            SummonOneInFirstEmptyType();
+            p1SummonCounter = 0;           // reset timer μετά το summon
+        }
+        else
+        {
+            // Κανονικό Attack
+            p1SummonCounter++;             // αυξάνουμε τον timer μόνο όταν δεν έγινε summon
+            DoAttack(BaseDamage());
         }
 
-        // 5) Κανονικό Attack
-        DoAttack(BaseDamage());
-        PredictNextIntent();
+        // 5) Αν πέσαμε ≤50% ΤΩΡΑ και δεν έχει τηλεγραφηθεί → τηλεγράφισε (εκτέλεση στον ΕΠΟΜΕΝΟ enemy γύρο)
+        if (!awakened && !awakenTelegraphed && boss.CurrentHealth <= boss.MaxHealth / 2)
+        {
+            awakenTelegraphed = true;
+            awakenTelegraphTurn = enemyTurnIndex;
+        }
+
+        // 6) Στο τέλος του enemy turn, ΣΧΕΔΙΑΣΕ & ΚΛΕΙΔΩΣΕ το πλάνο για τον ΕΠΟΜΕΝΟ enemy turn
+        PlanNextEnemyTurn();
+        display?.SetIntent(nextIntent);
     }
 
-
-    public EnemyIntent PredictNextIntent()
+    // ======================
+    // 🔒 ΚΛΕΙΔΩΜΑ ΠΛΑΝΟΥ ΓΙΑ ΤΟΝ ΕΠΟΜΕΝΟ ENEMY TURN
+    // Καλείται στο InitializeAI() και ΣΤΟ ΤΕΛΟΣ ΚΑΘΕ enemy turn.
+    // Δεν επηρεάζεται από αλλαγές που γίνονται κατά το player turn.
+    // ======================
+    private void PlanNextEnemyTurn()
     {
-        // 1) Αν έχει προγραμματιστεί double-summon
+        // 1) Αν έχει προγραμματιστεί double-summon για τον επόμενο γύρο
         if (doubleSummonNextTurn)
         {
             nextIntent = new EnemyIntent(IntentType.Special, "", 0, specialIcon);
-            return nextIntent;
+            plannedSummonNextTurn = true; // θα γίνει summon (double) στον επόμενο γύρο
+            return;
         }
 
         // 2) Awaken PREVIEW έχει προτεραιότητα στο UI
@@ -168,22 +182,35 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         {
             var icon = (awakenIntentIcon != null) ? awakenIntentIcon : specialIcon;
             nextIntent = new EnemyIntent(IntentType.Special, "", 0, icon);
-            return nextIntent;
+            plannedSummonNextTurn = false; // awaken δεν είναι summon
+            return;
         }
 
-        // 3) Διαφορετικά, δείξε Summon αν έρχεται αυτό (P1 timer)
-        if (!awakened && canSummonFurther && p1SummonCounter + 1 >= p1SummonEveryTurns && AliveMinionsCount() < 2)
+        // 3) Διαφορετικά, αποφάσισε για Summon ΜΟΝΟ τώρα (τέλος enemy turn) και κλείδωσε για τον επόμενο
+        bool willSummonNext =
+            (!awakened
+             && canSummonFurther
+             && (p1SummonCounter + 1 >= p1SummonEveryTurns)
+             && AliveMinionsCount() < 2);
+
+        plannedSummonNextTurn = willSummonNext;
+
+        if (willSummonNext)
         {
             nextIntent = new EnemyIntent(IntentType.Special, "", 0, specialIcon);
-            return nextIntent;
+            return;
         }
 
-        // 4) Αλλιώς Attack preview
+        // 4) Αλλιώς Attack preview για τον επόμενο γύρο
         int preview = BaseDamage();
         nextIntent = new EnemyIntent(IntentType.Attack, preview.ToString(), preview, attackIcon);
-        return nextIntent;
     }
 
+    public EnemyIntent PredictNextIntent()
+    {
+        // Επιστρέφουμε το ΗΔΗ κλειδωμένο intent — δεν ξαναϋπολογίζουμε εδώ.
+        return nextIntent;
+    }
 
     public EnemyIntent GetCurrentIntent() => nextIntent;
 
@@ -195,7 +222,6 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         if (player == null) { Debug.LogWarning("[ForestGuardianAI] player is null"); return; }
         var effect = new DamageEffect { damageAmount = dmg };
         effect.ApplyEffect(boss, player);
-        // Προαιρετικά: display.ShowAttackFX();
     }
 
     private void DoAwaken()

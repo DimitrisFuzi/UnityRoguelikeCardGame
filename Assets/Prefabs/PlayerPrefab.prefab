@@ -513,8 +513,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterVisualTransform: {fileID: 3408035541078347624}
   playerDisplay: {fileID: 0}
-  initialEnergy: 10
-  energy: 10
+  initialEnergy: 3
+  energy: 3
 --- !u!114 &1798116372734490168
 MonoBehaviour:
   m_ObjectHideFlags: 0

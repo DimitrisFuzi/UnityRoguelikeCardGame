@@ -30,4 +30,4 @@ MonoBehaviour:
       type: {class: ArmorEffect, ns: MyProjectF.Assets.Scripts.Effects, asm: Assembly-CSharp}
       data:
         targetType: 2
-        armorAmount: 5
+        armorAmount: 6

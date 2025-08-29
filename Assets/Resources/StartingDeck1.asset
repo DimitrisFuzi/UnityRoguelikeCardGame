@@ -13,6 +13,16 @@ MonoBehaviour:
   m_Name: StartingDeck1
   m_EditorClassIdentifier: Assembly-CSharp::StartingDeckData
   startingCards:
-  - Last Resort
-  - Fight or Flight
+  - Lashing Out
+  - Lashing Out
+  - Lashing Out
+  - Gut Reaction
+  - Gut Reaction
+  - Gut Reaction
   - Blood Rush
+  - Shift Stance
+  - Snap Decision
+  - Fight or Flight
+  - Deep Focus
+  - Wide Swing
+  - Last Resort

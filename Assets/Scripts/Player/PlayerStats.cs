@@ -26,7 +26,7 @@ namespace MyProjectF.Assets.Scripts.Player
             if (Instance == null)
             {
                 Instance = this;
-                InitializeStats(100); // Example starting health
+                InitializeStats(75); // Example starting health
 
                 energy = initialEnergy;
 

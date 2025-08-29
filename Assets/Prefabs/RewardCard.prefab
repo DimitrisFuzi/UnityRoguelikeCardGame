@@ -220,6 +220,7 @@ GameObject:
   - component: {fileID: 2714428572397897880}
   - component: {fileID: 5946208839640472047}
   - component: {fileID: 6907810955014581997}
+  - component: {fileID: 7517338965389567535}
   m_Layer: 5
   m_Name: CardButton
   m_TagString: Untagged
@@ -328,3 +329,17 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7517338965389567535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7167621128283350917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2b5d54602d35e4289b97e91b8b4b0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
+  clickSFX: MainMenuClick
+  hoverSFX: MainMenuHover

@@ -771,7 +771,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicLoop
   track: {fileID: 8300000, guid: a7485d790426baf47b87e8545a8bf543, type: 3}
   loop: 1
-  volume: 1
+  volume: 0.85
 --- !u!4 &523783078
 Transform:
   m_ObjectHideFlags: 0

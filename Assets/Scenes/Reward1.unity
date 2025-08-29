@@ -334,6 +334,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 267966753}
   m_CullTransparentMesh: 1
+--- !u!1 &307265887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 307265889}
+  - component: {fileID: 307265888}
+  m_Layer: 0
+  m_Name: MusicLoop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &307265888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307265887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19467f5cb136dfd4d9c5c2cce2716ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicLoop
+  track: {fileID: 8300000, guid: 1bcb5cf9f74c17648a2a68e9035dd0cf, type: 3}
+  loop: 1
+  volume: 1
+--- !u!4 &307265889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307265887}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1348.3018, y: 599.0861, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &521280444
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,6 +794,7 @@ GameObject:
   - component: {fileID: 2064423701}
   - component: {fileID: 2064423700}
   - component: {fileID: 2064423703}
+  - component: {fileID: 2064423704}
   m_Layer: 5
   m_Name: ContinueButton
   m_TagString: Untagged
@@ -871,6 +919,20 @@ MonoBehaviour:
   pulseScale: 1.1
   pulsePeriod: 1.5
   respectInteractable: 1
+--- !u!114 &2064423704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064423698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2b5d54602d35e4289b97e91b8b4b0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
+  clickSFX: MainMenuClick
+  hoverSFX: MainMenuHover
 --- !u!1 &2147130010
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,3 +975,4 @@ SceneRoots:
   - {fileID: 1867717873}
   - {fileID: 235766664}
   - {fileID: 845819037}
+  - {fileID: 307265889}

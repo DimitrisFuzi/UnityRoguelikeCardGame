@@ -21,10 +21,8 @@ public class RewardSceneController : MonoBehaviour
     [SerializeField] private float moveDuration = 0.35f;
     [SerializeField] private float zoomScale = 1.15f;
 
-
     void Start()
     {
-        AudioManager.Instance?.StopMusic();
         Time.timeScale = 1f;
 
         if (continueButton) continueButton.gameObject.SetActive(false);

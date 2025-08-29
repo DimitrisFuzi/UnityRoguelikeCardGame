@@ -1501,6 +1501,53 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &1083206755
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1083206757}
+  - component: {fileID: 1083206756}
+  m_Layer: 0
+  m_Name: MusicLoop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1083206756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083206755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19467f5cb136dfd4d9c5c2cce2716ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicLoop
+  track: {fileID: 8300000, guid: e831edc4ef12b334fa9b713399631fe9, type: 3}
+  loop: 0
+  volume: 1
+--- !u!4 &1083206757
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083206755}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1348.3018, y: 599.0861, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1176153749
 GameObject:
   m_ObjectHideFlags: 0
@@ -2069,6 +2116,7 @@ GameObject:
   - component: {fileID: 1999411448}
   - component: {fileID: 1999411447}
   - component: {fileID: 1999411450}
+  - component: {fileID: 1999411451}
   m_Layer: 0
   m_Name: Quit
   m_TagString: Untagged
@@ -2203,6 +2251,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1999411451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999411445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2b5d54602d35e4289b97e91b8b4b0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
+  clickSFX: MainMenuClick
+  hoverSFX: MainMenuHover
 --- !u!1 &2005043632
 GameObject:
   m_ObjectHideFlags: 0
@@ -2291,6 +2353,7 @@ GameObject:
   - component: {fileID: 2010702507}
   - component: {fileID: 2010702506}
   - component: {fileID: 2010702509}
+  - component: {fileID: 2010702510}
   m_Layer: 0
   m_Name: MainMenuButton
   m_TagString: Untagged
@@ -2425,6 +2488,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2010702510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010702504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2b5d54602d35e4289b97e91b8b4b0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
+  clickSFX: MainMenuClick
+  hoverSFX: MainMenuHover
 --- !u!1 &2025343138
 GameObject:
   m_ObjectHideFlags: 0
@@ -2611,3 +2688,4 @@ SceneRoots:
   - {fileID: 399169394}
   - {fileID: 1727699866}
   - {fileID: 980722658}
+  - {fileID: 1083206757}

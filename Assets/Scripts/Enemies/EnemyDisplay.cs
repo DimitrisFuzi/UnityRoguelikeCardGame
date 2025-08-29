@@ -262,15 +262,12 @@ public class EnemyDisplay : MonoBehaviour
     // EnemyDisplay.cs
     public void PlayDeathAnimation(System.Action onComplete = null)
     {
-        if (enemyImage == null)
-        {
-            onComplete?.Invoke();
-            return;
-        }
+        if (enemyImage == null) { onComplete?.Invoke(); return; }
 
-        // Σβήσε τυχόν loops/tweens στο overlay
-        enragedImage?.DOKill();
+        // Σβήσε τυχόν tweens
         enemyImage.DOKill();
+        enragedImage?.DOKill();
+        awakenedImage?.DOKill();                // 🔴 ΝΕΟ
 
         var seq = DOTween.Sequence()
             .Join(enemyImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
@@ -278,11 +275,15 @@ public class EnemyDisplay : MonoBehaviour
         if (enragedImage != null)
             seq.Join(enragedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
 
+        if (awakenedImage != null)              // 🔴 ΝΕΟ
+            seq.Join(awakenedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
         seq.OnComplete(() =>
         {
             onComplete?.Invoke();
             gameObject.SetActive(false);
         });
     }
+
 
 }

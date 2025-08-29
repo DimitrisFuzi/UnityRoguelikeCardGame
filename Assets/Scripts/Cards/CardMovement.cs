@@ -51,6 +51,23 @@ namespace MyProjectF.Assets.Scripts.Cards
         [SerializeField] private float playPositionXMultiplier = 1f;
         [SerializeField] private bool needUpdatePlayPosition = false;
 
+        [Header("Drag Threshold Tuning")]
+        [SerializeField] private float playThresholdOffsetPx = -90f; // αρνητικό = κατεβάζει το όριο
+        [SerializeField] private float hysteresisPx = 24f;           // σταθερότητα (προαιρετικό)
+
+        private float EnterPlayY => cardPlay.y + playThresholdOffsetPx;
+        private float ExitPlayY => EnterPlayY - hysteresisPx;
+
+        [SerializeField] private float targetPreviewScale = 0.92f;
+        [SerializeField] private float targetPreviewAlpha = 0.80f;
+        private CanvasGroup selfCg;
+
+        [Header("Playable Pulse")]
+        [SerializeField] private float playablePulseScale = 1.05f;
+        [SerializeField] private float playablePulseDuration = 0.25f;
+
+        private Vector3 pulseBaseScale;
+
         /// <summary>
         /// Reference to the data object for this card.
         /// </summary>
@@ -81,6 +98,9 @@ namespace MyProjectF.Assets.Scripts.Cards
 
             UpdateCardPlayPosition();
             UpdatePlayPosition();
+
+            selfCg = GetComponent<CanvasGroup>();
+            if (selfCg == null) selfCg = gameObject.AddComponent<CanvasGroup>();
         }
 
         void Start()
@@ -132,11 +152,21 @@ namespace MyProjectF.Assets.Scripts.Cards
                     }
                     else
                     {
-                        HandleDragState(); // let non-target cards follow the mouse naturally
+                        // NON-TARGET: βγες από play όταν πέσεις ΚΑΤΩ από το exit όριο
+                        if (Input.mousePosition.y < ExitPlayY)
+                        {
+                            currentState = 2;
+                            StopPlayablePulse(1f);          // ⬅️ σταματά το pulse αμέσως
+                        }
+                        else
+                        {
+                            HandleDragState();            // συνέχισε να ακολουθεί το ποντίκι
+                        }
                     }
 
                     if (!Input.GetMouseButton(0)) TransitionToIdle();
                     break;
+
 
             }
         }
@@ -147,7 +177,7 @@ namespace MyProjectF.Assets.Scripts.Cards
         private void TransitionToIdle()
         {
             currentState = 0;
-
+            StopPlayablePulse(1f);
             if (glowEffect != null)
             {
                 Image glowImage = glowEffect.GetComponent<Image>();
@@ -255,11 +285,18 @@ namespace MyProjectF.Assets.Scripts.Cards
             {
                 if (cardData.targetType == Card.TargetType.SingleEnemy)
                 {
-                    if (Input.mousePosition.y > cardPlay.y)
-                    {
+                    if (Input.mousePosition.y > EnterPlayY)
+                    {      // ή cardPlay.y αν δεν έχεις EnterPlayY
                         currentState = 3;
-                        playArrow.SetActive(true);
-                        rectTransform.localPosition = Vector3.Lerp(rectTransform.position, playPosition, lerpFactor);
+                        if (playArrow != null) playArrow.SetActive(true);
+
+                        // snap στο preview με ένα γρήγορο tween
+                        rectTransform.DOKill();
+                        rectTransform.DOLocalMove(playPosition, 0.12f).SetEase(Ease.OutQuad);
+                        rectTransform.DOScale(originalScale * targetPreviewScale, 0.12f).SetEase(Ease.OutQuad);
+
+                        selfCg.alpha = targetPreviewAlpha;   // διακριτικό dim
+                        StartPlayablePulse(targetPreviewScale);
                     }
                     else
                     {
@@ -268,10 +305,10 @@ namespace MyProjectF.Assets.Scripts.Cards
                 }
                 else
                 {
-                    if (Input.mousePosition.y > cardPlay.y)
+                    if (Input.mousePosition.y > EnterPlayY)
                     {
                         currentState = 3;
-                     
+                        StartPlayablePulse(1f);
                     }
                     else
                     {
@@ -306,7 +343,7 @@ namespace MyProjectF.Assets.Scripts.Cards
             }
 
             // Ensure the card was dragged high enough to be considered 'played'
-            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < cardPlay.y)
+            if (cardData.targetType != Card.TargetType.SingleEnemy && Input.mousePosition.y < EnterPlayY)
             {
                 TransitionToIdle();
                 return;
@@ -437,10 +474,13 @@ namespace MyProjectF.Assets.Scripts.Cards
             rectTransform.localPosition = playPosition;
             rectTransform.localRotation = Quaternion.identity;
 
-            if (Input.mousePosition.y < cardPlay.y)
+            if (Input.mousePosition.y < ExitPlayY)
             {
                 currentState = 2;
-                playArrow.SetActive(false);
+                if (playArrow != null) playArrow.SetActive(false);
+                rectTransform.DOScale(originalScale, 0.12f);
+                selfCg.alpha = 1f;
+                StopPlayablePulse(1f);
             }
         }
 
@@ -538,8 +578,10 @@ namespace MyProjectF.Assets.Scripts.Cards
 
         private IEnumerator ApplyEffectsInSequence()
         {
+
             // 1) Πλήρωσε energy πριν κάνεις οτιδήποτε
             PlayerManager.Instance.UseCard(cardData);
+            Debug.Log($"[CardMovement] Played {cardData.cardName}, cost={cardData.energyCost}, remaining energy={PlayerStats.Instance.energy}");
 
             // 2) Βγάλε ΑΜΕΣΑ την κάρτα από το hand (χωρίς destroy για να συνεχίσουν τα effects)
             HandManager.Instance.RemoveCardFromHand(this.gameObject, destroyGO: false);
@@ -606,6 +648,24 @@ namespace MyProjectF.Assets.Scripts.Cards
             if (HandManager.Instance != null && HandManager.Instance.IsDrawing) return true; // << νέο
             if (!isInHand) return true;
             return false;
+        }
+
+        private void StartPlayablePulse(float baseScaleFactor)
+        {
+            DOTween.Kill(rectTransform);
+            pulseBaseScale = originalScale * baseScaleFactor; // π.χ. 0.92f για target preview
+            rectTransform.localScale = pulseBaseScale;        // ξεκίνα από τη βάση
+            rectTransform.DOScale(pulseBaseScale * playablePulseScale, playablePulseDuration)
+                         .SetLoops(-1, LoopType.Yoyo)
+                         .SetEase(Ease.InOutSine)
+                         .SetUpdate(true);
+        }
+
+        private void StopPlayablePulse(float? returnToFactor = null)
+        {
+            DOTween.Kill(rectTransform);
+            var target = returnToFactor.HasValue ? originalScale * returnToFactor.Value : pulseBaseScale;
+            rectTransform.DOScale(target, 0.12f).SetEase(Ease.OutQuad).SetUpdate(true);
         }
 
 

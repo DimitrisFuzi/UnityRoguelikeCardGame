@@ -79,7 +79,7 @@ public class RewardCardView : MonoBehaviour
                 Debug.LogWarning("[Reward] RewardCardView: Δεν βρέθηκε CardDisplay ή λείπει cardData.");
         }
 
-        // Overlay button full-rect (και ελαφρώς ορατό για debug)
+        // Overlay button full-rect
         if (button)
         {
             var brt = button.GetComponent<RectTransform>();

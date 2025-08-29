@@ -14,13 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: ForestGuardian
   health: 20
-  enemySprite: {fileID: 3543293819214416110, guid: 59ae480c1da16b544ba964b8ad399cc7, type: 3}
-  position: {x: -200, y: -20}
-  size: {x: 400, y: 400}
+  enemySprite: {fileID: -7491795078641249071, guid: 9529f3a1e2c05f247b64196fb6922c04, type: 3}
+  position: {x: -270, y: -40}
+  size: {x: 270, y: 350}
   enemyAIType: 3
-  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
-  buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  attackIntentIcon: {fileID: 8442774558652979393, guid: 8e8493d63fef06d4f8dd4904b06d0ded, type: 3}
+  buffIntentIcon: {fileID: -1513563777638607941, guid: 8275e2a5e0ef3434f8df0dc949f82e47, type: 3}
   healIntentIcon: {fileID: 0}
-  awakenIntentIcon: {fileID: -3068338416614181860, guid: f6482ea319541414d9fbd91eb1e5c949, type: 3}
+  awakenIntentIcon: {fileID: -8827765012364247763, guid: 4610d58332c20974c994028faa0ec22c, type: 3}
   summonLeftData: {fileID: 11400000, guid: e8e4ac51902ff924abb9404d098fc795, type: 2}
   summonRightData: {fileID: 11400000, guid: b891eb07d14c4fc42a3a0447ef3ef04a, type: 2}
+  shadowMode: 2
+  shadowWidthMultiplier: 0.75
+  shadowHeightToWidth: 0.2
+  shadowOffset: {x: 135, y: 0}
+  manualShadowSize: {x: 250, y: 30}

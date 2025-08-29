@@ -12,7 +12,8 @@ public class EnemyDisplay : MonoBehaviour
     [SerializeField] private IntentDisplay intentDisplay; // Reference to the IntentDisplay component
     [SerializeField] private Transform textSpawnAnchor;
     [SerializeField] private GameObject floatingDamageTextPrefab;
-
+    [SerializeField] private Image enragedImage;
+    [SerializeField] private Image awakenedImage;
 
 
     private RectTransform enemyRect;
@@ -31,6 +32,18 @@ public class EnemyDisplay : MonoBehaviour
         }
 
         enemyImage.sprite = enemyData.enemySprite;
+
+        if (enragedImage != null)
+        {
+            var c = enragedImage.color; c.a = 0f; enragedImage.color = c;
+        }
+
+        if (awakenedImage != null) // 🔴 κρύψε το awakened overlay στην αρχή
+        {
+            var c2 = awakenedImage.color; c2.a = 0f; awakenedImage.color = c2;
+        }
+
+
         enemyRect = GetComponent<RectTransform>();
 
         if (enemyRect != null)
@@ -46,8 +59,58 @@ public class EnemyDisplay : MonoBehaviour
             Logger.LogWarning("[EnemyDisplay] RectTransform component missing!", this);
         }
 
+        var shadowTr = transform.Find("Shadow");
+        if (shadowTr)
+        {
+            var fitter = shadowTr.GetComponent<EnemyShadowFitter>();
+            if (!fitter) fitter = shadowTr.gameObject.AddComponent<EnemyShadowFitter>();
+
+            // Target = το οπτικό μέγεθος του εχθρού
+            fitter.target = enemyImage.rectTransform;
+
+            // Apply από τα EnemyData
+            switch (enemyData.shadowMode)  // από EnemyData.cs  :contentReference[oaicite:1]{index=1}
+            {
+                case ShadowMode.None:
+                    shadowTr.gameObject.SetActive(false);
+                    break;
+
+                case ShadowMode.Manual:
+                    shadowTr.gameObject.SetActive(true);
+                    fitter.mode = EnemyShadowFitter.Mode.Manual;
+                    fitter.ApplyFromData(ShadowMode.Manual,
+                                         enemyData.shadowWidthMultiplier,
+                                         enemyData.shadowHeightToWidth,
+                                         enemyData.shadowOffset,
+                                         enemyData.manualShadowSize);
+                    break;
+
+                default: // Auto
+                    shadowTr.gameObject.SetActive(true);
+                    fitter.mode = EnemyShadowFitter.Mode.Auto;
+                    fitter.ApplyFromData(ShadowMode.Auto,
+                                         enemyData.shadowWidthMultiplier,
+                                         enemyData.shadowHeightToWidth,
+                                         enemyData.shadowOffset,
+                                         Vector2.zero);
+                    break;
+            }
+        }
+
         // Initialize health display using the HealthBar script
         UpdateDisplay(enemy.CurrentHealth, enemy.MaxHealth);
+
+        // EnemyDisplay.cs  (μέσα στο Setup, στο τέλος του method – μετά τα UpdateDisplay/σκιά)
+        if (enemyData.enemyAIType == EnemyAIType.WispLeft || enemyData.enemyAIType == EnemyAIType.WispRight)
+        {
+            var floaty = gameObject.GetComponent<WispFloatMotion>();
+            if (floaty == null) floaty = gameObject.AddComponent<WispFloatMotion>();
+
+            // Optional: λίγες διαφορές ανά instance
+            floaty.amplitude = Random.Range(5f, 8f); // canvas units
+            floaty.speed = Random.Range(1.6f, 2.4f);
+        }
+
     }
 
     /// <summary>
@@ -93,25 +156,41 @@ public class EnemyDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Changes the enemy sprite's color to visually indicate enraged state.
+    /// Sets or resets the enraged visual effect.
     /// </summary>
     /// <param name="isEnraged">True to set enraged color, false to reset to normal.</param>
     public void SetEnragedVisual(bool isEnraged)
     {
-        if (enemyImage == null) return;
-
-        if (isEnraged)
+        if (enragedImage != null)
         {
-            // Set an enraged color (e.g., red tint)
-            // FF2F3B in hex is R=255, G=47, B=59
-            // Divide by 255 for Unity's Color (0-1f) format
-            enemyImage.color = new Color(1f, 47f / 255f, 59f / 255f, 1f);
+            enragedImage.DOKill();
+            enragedImage.DOFade(isEnraged ? 1f : 0f, 0.2f);
+
+            // Βεβαιώσου ότι το βασικό sprite μένει "καθαρό"
+            if (enemyImage != null) enemyImage.color = Color.white;
         }
         else
         {
-            // Reset to normal color (white)
-            enemyImage.color = Color.white;
+            // Fallback (όπως πριν) αν δεν έχεις δώσει enragedImage:
+            if (enemyImage == null) return;
+            enemyImage.color = isEnraged ? new Color(1f, 47f / 255f, 59f / 255f, 1f) : Color.white;
         }
+    }
+
+    /// <summary>
+    /// Awakened visual effect.
+    /// </summary>
+    public void SetAwakenVisual(bool on)
+    {
+        if (awakenedImage == null) return;
+
+        awakenedImage.DOKill();
+        var t = on ? 1.2f : 0.25f;
+        awakenedImage.DOFade(on ? 1f : 0f, t);
+
+        // optional “impact” στο trigger
+        if (on && enemyImage != null)
+            enemyImage.rectTransform.DOPunchScale(Vector3.one * 0.12f, 0.28f, 6, 0.6f);
     }
 
     public void ShowDamagePopup(int damage)
@@ -180,19 +259,31 @@ public class EnemyDisplay : MonoBehaviour
     /// <summary>
     /// Plays the death animation for the enemy.
     /// </summary> 
+    // EnemyDisplay.cs
     public void PlayDeathAnimation(System.Action onComplete = null)
     {
-        if (enemyImage == null)
+        if (enemyImage == null) { onComplete?.Invoke(); return; }
+
+        // Σβήσε τυχόν tweens
+        enemyImage.DOKill();
+        enragedImage?.DOKill();
+        awakenedImage?.DOKill();                // 🔴 ΝΕΟ
+
+        var seq = DOTween.Sequence()
+            .Join(enemyImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
+        if (enragedImage != null)
+            seq.Join(enragedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
+        if (awakenedImage != null)              // 🔴 ΝΕΟ
+            seq.Join(awakenedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
+
+        seq.OnComplete(() =>
         {
             onComplete?.Invoke();
-            return;
-        }
-
-        enemyImage.DOFade(0f, 1f)
-                  .SetEase(Ease.InOutQuad)
-                  .OnComplete(() => {
-                      onComplete?.Invoke();
-                      gameObject.SetActive(false);
-                  });
+            gameObject.SetActive(false);
+        });
     }
+
+
 }

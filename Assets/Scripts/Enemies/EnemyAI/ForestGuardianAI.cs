@@ -159,7 +159,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         // 1) Αν έχει προγραμματιστεί double-summon
         if (doubleSummonNextTurn)
         {
-            nextIntent = new EnemyIntent(IntentType.Special, "Summon x2", 0, specialIcon);
+            nextIntent = new EnemyIntent(IntentType.Special, "", 0, specialIcon);
             return nextIntent;
         }
 
@@ -167,14 +167,14 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         if (!awakened && (awakenTelegraphed || boss.CurrentHealth <= boss.MaxHealth / 2))
         {
             var icon = (awakenIntentIcon != null) ? awakenIntentIcon : specialIcon;
-            nextIntent = new EnemyIntent(IntentType.Special, "Awaken", 0, icon);
+            nextIntent = new EnemyIntent(IntentType.Special, "", 0, icon);
             return nextIntent;
         }
 
         // 3) Διαφορετικά, δείξε Summon αν έρχεται αυτό (P1 timer)
         if (!awakened && canSummonFurther && p1SummonCounter + 1 >= p1SummonEveryTurns && AliveMinionsCount() < 2)
         {
-            nextIntent = new EnemyIntent(IntentType.Special, "Summon", 0, specialIcon);
+            nextIntent = new EnemyIntent(IntentType.Special, "", 0, specialIcon);
             return nextIntent;
         }
 
@@ -216,7 +216,8 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
 
             // μετά το consume → δεν ξανακάνει summons
             canSummonFurther = false;
-            // Προαιρετικά: display.SetAwakenVisual(true);
+
+            display?.SetAwakenVisual(true);
             return;
         }
 

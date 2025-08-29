@@ -45,6 +45,15 @@ public class EnemyData : ScriptableObject
     public EnemyData summonLeftData;   // π.χ. WispLeft.asset
     public EnemyData summonRightData;  // π.χ. WispRight.asset
 
+    [Header("Shadow Settings")]
+    public ShadowMode shadowMode = ShadowMode.Auto;
+    [Range(0.1f, 2f)] public float shadowWidthMultiplier = 0.75f;   // Auto
+    [Range(0.05f, 0.6f)] public float shadowHeightToWidth = 0.20f;   // Auto
+    public Vector2 shadowOffset = new Vector2(0f, -10f);             // Auto/Manual
+
+    // Manual override (αν θες να ορίσεις ρητά μέγεθος)
+    public Vector2 manualShadowSize = new Vector2(180f, 28f);
+
 }
 
 /// <summary>
@@ -59,3 +68,10 @@ public enum EnemyAIType
     WispLeft,      
     WispRight
 }
+
+/// <summary>
+/// Shadow sizing modes.
+/// </summary>
+public enum ShadowMode { None, Auto, Manual }
+
+

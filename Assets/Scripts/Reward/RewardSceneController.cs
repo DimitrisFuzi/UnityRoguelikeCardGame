@@ -21,10 +21,8 @@ public class RewardSceneController : MonoBehaviour
     [SerializeField] private float moveDuration = 0.35f;
     [SerializeField] private float zoomScale = 1.15f;
 
-
     void Start()
     {
-        AudioManager.Instance?.StopMusic();
         Time.timeScale = 1f;
 
         if (continueButton) continueButton.gameObject.SetActive(false);
@@ -87,7 +85,7 @@ public class RewardSceneController : MonoBehaviour
         string cardName = chosen?.def?.cardData ? chosen.def.cardData.cardName : null;
         ApplyCard(cardName);
 
-        if (headerText) headerText.text = $"Πήρες: {cardName}";
+        if (headerText) headerText.text = $"{cardName} was added to the deck";
         if (continueButton)
         {
             continueButton.gameObject.SetActive(true);

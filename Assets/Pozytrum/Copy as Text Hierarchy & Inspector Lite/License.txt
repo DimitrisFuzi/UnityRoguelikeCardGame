@@ -1,5 +1,0 @@
-Hierarchy & Inspector Exporter
-Copyright (c) 2025 Pozytrum Michał Szczepanik. All rights reserved.
-
-Use of this asset is governed by the Unity Asset Store End User License Agreement (EULA).
-See https://unity3d.com/legal/as_terms

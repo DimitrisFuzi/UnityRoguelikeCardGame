@@ -32,6 +32,7 @@ namespace MyProjectF.Assets.Scripts.Player
 
                 playerDisplay = GetComponentInChildren<PlayerDisplay>();
 
+                OnArmorChanged += HandleArmorRelay;
                 NotifyUI();
             }
             else
@@ -109,6 +110,11 @@ namespace MyProjectF.Assets.Scripts.Player
         {
             Logger.Log("💀 Player died! Game Over.", this);
             base.Die();
+        }
+
+        private void HandleArmorRelay(int _)
+        {
+            NotifyUI();   // σηκώνει OnStatsChanged ώστε το UI σου να ανανεωθεί άμεσα
         }
     }
 }

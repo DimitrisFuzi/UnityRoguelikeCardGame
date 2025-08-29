@@ -14,13 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Wolf2
   health: 1
-  enemySprite: {fileID: -7182203434520209011, guid: fda09dbcb3f912d46b4176509c07651d, type: 3}
-  position: {x: -300, y: -100}
-  size: {x: 200, y: 200}
+  enemySprite: {fileID: 8043684245823414713, guid: 56c9e23399c43c24793622dba93921d1, type: 3}
+  position: {x: -330, y: -200}
+  size: {x: 170, y: 120}
   enemyAIType: 2
-  attackIntentIcon: {fileID: 8038433550303944917, guid: b7a3d21211ccbde429c152fb5c6e0182, type: 3}
-  buffIntentIcon: {fileID: 7814738740268439231, guid: 6f6fa6f47109db34cb1d68c6fa85a68d, type: 3}
+  attackIntentIcon: {fileID: 8442774558652979393, guid: 8e8493d63fef06d4f8dd4904b06d0ded, type: 3}
+  buffIntentIcon: {fileID: -1513563777638607941, guid: 8275e2a5e0ef3434f8df0dc949f82e47, type: 3}
   healIntentIcon: {fileID: 0}
   awakenIntentIcon: {fileID: 0}
   summonLeftData: {fileID: 0}
   summonRightData: {fileID: 0}
+  shadowMode: 2
+  shadowWidthMultiplier: 0.75
+  shadowHeightToWidth: 0.2
+  shadowOffset: {x: 80, y: 10}
+  manualShadowSize: {x: 140, y: 20}

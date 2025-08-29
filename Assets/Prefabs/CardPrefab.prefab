@@ -128,7 +128,7 @@ MonoBehaviour:
   glowEffect: {fileID: 2043751710176427291}
   playArrow: {fileID: 2834380698392247112}
   cardPlay: {x: 0, y: 400}
-  playPosition: {x: -600, y: 500, z: 0}
+  playPosition: {x: -800, y: 500, z: 0}
   lerpFactor: 0.1
   cardPlayDivider: 2
   cardPlayMultiplier: 1
@@ -138,6 +138,12 @@ MonoBehaviour:
   playPositionXDivider: -3
   playPositionXMultiplier: 1.2
   needUpdatePlayPosition: 0
+  playThresholdOffsetPx: -90
+  hysteresisPx: 24
+  targetPreviewScale: 0.5
+  targetPreviewAlpha: 1
+  playablePulseScale: 1.03
+  playablePulseDuration: 0.25
   cardData: {fileID: 0}
 --- !u!1 &2043751710176427291
 GameObject:
@@ -334,7 +340,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Fight or Flight
+  m_text: Brace
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3fb42610a38c5ea44b6e422217e1379e, type: 2}
   m_sharedMaterial: {fileID: -5293015429705894655, guid: 3fb42610a38c5ea44b6e422217e1379e, type: 2}
@@ -470,7 +476,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9228532359aef794aa54d82a61a4d507, type: 2}
   m_sharedMaterial: {fileID: 801408554553963218, guid: 9228532359aef794aa54d82a61a4d507, type: 2}
@@ -718,7 +724,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2866464677855621320, guid: 8d13ff47bfc68144b928d4045948f835, type: 3}
+  m_Sprite: {fileID: -5314158422959602925, guid: 48cffde789c107f44a2b882b7f95018f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -832,7 +838,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8481177166388933822, guid: 31fb0d305c1d6db44a444e667539ffad, type: 3}
+  m_Sprite: {fileID: 8009418507701389807, guid: 5a8c8a81c9e765a489e438c3a100e472, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -908,7 +914,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: descripion text
+  m_text: Gain 12 armor.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d562c46e05200274eb14638dd2def1d9, type: 2}
   m_sharedMaterial: {fileID: 4609558808718256472, guid: d562c46e05200274eb14638dd2def1d9, type: 2}

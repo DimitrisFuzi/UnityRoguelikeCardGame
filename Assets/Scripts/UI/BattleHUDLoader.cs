@@ -14,9 +14,9 @@ public class BattleHUDLoader : MonoBehaviour
     }
     private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    /*private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        bool isBattle = scene.name.StartsWith(battlePrefix);
+        bool isBattle = scene.name.StartsWith(battlePrefix) ;
         if (isBattle)
         {
             if (instance == null && hudPrefab != null)
@@ -26,5 +26,14 @@ public class BattleHUDLoader : MonoBehaviour
         {
             if (instance != null) { Destroy(instance); instance = null; }
         }
+    }*/
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "MainMenu")
+        {
+            instance = Instantiate(hudPrefab);
+        }
+        
     }
 }

@@ -14,7 +14,7 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     private Sprite attackIcon;
     private Sprite buffIcon;
 
-    [SerializeField] private int damageAmount = 10;
+    [SerializeField] private int damageAmount = 12;
 
     private CharacterStats playerStats;
     private EnemyDisplay enemyDisplay; // NEW: Reference to the EnemyDisplay

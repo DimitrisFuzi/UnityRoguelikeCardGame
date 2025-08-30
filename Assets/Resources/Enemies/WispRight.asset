@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WispRight
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: WispRight
-  health: 18
+  health: 1
   enemySprite: {fileID: -5833361484094264668, guid: a94dba0b6f80dba4d838593e1b5ecc0a, type: 3}
   position: {x: -170, y: 185}
   size: {x: 100, y: 100}

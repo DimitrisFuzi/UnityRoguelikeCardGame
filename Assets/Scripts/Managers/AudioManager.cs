@@ -26,15 +26,15 @@ public class AudioManager : MonoBehaviour
         { "Card_Hover", 0.05f },
         { "Card_Select", 0.1f },
         { "Enemy_Hit", 0.2f },
-        { "Card_Draw", 0.2f },
-        { "Block_Gain", 0.2f },
+        { "Card_Draw", 0.3f },
+        { "Block_Gain", 0.3f },
         { "Enemy_Death", 0.1f },
         { "End_Turn", 0.3f },
         { "Player_Hit_Blocked", 0.2f },
         { "Player_Hit", 0.1f },
         { "Rage_Effect", 0.2f },
-        { "MainMenuHover", 0.5f },
-        { "MainMenuClick", 0.5f }
+        { "MainMenuHover", 0.4f },
+        { "MainMenuClick", 0.4f }
     };
 
     private void Awake()

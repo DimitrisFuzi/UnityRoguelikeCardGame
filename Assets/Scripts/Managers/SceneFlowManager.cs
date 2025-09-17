@@ -78,6 +78,9 @@ public class SceneFlowManager : MonoBehaviour
         // Fade out
         yield return ScreenFader.Instance.FadeOut();
 
+        var am = AudioManager.Instance;
+        if (am != null) am.StopMusic();
+
         // Async φόρτωμα χωρίς άμεση ενεργοποίηση
         var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         op.allowSceneActivation = false;

@@ -202,7 +202,10 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         }
 
         // 4) Αλλιώς Attack preview για τον επόμενο γύρο
-        int preview = BaseDamage();
+        //int preview = BaseDamage();
+        //nextIntent = new EnemyIntent(IntentType.Attack, preview.ToString(), preview, attackIcon);
+
+        int preview = baseAttack + (ramp + rampPerTurn) + absorbBonus; // 👈 προβλέπεις την αύξηση
         nextIntent = new EnemyIntent(IntentType.Attack, preview.ToString(), preview, attackIcon);
     }
 
@@ -250,7 +253,7 @@ public class ForestGuardianAI : MonoBehaviour, IEnemyAI
         // Χωρίς summons → προγραμμάτισε double-summon στο επόμενο boss turn
         doubleSummonNextTurn = true;
         // canSummonFurther θα κλειδώσει αμέσως μετά το double-summon
-        // Προαιρετικά: display.SetAwakenVisual(true);
+        display.SetAwakenVisual(true);
     }
 
     private int AliveMinionsCount() => GetAliveMinions().Count;

@@ -16,9 +16,7 @@ namespace MyProjectF.Assets.Scripts.Player
         public int initialEnergy;
         public int energy;
 
-        /// <summary>
-        /// Event fired whenever player stats change (health, armor, energy).
-        /// </summary>
+        /// <summary>Event fired whenever player stats change (health, armor, energy).</summary>
         public static event Action OnStatsChanged;
 
         private void Awake()
@@ -26,8 +24,7 @@ namespace MyProjectF.Assets.Scripts.Player
             if (Instance == null)
             {
                 Instance = this;
-                InitializeStats(75); // Example starting health
-
+                InitializeStats(75); // starting health
                 energy = initialEnergy;
 
                 playerDisplay = GetComponentInChildren<PlayerDisplay>();
@@ -37,30 +34,26 @@ namespace MyProjectF.Assets.Scripts.Player
             }
             else
             {
-                Logger.LogWarning($"Duplicate PlayerStats detected! Destroying this instance. ID: {GetInstanceID()}", this);
+                Logger.LogWarning($"Duplicate PlayerStats detected. Destroying this instance. ID: {GetInstanceID()}", this);
                 Destroy(gameObject);
             }
         }
 
-        // ✅ Override SetCurrentHealth ώστε να περνάει από NotifyUI
-        // PlayerStats.cs
+        /// <summary>Ensure UI is notified when health is set directly.</summary>
         public override void SetCurrentHealth(int value)
         {
-            base.SetCurrentHealth(value);   // καλεί το CharacterStats clamp logic
-            NotifyUI();                     // σήκωσε event για το PlayerDisplay
+            base.SetCurrentHealth(value);
+            NotifyUI();
         }
 
-
-        // ✅ Override LoseHealthDirect ώστε να περνάει από NotifyUI
+        /// <summary>Ensure UI is notified when health is reduced directly.</summary>
         public override void LoseHealthDirect(int amount)
         {
             base.LoseHealthDirect(amount);
             NotifyUI();
         }
 
-        /// <summary>
-        /// Override for CurrentHealth to notify UI whenever it changes.
-        /// </summary>
+        /// <summary>Notify UI on CurrentHealth setter.</summary>
         public override int CurrentHealth
         {
             get => base.CurrentHealth;
@@ -68,69 +61,54 @@ namespace MyProjectF.Assets.Scripts.Player
             {
                 base.CurrentHealth = value;
                 NotifyUI();
-              }
-          }
+            }
+        }
 
-        /// <summary>
-        /// Resets the player's energy to initial value and notifies listeners.
-        /// </summary>
+        /// <summary>Resets the player's energy to initial value.</summary>
         public void ResetEnergy()
         {
             energy = initialEnergy;
             NotifyUI();
         }
 
-        /// <summary>
-        /// Resets the player's armor to zero and notifies listeners.
-        /// </summary>
+        /// <summary>Resets the player's armor to zero.</summary>
         public void ResetArmor()
         {
             Armor = 0;
             NotifyUI();
         }
 
-        /// <summary>
-        /// Uses a specified amount of energy. Clamps to zero minimum.
-        /// </summary>
-        /// <param name="amount">Amount of energy to use.</param>
+        /// <summary>Uses a specified amount of energy. Clamps to zero.</summary>
         public void UseEnergy(int amount)
         {
             energy -= amount;
             if (energy < 0) energy = 0;
-
             NotifyUI();
         }
 
-        /// <summary>
-        /// Increases the player's energy by a specified amount.
-        /// </summary>
+        /// <summary>Increases the player's energy by a specified amount.</summary>
         public void GainEnergy(int amount)
         {
             energy += amount;
             NotifyUI();
         }
 
-
-        /// <summary>
-        /// Notifies listeners that player stats have changed.
-        /// </summary>
+        /// <summary>Notifies listeners that player stats have changed.</summary>
         private void NotifyUI()
         {
             OnStatsChanged?.Invoke();
         }
 
-        /// <summary>
-        /// Handles player death logic.
-        /// </summary>
+        /// <summary>Handles player death logic.</summary>
         protected override void Die()
         {
-            Logger.Log("💀 Player died! Game Over.", this);
+            Logger.Log("Player died. Game Over.", this);
             base.Die();
         }
 
         private void HandleArmorRelay(int _)
         {
-            NotifyUI();   // σηκώνει OnStatsChanged ώστε το UI σου να ανανεωθεί άμεσα
+            NotifyUI();
         }
     }
 }

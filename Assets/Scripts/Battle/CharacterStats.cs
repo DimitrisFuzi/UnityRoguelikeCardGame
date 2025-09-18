@@ -15,9 +15,7 @@ public abstract class CharacterStats : MonoBehaviour
 
     protected int currentHealth;
 
-    /// <summary>
-    /// Virtual property for current health to allow override (e.g., UI sync).
-    /// </summary>
+    /// <summary>Virtual property for current health to allow override (e.g., UI sync).</summary>
     public virtual int CurrentHealth
     {
         get => currentHealth;
@@ -25,9 +23,6 @@ public abstract class CharacterStats : MonoBehaviour
     }
 
     public int Armor { get; protected set; }
-
-    // Add energy stat here if it's common to all characters
-    // For now, it's specific to PlayerStats, but we will add the event here.
 
     /// <summary>
     /// Event fired when health changes.
@@ -41,47 +36,36 @@ public abstract class CharacterStats : MonoBehaviour
     /// </summary>
     public event Action<int> OnArmorChanged;
 
-    /// <summary>
-    /// Event fired when energy changes.
-    /// Parameter: currentEnergy
-    /// </summary>
-    //public event Action<int> OnEnergyChanged; // ADDED: OnEnergyChanged event
-
-    /// <summary>
-    /// Event fired when the character dies.
-    /// </summary>
+    /// <summary>Event fired when the character dies.</summary>
     public event Action OnDied;
 
     /// <summary>
     /// Initialize the stats, usually called on spawn or setup.
     /// </summary>
-    /// <param name="maxHealth">Maximum health value.</param>
-    /// <param name="startingArmor">Starting armor value (optional, defaults to 0).</param>
     public virtual void InitializeStats(int maxHealth, int startingArmor = 0)
     {
         MaxHealth = maxHealth;
-        CurrentHealth = maxHealth; // Start with full health
+        CurrentHealth = maxHealth;
         Armor = startingArmor;
 
-        // Immediately invoke events to update UI on initialization
+        // Initial push to UI
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         OnArmorChanged?.Invoke(Armor);
-        // OnEnergyChanged will be invoked by PlayerStats if applicable
     }
 
     /// <summary>
     /// Reduces character's health, accounting for armor. Triggers OnHealthChanged.
+    /// Returns the damage that actually went through after armor.
     /// </summary>
-    /// <param name="amount">Amount of damage to take.</param>
     public virtual int TakeDamage(int amount)
     {
-        int damageAfterArmor = Mathf.Max(0, amount - Armor); // Damage absorbed by armor
-        Armor = Mathf.Max(0, Armor - amount); // Armor reduced first
+        int damageAfterArmor = Mathf.Max(0, amount - Armor);
+        Armor = Mathf.Max(0, Armor - amount);
 
         CurrentHealth -= damageAfterArmor;
 
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
-        OnArmorChanged?.Invoke(Armor); // Armor might have changed too
+        OnArmorChanged?.Invoke(Armor);
 
         if (CurrentHealth <= 0)
         {
@@ -91,9 +75,7 @@ public abstract class CharacterStats : MonoBehaviour
         return damageAfterArmor;
     }
 
-    /// <summary>
-    /// Directly reduces health without considering armor.
-    /// </summary>
+    /// <summary>Directly reduces health without considering armor.</summary>
     public virtual void LoseHealthDirect(int amount)
     {
         currentHealth = Mathf.Clamp(currentHealth - amount, 0, MaxHealth);
@@ -107,35 +89,23 @@ public abstract class CharacterStats : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Sets the current health directly, clamping it between 0 and max health.
-    /// </summary> 
+    /// <summary>Sets the current health directly, clamping it between 0 and max health.</summary>
     public virtual void SetCurrentHealth(int value)
     {
-        int oldHealth = currentHealth;
         currentHealth = Mathf.Clamp(value, 0, MaxHealth);
-        OnHealthChanged?.Invoke(oldHealth, currentHealth);
-        Debug.Log($"[SetCurrentHealth] {name}: old={oldHealth}, new={currentHealth}, max={MaxHealth}");
-
+        OnHealthChanged?.Invoke(currentHealth, MaxHealth);
     }
 
-
-    /// <summary>
-    /// Performs an attack on another character.
-    /// </summary>
-    /// <param name="target">The character receiving the attack.</param>
+    /// <summary>Performs a simple attack on another character.</summary>
     public virtual void PerformAttack(CharacterStats target)
     {
-        int attackDamage = 10; // This can later come from EnemyData or WeaponData
+        int attackDamage = 10; // could come from data later
         target.TakeDamage(attackDamage);
 
-        Logger.Log($"⚔️ {gameObject.name} attacks {target.gameObject.name} for {attackDamage} damage!", this);
+        Logger.Log($"{gameObject.name} attacks {target.gameObject.name} for {attackDamage} damage.", this);
     }
 
-    /// <summary>
-    /// Heals the character by a specific amount, not exceeding max health.
-    /// </summary>
-    /// <param name="amount">Amount to heal.</param>
+    /// <summary>Heals the character by a specific amount, not exceeding max health.</summary>
     public virtual void Heal(int amount)
     {
         CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
@@ -144,10 +114,7 @@ public abstract class CharacterStats : MonoBehaviour
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
-    /// <summary>
-    /// Adds armor to the character.
-    /// </summary>
-    /// <param name="amount">Amount of armor to add.</param>
+    /// <summary>Adds armor to the character.</summary>
     public virtual void AddArmor(int amount)
     {
         Armor = Mathf.Max(0, Armor + amount);
@@ -156,18 +123,13 @@ public abstract class CharacterStats : MonoBehaviour
         OnArmorChanged?.Invoke(Armor);
     }
 
-    /// <summary>
-    /// Handles death logic for the character.
-    /// Can be overridden by derived classes for custom behavior.
-    /// </summary>
+    /// <summary>Handles death logic for the character.</summary>
     protected virtual void Die()
     {
-        OnDied?.Invoke(); // Notify listeners that the character has died
+        OnDied?.Invoke();
     }
 
-    /// <summary>
-    /// Directly gains health without any checks.
-    /// </summary>  
+    /// <summary>Directly gains health without any checks. Returns the amount actually healed.</summary>
     public virtual int GainHealthDirect(int amount)
     {
         if (amount <= 0) return 0;
@@ -183,5 +145,4 @@ public abstract class CharacterStats : MonoBehaviour
 
         return healed;
     }
-
 }

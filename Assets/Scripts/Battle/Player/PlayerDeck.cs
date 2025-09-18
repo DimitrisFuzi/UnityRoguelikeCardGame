@@ -11,7 +11,6 @@ public class PlayerDeck : MonoBehaviour
     public static PlayerDeck Instance { get; private set; }
     public IReadOnlyList<Card> CurrentDeck => playerDeck;
 
-
     [SerializeField] private List<Card> playerDeck = new List<Card>();
     private Dictionary<string, Card> allCardsDictionary = new();
 
@@ -27,21 +26,18 @@ public class PlayerDeck : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);   // ✅ κράτα το ζωντανό σε όλες τις σκηνές
+        DontDestroyOnLoad(gameObject);
 
-        LoadAllCards();                  // αν διαβάζει resources/DB, καλό είναι να το κάνει μία φορά εδώ
+        LoadAllCards();
         GameSession.Instance?.RegisterDeck(this);
     }
-
 
     private void Start()
     {
         InitializeStartingDeck();
     }
 
-    /// <summary>
-    /// Loads all card assets from the Resources/Cards folder into a dictionary for fast lookup.
-    /// </summary>
+    /// <summary>Loads all card assets from Resources/Cards into a dictionary for fast lookup.</summary>
     private void LoadAllCards()
     {
         allCardsDictionary.Clear();
@@ -54,17 +50,14 @@ public class PlayerDeck : MonoBehaviour
                 allCardsDictionary[card.cardName] = card;
             }
         }
-
     }
 
-    /// <summary>
-    /// Initializes the player's starting deck using StartingDeck.asset (or falls back).
-    /// </summary>
+    /// <summary>Initializes the player's starting deck using StartingDeck.asset (or fallback).</summary>
     public void InitializeStartingDeck()
     {
         playerDeck.Clear();
 
-        // 1) Αν υπάρχει asset + λίστα, χρησιμοποίησέ τα
+        // From asset if present
         if (startingDeckData != null && startingDeckData.startingCards != null && startingDeckData.startingCards.Count > 0)
         {
             foreach (var cardName in startingDeckData.startingCards)
@@ -75,14 +68,14 @@ public class PlayerDeck : MonoBehaviour
                 }
                 else
                 {
-                    Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
+                    Logger.LogError($"Card '{cardName}' not found in card dictionary.", this);
                 }
             }
             Logger.Log("[PlayerDeck] Deck initialized from StartingDeck asset.", this);
             return;
         }
 
-        // 2) Fallback: η παλιά hardcoded λίστα (αν λείπει asset)
+        // Fallback defaults
         string[] defaultCards =
         {
             "Blood Rush","Blood Rush","Blood Rush","Blood Rush","Blood Rush",
@@ -94,34 +87,26 @@ public class PlayerDeck : MonoBehaviour
             if (allCardsDictionary.TryGetValue(cardName, out Card card))
                 playerDeck.Add(card);
             else
-                Logger.LogError($"❌ Card '{cardName}' not found in card dictionary!", this);
+                Logger.LogError($"Card '{cardName}' not found in card dictionary.", this);
         }
 
         Logger.Log("[PlayerDeck] Deck initialized from fallback defaults.", this);
     }
 
-    /// <summary>
-    /// Returns a new copy of the player's current deck.
-    /// </summary>
-    public List<Card> GetDeck()
-    {
-        return new List<Card>(playerDeck);
-    }
+    /// <summary>Returns a new copy of the player's current deck.</summary>
+    public List<Card> GetDeck() => new List<Card>(playerDeck);
 
-    /// <summary>
-    /// Adds a card to the player's deck by name.
-    /// </summary>
-    /// <param name="cardName">The name of the card to add.</param>
+    /// <summary>Adds a card to the player's deck by name.</summary>
     public void AddCardToDeck(string cardName)
     {
         if (allCardsDictionary.TryGetValue(cardName, out Card card))
         {
             playerDeck.Add(card);
-            Logger.Log($"➕ Card '{card.cardName}' added to deck.", this);
+            Logger.Log($"Card '{card.cardName}' added to deck.", this);
         }
         else
         {
-            Logger.LogError($"❌ Card '{cardName}' not found in card dictionary.", this);
+            Logger.LogError($"Card '{cardName}' not found in card dictionary.", this);
         }
     }
 }

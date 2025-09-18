@@ -1,5 +1,4 @@
-﻿// PlayerDisplay.cs
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -10,7 +9,7 @@ public class PlayerDisplay : MonoBehaviour
     private PlayerStats playerStats;
 
     [Header("UI Elements")]
-    [SerializeField] private HealthBar playerHealthBar; // NEW: Reference to HealthBar script for player
+    [SerializeField] private HealthBar playerHealthBar;
     [SerializeField] private TextMeshProUGUI armorText;
     [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private Image armorImage;
@@ -19,30 +18,32 @@ public class PlayerDisplay : MonoBehaviour
 
     private void Start()
     {
-        if (playerStats == null)
-        {
-            playerStats = PlayerStats.Instance;
-        }
-        else
-        {
-            Logger.Log($"PlayerDisplay has pre-assigned playerStats = {playerStats}", this);
-        }
+        playerStats = PlayerStats.Instance ?? playerStats;
 
         if (playerStats != null)
         {
-            PlayerStats.OnStatsChanged += UpdatePlayerUI;
-            UpdatePlayerUI(); // Update UI immediately on start
+            UpdatePlayerUI(); // initial paint
         }
         else
         {
-            Logger.LogWarning("⚠️ PlayerStats not found! UI will show fallback values.", this);
+            Logger.LogWarning("PlayerStats not found. UI will show fallback values.", this);
             SetFallbackDisplay();
         }
     }
 
-    /// <summary>
-    /// Updates the UI elements with the current player stats.
-    /// </summary>
+    private void OnEnable()
+    {
+        if (PlayerStats.Instance != null)
+            PlayerStats.OnStatsChanged += UpdatePlayerUI;
+    }
+
+    private void OnDisable()
+    {
+        if (PlayerStats.Instance != null)
+            PlayerStats.OnStatsChanged -= UpdatePlayerUI;
+    }
+
+    /// <summary>Updates the UI elements with the current player stats.</summary>
     public void UpdatePlayerUI()
     {
         if (playerStats == null)
@@ -51,57 +52,27 @@ public class PlayerDisplay : MonoBehaviour
             return;
         }
 
-        // Update player health using the HealthBar script
         if (playerHealthBar != null)
         {
             playerHealthBar.UpdateHealthBar(playerStats.CurrentHealth, playerStats.MaxHealth);
         }
         else
         {
-            Logger.LogWarning("[PlayerDisplay] playerHealthBar is not assigned! Player health will not display.", this);
-            // Fallback for health text if health bar isn't set up
-            // You might want to have a separate TextMeshProUGUI for health here if HealthBar isn't always used.
+            Logger.LogWarning("[PlayerDisplay] playerHealthBar is not assigned.", this);
         }
 
-        armorText.text = $"{playerStats.Armor}";
-        energyText.text = $"{playerStats.energy}";
+        if (armorText != null) armorText.text = $"{playerStats.Armor}";
+        if (energyText != null) energyText.text = $"{playerStats.energy}";
     }
 
-    /// <summary>
-    /// Sets placeholder values when no PlayerStats is available.
-    /// </summary>
+    /// <summary>Sets placeholder values when no PlayerStats is available.</summary>
     private void SetFallbackDisplay()
     {
-        // For health, you'd need to decide if HealthBar handles fallback or if there's a separate text field.
-        // For now, this will show 0/0 on the health bar.
         if (playerHealthBar != null)
-        {
             playerHealthBar.UpdateHealthBar(0, 0);
-        }
-        else
-        {
-            // If playerHealthBar is null AND you removed healthText, this will not show health.
-            // You might need a separate TextMeshProUGUI for player health if HealthBar isn't mandatory.
-        }
 
-        armorText.text = "--";
-        energyText.text = "--";
-    }
-
-    private void OnEnable()
-    {
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.OnStatsChanged += UpdatePlayerUI;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.OnStatsChanged -= UpdatePlayerUI;
-        }
+        if (armorText != null) armorText.text = "--";
+        if (energyText != null) energyText.text = "--";
     }
 
     public void ShowArmorGainEffect()
@@ -111,7 +82,6 @@ public class PlayerDisplay : MonoBehaviour
         armorImage.rectTransform.DOKill();
         armorImage.rectTransform.DOPunchScale(Vector3.one * 0.25f, 0.3f, 8, 1.0f);
 
-        // Armor Text
         if (armorText != null)
         {
             armorText.rectTransform.DOKill();
@@ -119,13 +89,12 @@ public class PlayerDisplay : MonoBehaviour
 
             Color originalTextColor = armorText.color;
             armorText.DOColor(Color.cyan, 0.1f)
-                .SetLoops(2, LoopType.Yoyo)
-                .OnComplete(() => armorText.color = originalTextColor);
+                     .SetLoops(2, LoopType.Yoyo)
+                     .OnComplete(() => armorText.color = originalTextColor);
         }
     }
-    // <summary>
-    /// Displays a floating damage text popup at the specified anchor position.
-    /// </summary>
+
+    /// <summary>Displays a floating damage text popup at the anchor position.</summary>
     public void ShowDamagePopup(int damage)
     {
         if (floatingDamageTextPrefab == null || textSpawnAnchor == null) return;
@@ -146,14 +115,18 @@ public class PlayerDisplay : MonoBehaviour
         Sequence seq = DOTween.Sequence();
 
         seq.Append(rect.DOShakeScale(0.1f, 0.2f, 10));
-        seq.Append(text.DOColor(Color.white, 0.05f));
-        seq.Append(text.DOColor(new Color32(0xFF, 0x7A, 0x7A, 255), 0.2f));
+        if (text != null)
+        {
+            seq.Append(text.DOColor(Color.white, 0.05f));
+            seq.Append(text.DOColor(new Color32(0xFF, 0x7A, 0x7A, 255), 0.2f));
+        }
 
         seq.Append(rect.DOScale(0.8f, 0.6f).SetEase(Ease.InOutQuad))
-           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic))
-           .Join(group.DOFade(0f, 0.6f))
-           .AppendCallback(() => Destroy(go));
+           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic));
+
+        if (group != null)
+            seq.Join(group.DOFade(0f, 0.6f));
+
+        seq.AppendCallback(() => Destroy(go));
     }
-
-
 }

@@ -1,55 +1,39 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Handles the UI display of the 
-/// pile count.
-/// Listens to draw pile changes and updates the UI accordingly.
+/// UI display for the draw pile count; updates when the pile changes.
 /// </summary>
 public class DrawPileUI : MonoBehaviour
 {
     [Header("UI Reference")]
-    public TMP_Text drawPileText; // Reference to the TMP text element displaying the draw pile count
+    public TMP_Text drawPileText;
 
-    /// <summary>
-    /// Called on Start. Initializes the draw pile UI if the DeckManager is available.
-    /// </summary>
-    void Start()
+    private void Start()
     {
         if (DeckManager.Instance != null)
         {
-            UpdateDrawPileUI(); // Initialize UI with current draw pile count
+            UpdateDrawPileUI();
         }
         else
         {
-            Debug.LogError("❌ DeckManager instance was not found on Start.");
+            Logger.LogError("DrawPileUI: DeckManager instance not found.", this);
         }
     }
 
-    /// <summary>
-    /// Updates the draw pile text to reflect the current number of cards in the draw pile.
-    /// </summary>
+    /// <summary>Refresh draw pile count text.</summary>
     public void UpdateDrawPileUI()
     {
-        if (DeckManager.Instance != null)
-        {
-            drawPileText.text = DeckManager.Instance.GetDrawPileCount().ToString();
-        }
+        if (DeckManager.Instance == null || drawPileText == null) return;
+        drawPileText.text = DeckManager.Instance.GetDrawPileCount().ToString();
     }
 
-    /// <summary>
-    /// Subscribes to the OnDrawPileChanged event when this component is enabled.
-    /// </summary>
-    void OnEnable()
+    private void OnEnable()
     {
         DeckManager.OnDrawPileChanged += UpdateDrawPileUI;
     }
 
-    /// <summary>
-    /// Unsubscribes from the OnDrawPileChanged event when this component is disabled.
-    /// </summary>
-    void OnDisable()
+    private void OnDisable()
     {
         DeckManager.OnDrawPileChanged -= UpdateDrawPileUI;
     }

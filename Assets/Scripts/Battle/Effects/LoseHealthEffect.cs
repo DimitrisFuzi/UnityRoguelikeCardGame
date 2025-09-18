@@ -8,15 +8,13 @@ public class LoseHealthEffect : EffectData
 {
     public int healthLoss = 1;
 
-    [SerializeField]
-
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
+        if (target == null || healthLoss <= 0) return;
+
         target.LoseHealthDirect(healthLoss);
-        //Debug.Log($"[Effect] {target.name} lost {healthLoss} HP (ignoring armor).");
-        Debug.Log($"[Effect RUN] {GetType().Name}: source={source.name}, target={target.name}, health(before)={target.CurrentHealth}");
 
-
+        // Session stats
         if (healthLoss > 0)
         {
             if (target is Enemy)
@@ -24,6 +22,7 @@ public class LoseHealthEffect : EffectData
             else
                 GameSession.Instance?.AddDamageTaken(healthLoss);
         }
-    }
 
+        Logger.Log($"[LoseHealthEffect] {target.name} lost {healthLoss} HP.");
+    }
 }

@@ -4,7 +4,9 @@ using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Cards;
 
-//[CreateAssetMenu(fileName = "New DrawCardEffect", menuName = "Effects/Draw Card")]
+/// <summary>
+/// Coroutine effect that draws a number of cards from the deck into the hand.
+/// </summary>
 public class DrawCardEffect : EffectData, ICoroutineEffect
 {
     public int cardsToDraw = 1;

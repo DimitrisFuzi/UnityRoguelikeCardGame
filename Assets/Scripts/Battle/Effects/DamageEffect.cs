@@ -1,13 +1,12 @@
 ﻿using System;
 using UnityEngine;
-using MyProjectF.Assets.Scripts.Effects;
 using DG.Tweening;
+using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Player;
 using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
-/// Represents an effect that deals damage to a target character.
-/// Can be serialized and configured within card data.
+/// Deals damage to a target and triggers basic VFX/SFX.
 /// </summary>
 [Serializable]
 public class DamageEffect : EffectData
@@ -15,24 +14,13 @@ public class DamageEffect : EffectData
     [Tooltip("Amount of damage to deal to the target.")]
     public int damageAmount;
 
-    /// <summary>
-    /// Sets the amount of damage this effect will deal.
-    /// </summary>
-    public void SetDamageAmount(int amount)
-    {
-        damageAmount = amount;
-    }
+    public void SetDamageAmount(int amount) => damageAmount = amount;
 
-    /// <summary>
-    /// Applies the damage effect to the target character.
-    /// </summary>
-    /// <param name="source">The character applying the effect.</param>
-    /// <param name="target">The target character receiving the damage.</param>
     public override void ApplyEffect(CharacterStats source, CharacterStats target)
     {
         if (BattleManager.Instance != null && BattleManager.Instance.IsBattleOver())
         {
-            Debug.LogWarning("🛑 Skipping ApplyEffect: battle is over.");
+            Logger.LogWarning("Skipping ApplyEffect: battle is over.");
             return;
         }
 
@@ -42,6 +30,7 @@ public class DamageEffect : EffectData
         {
             int realDamage = target.TakeDamage(damageAmount);
 
+            // Player feedback
             if (target is PlayerStats playerTarget && playerTarget.playerDisplay != null)
             {
                 if (realDamage > 0)
@@ -52,12 +41,11 @@ public class DamageEffect : EffectData
                 }
                 else if (damageAmount > 0)
                 {
-
                     AudioManager.Instance?.PlaySFX("Player_Hit_Blocked");
                 }
-
             }
 
+            // Enemy VFX (scratch)
             GameObject scratchPrefab = Resources.Load<GameObject>("Effects/ScratchEffect");
 
             if (scratchPrefab != null &&
@@ -65,11 +53,9 @@ public class DamageEffect : EffectData
                 enemyTarget.enemyDisplay != null &&
                 enemyTarget.enemyDisplay.enemyImage != null)
             {
-                // ✅ Instantiate the scratch effect prefab
                 GameObject instance = GameObject.Instantiate(scratchPrefab);
-                instance.transform.SetParent(enemyTarget.enemyDisplay.enemyImage.transform, false); // false = reset local pos
+                instance.transform.SetParent(enemyTarget.enemyDisplay.enemyImage.transform, false);
 
-                // ✅ force reset το RectTransform
                 RectTransform rect = instance.GetComponent<RectTransform>();
                 if (rect != null)
                 {
@@ -78,55 +64,36 @@ public class DamageEffect : EffectData
                     rect.localRotation = Quaternion.identity;
                 }
 
-                // ✅ Get the ScratchEffect component and play it
                 var effect = instance.GetComponent<ScratchEffect>();
-                if (effect != null)
-                {
-                    effect.PlayEffect();
-                }
-
+                if (effect != null) effect.PlayEffect();
             }
 
+            // Enemy feedback (popup + SFX) — uses configured damageAmount for consistency with other displays
             if (enemyTarget != null && enemyTarget.enemyDisplay != null)
             {
-                
                 GameSession.Instance?.AddDamageDealt(damageAmount);
-
-                // ✅ Show damage popup on enemy display
                 enemyTarget.enemyDisplay.ShowDamagePopup(damageAmount);
-
-                // ✅ Play enemy hit sound effect
                 AudioManager.Instance?.PlaySFX("Enemy_Hit");
-
             }
-
         }
 
         if (BattleManager.Instance != null && BattleManager.Instance.IsBattleOver())
         {
-            Debug.LogWarning("🛑 Skipping attack animation: battle is over.");
+            Logger.LogWarning("Skipping attack animation: battle is over.");
             return;
         }
 
-        // 🔄 Visual "attack movement" animation
+        // Simple "attack nudge" animation on the source visuals
         if (source != null && source.characterVisualTransform != null)
         {
-            Debug.Log($"[AttackAnimation] {source.name} is attacking", target);
+            Logger.Log($"[AttackAnimation] {source.name} attacking.");
             Vector3 originalPos = source.characterVisualTransform.localPosition;
             Vector3 attackOffset = Vector3.right * 20f;
-
-            if (source is Enemy)
-            {
-                attackOffset = Vector3.left * 100f;
-            }
+            if (source is Enemy) attackOffset = Vector3.left * 100f;
 
             Sequence attackSeq = DOTween.Sequence();
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos + attackOffset, 0.1f));
             attackSeq.Append(source.characterVisualTransform.DOLocalMove(originalPos, 0.1f));
         }
     }
-
-
-
-
 }

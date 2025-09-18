@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Managers;
 
 public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
 {
@@ -15,7 +16,8 @@ public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
         if (cards.Count == 0)
             yield break;
 
-        yield return new WaitForSeconds(0.3f); // για "δράμα"
+        // Small delay for pacing
+        yield return new WaitForSeconds(0.3f);
 
         int index = UnityEngine.Random.Range(0, cards.Count);
         GameObject randomCard = cards[index];
@@ -23,5 +25,4 @@ public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
         AudioManager.Instance?.PlaySFX("Discard_Card");
         yield return hand.AnimateDiscardAndRemoveCard(randomCard);
     }
-
 }

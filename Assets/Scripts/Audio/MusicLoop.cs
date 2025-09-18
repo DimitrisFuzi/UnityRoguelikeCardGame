@@ -1,9 +1,10 @@
 using UnityEngine;
+using MyProjectF.Assets.Scripts.Managers;
 
 [DisallowMultipleComponent]
 [AddComponentMenu("Audio/Music Loop")]
 /// <summary>
-/// Plays a music track via AudioManager on enable. Typically used on menu/battle roots.
+/// Plays a music track via AudioManager on enable.
 /// </summary>
 public class MusicLoop : MonoBehaviour
 {

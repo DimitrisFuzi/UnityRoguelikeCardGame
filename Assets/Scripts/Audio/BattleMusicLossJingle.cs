@@ -1,12 +1,12 @@
 using UnityEngine;
-using MyProjectF.Assets.Scripts.Player;
 using System.Collections;
+using MyProjectF.Assets.Scripts.Player;
+using MyProjectF.Assets.Scripts.Managers;
 
 [DisallowMultipleComponent]
 [AddComponentMenu("Audio/Battle Music Loss Jingle")]
 /// <summary>
-/// On player death: stop any looping BGM and play a short defeat jingle once.
-/// Minimal & robust: works even if battle music isn't on AudioManager.musicSource.
+/// On player death: stop active music/loops and play a one-shot defeat jingle.
 /// </summary>
 public class BattleMusicLossJingle : MonoBehaviour
 {
@@ -14,7 +14,7 @@ public class BattleMusicLossJingle : MonoBehaviour
     [SerializeField] private AudioClip defeatJingle;          // Assign in Inspector
     [SerializeField, Range(0f, 1f)] private float jingleVolume = 1f;
 
-    private bool fired;
+    private bool _fired;
 
     private void Awake()
     {
@@ -22,12 +22,10 @@ public class BattleMusicLossJingle : MonoBehaviour
             player = Object.FindFirstObjectByType<PlayerStats>();
     }
 
-    /// <summary>Waits until a PlayerStats exists (if needed) and subscribes to OnDied.</summary>
     private IEnumerator Start()
     {
         if (player == null)
         {
-            // Wait until PlayerStats appears
             while (player == null)
             {
                 player = Object.FindFirstObjectByType<PlayerStats>();
@@ -36,7 +34,7 @@ public class BattleMusicLossJingle : MonoBehaviour
                     player.OnDied += OnPlayerDied;
                     break;
                 }
-                yield return null; // wait a frame
+                yield return null;
             }
         }
     }
@@ -44,7 +42,7 @@ public class BattleMusicLossJingle : MonoBehaviour
     private void OnEnable()
     {
         if (player != null)
-            player.OnDied += OnPlayerDied; // PlayerStats.OnDied: Action (no args)
+            player.OnDied += OnPlayerDied;
     }
 
     private void OnDisable()
@@ -53,18 +51,15 @@ public class BattleMusicLossJingle : MonoBehaviour
             player.OnDied -= OnPlayerDied;
     }
 
-    /// <summary>Stops music/loops and plays the defeat jingle once.</summary>
     private void OnPlayerDied()
     {
-        if (fired) return;
-        fired = true;
+        if (_fired) return;
+        _fired = true;
 
         var am = AudioManager.Instance;
-
-        // 1) Stop music from AudioManager if used
         am?.StopMusic();
 
-        // 2) Hard-stop ANY other looping AudioSources that are currently playing (e.g., Play On Awake BGM)
+        // Non-obvious but useful: stop ALL looping AudioSources in case some BGM bypasses AudioManager.
         var sources = Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
         foreach (var src in sources)
         {
@@ -72,7 +67,6 @@ public class BattleMusicLossJingle : MonoBehaviour
                 src.Stop();
         }
 
-        // 3) Play defeat jingle once (non-loop) via AudioManager
         if (am != null && defeatJingle != null)
             am.PlayJingle(defeatJingle, jingleVolume);
     }

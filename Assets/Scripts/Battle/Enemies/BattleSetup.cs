@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[DefaultExecutionOrder(-100)] // να είναι διαθέσιμο νωρίς
+[DefaultExecutionOrder(-100)] // ensure this is available early
 public class BattleSetup : MonoBehaviour
 {
-    [Tooltip("Τι enemy data να μπει σε αυτή τη μάχη, με τη σειρά spawn.")]
+    [Tooltip("Enemy data to spawn in this battle, ordered left-to-right.")]
     public List<EnemyData> enemies = new();
 
-    [Tooltip("Προαιρετικά spawn points. Αν είναι κενό, θα μπει default layout κάτω από το EnemyCanvas.")]
+    [Tooltip("Optional spawn points. If empty, a default layout under EnemyCanvas will be used.")]
     public List<Transform> spawnPoints = new();
 }

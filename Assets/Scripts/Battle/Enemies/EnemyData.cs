@@ -42,36 +42,29 @@ public class EnemyData : ScriptableObject
     public Sprite awakenIntentIcon;
 
     [Header("Boss Summon Config (optional)")]
-    public EnemyData summonLeftData;   // π.χ. WispLeft.asset
-    public EnemyData summonRightData;  // π.χ. WispRight.asset
+    public EnemyData summonLeftData;   // e.g., WispLeft.asset
+    public EnemyData summonRightData;  // e.g., WispRight.asset
 
     [Header("Shadow Settings")]
     public ShadowMode shadowMode = ShadowMode.Auto;
     [Range(0.1f, 2f)] public float shadowWidthMultiplier = 0.75f;   // Auto
-    [Range(0.05f, 0.6f)] public float shadowHeightToWidth = 0.20f;   // Auto
-    public Vector2 shadowOffset = new Vector2(0f, -10f);             // Auto/Manual
+    [Range(0.05f, 0.6f)] public float shadowHeightToWidth = 0.20f;  // Auto
+    public Vector2 shadowOffset = new Vector2(0f, -10f);            // Auto/Manual
 
-    // Manual override (αν θες να ορίσεις ρητά μέγεθος)
+    // Manual override if you want to explicitly set size
     public Vector2 manualShadowSize = new Vector2(180f, 28f);
-
 }
 
-/// <summary>
-/// Enum to choose which AI script to attach to an enemy dynamically.
-/// </summary>
+/// <summary>Enum to choose which AI script to attach to an enemy dynamically.</summary>
 public enum EnemyAIType
 {
     None,
     Wolf1,
     Wolf2,
-    ForestGuardian,     
-    WispLeft,      
+    ForestGuardian,
+    WispLeft,
     WispRight
 }
 
-/// <summary>
-/// Shadow sizing modes.
-/// </summary>
+/// <summary>Shadow sizing modes.</summary>
 public enum ShadowMode { None, Auto, Manual }
-
-

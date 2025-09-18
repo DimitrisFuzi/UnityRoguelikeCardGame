@@ -7,22 +7,17 @@ using DG.Tweening;
 public class EnemyDisplay : MonoBehaviour
 {
     [Header("UI Components")]
-    public Image enemyImage; // Enemy sprite image
-    [SerializeField] private HealthBar healthBar; // NEW: Reference to the HealthBar script
-    [SerializeField] private IntentDisplay intentDisplay; // Reference to the IntentDisplay component
+    public Image enemyImage;                           // Enemy sprite image
+    [SerializeField] private HealthBar healthBar;      // Reference to the HealthBar script
+    [SerializeField] private IntentDisplay intentDisplay;
     [SerializeField] private Transform textSpawnAnchor;
     [SerializeField] private GameObject floatingDamageTextPrefab;
     [SerializeField] private Image enragedImage;
     [SerializeField] private Image awakenedImage;
 
-
     private RectTransform enemyRect;
 
-    /// <summary>
-    /// Sets up the enemy display with provided enemy data and initializes UI.
-    /// </summary>
-    /// <param name="enemy">Reference to the Enemy instance.</param>
-    /// <param name="enemyData">Data container with enemy sprite and display parameters.</param>
+    /// <summary>Sets up visuals and layout from EnemyData.</summary>
     public void Setup(Enemy enemy, EnemyData enemyData)
     {
         if (enemyImage == null)
@@ -38,14 +33,12 @@ public class EnemyDisplay : MonoBehaviour
             var c = enragedImage.color; c.a = 0f; enragedImage.color = c;
         }
 
-        if (awakenedImage != null) // 🔴 κρύψε το awakened overlay στην αρχή
+        if (awakenedImage != null)
         {
             var c2 = awakenedImage.color; c2.a = 0f; awakenedImage.color = c2;
         }
 
-
         enemyRect = GetComponent<RectTransform>();
-
         if (enemyRect != null)
         {
             enemyRect.anchorMin = new Vector2(1, 0.5f);
@@ -65,11 +58,11 @@ public class EnemyDisplay : MonoBehaviour
             var fitter = shadowTr.GetComponent<EnemyShadowFitter>();
             if (!fitter) fitter = shadowTr.gameObject.AddComponent<EnemyShadowFitter>();
 
-            // Target = το οπτικό μέγεθος του εχθρού
+            // target = visual size of the enemy
             fitter.target = enemyImage.rectTransform;
 
-            // Apply από τα EnemyData
-            switch (enemyData.shadowMode)  // από EnemyData.cs  :contentReference[oaicite:1]{index=1}
+            // Apply settings from EnemyData
+            switch (enemyData.shadowMode)
             {
                 case ShadowMode.None:
                     shadowTr.gameObject.SetActive(false);
@@ -78,46 +71,42 @@ public class EnemyDisplay : MonoBehaviour
                 case ShadowMode.Manual:
                     shadowTr.gameObject.SetActive(true);
                     fitter.mode = EnemyShadowFitter.Mode.Manual;
-                    fitter.ApplyFromData(ShadowMode.Manual,
-                                         enemyData.shadowWidthMultiplier,
-                                         enemyData.shadowHeightToWidth,
-                                         enemyData.shadowOffset,
-                                         enemyData.manualShadowSize);
+                    fitter.ApplyFromData(
+                        ShadowMode.Manual,
+                        enemyData.shadowWidthMultiplier,
+                        enemyData.shadowHeightToWidth,
+                        enemyData.shadowOffset,
+                        enemyData.manualShadowSize
+                    );
                     break;
 
                 default: // Auto
                     shadowTr.gameObject.SetActive(true);
                     fitter.mode = EnemyShadowFitter.Mode.Auto;
-                    fitter.ApplyFromData(ShadowMode.Auto,
-                                         enemyData.shadowWidthMultiplier,
-                                         enemyData.shadowHeightToWidth,
-                                         enemyData.shadowOffset,
-                                         Vector2.zero);
+                    fitter.ApplyFromData(
+                        ShadowMode.Auto,
+                        enemyData.shadowWidthMultiplier,
+                        enemyData.shadowHeightToWidth,
+                        enemyData.shadowOffset,
+                        Vector2.zero
+                    );
                     break;
             }
         }
 
-        // Initialize health display using the HealthBar script
+        // Initialize health display
         UpdateDisplay(enemy.CurrentHealth, enemy.MaxHealth);
 
-        // EnemyDisplay.cs  (μέσα στο Setup, στο τέλος του method – μετά τα UpdateDisplay/σκιά)
+        // Wisp float motion for wisp enemies
         if (enemyData.enemyAIType == EnemyAIType.WispLeft || enemyData.enemyAIType == EnemyAIType.WispRight)
         {
-            var floaty = gameObject.GetComponent<WispFloatMotion>();
-            if (floaty == null) floaty = gameObject.AddComponent<WispFloatMotion>();
-
-            // Optional: λίγες διαφορές ανά instance
-            floaty.amplitude = Random.Range(5f, 8f); // canvas units
+            var floaty = gameObject.GetComponent<WispFloatMotion>() ?? gameObject.AddComponent<WispFloatMotion>();
+            floaty.amplitude = Random.Range(5f, 8f);
             floaty.speed = Random.Range(1.6f, 2.4f);
         }
-
     }
 
-    /// <summary>
-    /// Updates the health bar and text using the HealthBar component.
-    /// </summary>
-    /// <param name="currentHealth">Current health value.</param>
-    /// <param name="maxHealth">Maximum health value.</param>
+    /// <summary>Updates the health bar and text via HealthBar.</summary>
     public void UpdateDisplay(int currentHealth, int maxHealth)
     {
         if (healthBar == null)
@@ -128,10 +117,7 @@ public class EnemyDisplay : MonoBehaviour
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
 
-    /// <summary>
-    /// Sets the intent display with the provided EnemyIntent.
-    /// </summary>
-    /// <param name="intent">The EnemyIntent object to display.</param>
+    /// <summary>Sets the intent display with the provided EnemyIntent.</summary>
     public void SetIntent(EnemyIntent intent)
     {
         if (intentDisplay != null)
@@ -144,21 +130,14 @@ public class EnemyDisplay : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Clears the intent display.
-    /// </summary>
+    /// <summary>Clears the intent display.</summary>
     public void ClearIntentDisplay()
     {
         if (intentDisplay != null)
-        {
             intentDisplay.ClearIntent();
-        }
     }
 
-    /// <summary>
-    /// Sets or resets the enraged visual effect.
-    /// </summary>
-    /// <param name="isEnraged">True to set enraged color, false to reset to normal.</param>
+    /// <summary>Sets or resets the enraged visual effect.</summary>
     public void SetEnragedVisual(bool isEnraged)
     {
         if (enragedImage != null)
@@ -166,20 +145,18 @@ public class EnemyDisplay : MonoBehaviour
             enragedImage.DOKill();
             enragedImage.DOFade(isEnraged ? 1f : 0f, 0.2f);
 
-            // Βεβαιώσου ότι το βασικό sprite μένει "καθαρό"
+            // keep base sprite clean
             if (enemyImage != null) enemyImage.color = Color.white;
         }
         else
         {
-            // Fallback (όπως πριν) αν δεν έχεις δώσει enragedImage:
+            // fallback if no separate enragedImage is assigned
             if (enemyImage == null) return;
             enemyImage.color = isEnraged ? new Color(1f, 47f / 255f, 59f / 255f, 1f) : Color.white;
         }
     }
 
-    /// <summary>
-    /// Awakened visual effect.
-    /// </summary>
+    /// <summary>Awakened visual effect.</summary>
     public void SetAwakenVisual(bool on)
     {
         if (awakenedImage == null) return;
@@ -188,7 +165,7 @@ public class EnemyDisplay : MonoBehaviour
         var t = on ? 1.2f : 0.25f;
         awakenedImage.DOFade(on ? 1f : 0f, t);
 
-        // optional “impact” στο trigger
+        // optional impact on trigger
         if (on && enemyImage != null)
             enemyImage.rectTransform.DOPunchScale(Vector3.one * 0.12f, 0.28f, 6, 0.6f);
     }
@@ -205,33 +182,27 @@ public class EnemyDisplay : MonoBehaviour
         if (text != null)
         {
             text.text = damage.ToString();
-            text.color = Color.white; // base color
+            text.color = Color.white;
         }
 
         rect.localScale = Vector3.one * 1.6f;
 
         Sequence seq = DOTween.Sequence();
-
-        // Shake
-        seq.Append(rect.DOShakeScale(0.1f, 0.2f, 10));
-
-        // Light flash (e.g. white glow)
+        seq.Append(rect.DOShakeScale(0.1f, 0.2f, 10)); // shake
         if (text != null)
-        {
-            seq.Append(text.DOColor(new Color(1f, 1f, 1f), 0.05f));  // Full white
-           // seq.Append(text.DOColor(new Color32(0xFF, 0x7A, 0x7A, 255), 0.2f)); // Slight red tone
-        }
+            seq.Append(text.DOColor(new Color(1f, 1f, 1f), 0.05f));  // light flash
 
-        // Shrink, Float & Fade out
+        // shrink, float & fade out
         seq.Append(rect.DOScale(0.8f, 0.6f).SetEase(Ease.InOutQuad))
-           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic))
-           .Join(group.DOFade(0f, 0.6f))
-           .AppendCallback(() => Destroy(go));
+           .Join(rect.DOAnchorPosY(rect.anchoredPosition.y + 80f, 0.6f).SetEase(Ease.OutCubic));
+
+        if (group != null)
+            seq.Join(group.DOFade(0f, 0.6f));
+
+        seq.OnComplete(() => Destroy(go));
     }
 
-    /// <summary>
-    /// Shows a heal popup with the specified amount.
-    /// </summary>
+    /// <summary>Shows a heal popup with the specified amount.</summary>
     public void ShowHealPopup(int amount)
     {
         if (floatingDamageTextPrefab == null || textSpawnAnchor == null) return;
@@ -249,25 +220,25 @@ public class EnemyDisplay : MonoBehaviour
 
         rect.localScale = Vector3.one * 1.3f;
 
-        var seq = DG.Tweening.DOTween.Sequence();
+        var seq = DOTween.Sequence();
         seq.Append(rect.DOScale(1.0f, 0.2f));
-        seq.Append(rect.DOAnchorPosY(rect.anchoredPosition.y + 70f, 0.6f).SetEase(Ease.OutCubic))
-           .Join(group.DOFade(0f, 0.6f))
-           .AppendCallback(() => Destroy(go));
+        seq.Append(rect.DOAnchorPosY(rect.anchoredPosition.y + 70f, 0.6f).SetEase(Ease.OutCubic));
+
+        if (group != null)
+            seq.Join(group.DOFade(0f, 0.6f));
+
+        seq.OnComplete(() => Destroy(go));
     }
 
-    /// <summary>
-    /// Plays the death animation for the enemy.
-    /// </summary> 
-    // EnemyDisplay.cs
+    /// <summary>Plays the death animation for the enemy.</summary>
     public void PlayDeathAnimation(System.Action onComplete = null)
     {
         if (enemyImage == null) { onComplete?.Invoke(); return; }
 
-        // Σβήσε τυχόν tweens
+        // kill any running tweens
         enemyImage.DOKill();
         enragedImage?.DOKill();
-        awakenedImage?.DOKill();                // 🔴 ΝΕΟ
+        awakenedImage?.DOKill();
 
         var seq = DOTween.Sequence()
             .Join(enemyImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
@@ -275,7 +246,7 @@ public class EnemyDisplay : MonoBehaviour
         if (enragedImage != null)
             seq.Join(enragedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
 
-        if (awakenedImage != null)              // 🔴 ΝΕΟ
+        if (awakenedImage != null)
             seq.Join(awakenedImage.DOFade(0f, 1f).SetEase(Ease.InOutQuad));
 
         seq.OnComplete(() =>
@@ -284,6 +255,4 @@ public class EnemyDisplay : MonoBehaviour
             gameObject.SetActive(false);
         });
     }
-
-
 }

@@ -8,41 +8,33 @@ public class Enemy : CharacterStats
     public string enemyName;
     public bool IsEnraged = false;
 
-    public EnemyDisplay enemyDisplay; // Reference to the UI component
-    public IEnemyAI EnemyAI { get; private set; } // Reference to the AI logic for this enemy
-    public EnemyData Data { get; private set; }   // NEW
-    public EnemyAIType AiType { get; private set; } 
+    public EnemyDisplay enemyDisplay;                 // UI component
+    public IEnemyAI EnemyAI { get; private set; }     // AI logic for this enemy
+    public EnemyData Data { get; private set; }
+    public EnemyAIType AiType { get; private set; }
 
-
-    /// <summary>
-    /// Performs the enemy's AI-defined action.
-    /// </summary>
+    /// <summary>Performs the enemy's AI-defined action.</summary>
     public void PerformAction()
     {
         if (EnemyAI != null)
         {
             EnemyAI.ExecuteTurn();
-            // After executing the turn, the AI has predicted its NEXT intent.
-            // So, update the display.
+            // After executing the turn, the AI has predicted its NEXT intent → update display.
             UpdateIntentDisplay();
         }
         else
         {
-            Debug.LogWarning($"⚠️ {enemyName} has no AI component attached!", this);
+            Logger.LogWarning($"{enemyName} has no AI component attached!", this);
             if (PlayerStats.Instance != null)
                 PerformAttack(PlayerStats.Instance);
         }
     }
 
-    /// <summary>
-    /// Initializes enemy stats and connects UI + AI.
-    /// </summary>
-    /// <param name="enemyData">The ScriptableObject containing enemy data.</param>
-    /// <param name="enemyDisplay">The EnemyDisplay component for UI updates.</param>
+    /// <summary>Initializes enemy stats and connects UI + AI.</summary>
     public void InitializeEnemy(EnemyData enemyData, EnemyDisplay enemyDisplay)
     {
-        Data = enemyData;              
-        AiType = enemyData.enemyAIType;     
+        Data = enemyData;
+        AiType = enemyData.enemyAIType;
         enemyName = enemyData.enemyName;
 
         InitializeStats(enemyData.health);
@@ -51,8 +43,7 @@ public class Enemy : CharacterStats
         if (enemyDisplay != null)
             enemyDisplay.Setup(this, enemyData);
         else
-            Debug.LogError($"[Enemy.InitializeEnemy] enemyDisplay is NULL for {enemyName}!", this);
-
+            Logger.LogError($"[Enemy.InitializeEnemy] enemyDisplay is NULL for {enemyName}!", this);
 
         // Attach AI
         AttachAI(enemyData.enemyAIType, enemyData, this.enemyDisplay);
@@ -60,13 +51,7 @@ public class Enemy : CharacterStats
         UpdateIntentDisplay();
     }
 
-
-    /// <summary>
-    /// Dynamically attaches AI component based on EnemyData enum value.
-    /// </summary>
-    /// <param name="aiType">The type of AI to attach.</param>
-    /// <param name="enemyData">The EnemyData containing intent icons.</param>
-    /// <param name="display">The EnemyDisplay component associated with this enemy.</param>
+    /// <summary>Dynamically attaches AI component based on EnemyData enum value.</summary>
     private void AttachAI(EnemyAIType aiType, EnemyData enemyData, EnemyDisplay display)
     {
         switch (aiType)
@@ -77,7 +62,7 @@ public class Enemy : CharacterStats
             case EnemyAIType.ForestGuardian:
                 {
                     var fg = gameObject.AddComponent<ForestGuardianAI>();
-                    // ΠΕΡΝΑΜΕ τα EnemyData των minions από το EnemyData του boss
+                    // pass minion EnemyData from the boss EnemyData
                     fg.Configure(enemyData.summonLeftData, enemyData.summonRightData);
                     EnemyAI = fg;
                     break;
@@ -97,8 +82,9 @@ public class Enemy : CharacterStats
                     EnemyAI = w;
                     break;
                 }
+
             default:
-                Debug.LogWarning($"⚠️ No AI assigned for enemy {enemyName}. Using default.", this);
+                Logger.LogWarning($"No AI assigned for enemy {enemyName}. Using default.", this);
                 break;
         }
 
@@ -111,10 +97,7 @@ public class Enemy : CharacterStats
         }
     }
 
-
-    /// <summary>
-    /// Retrieves the current predicted intent from the AI and passes it to EnemyDisplay.
-    /// </summary>
+    /// <summary>Retrieves the current predicted intent from the AI and passes it to EnemyDisplay.</summary>
     public void UpdateIntentDisplay()
     {
         if (EnemyAI != null && enemyDisplay != null)
@@ -127,7 +110,7 @@ public class Enemy : CharacterStats
             else
             {
                 enemyDisplay.ClearIntentDisplay();
-                Debug.LogWarning($"⚠️ No current intent available for {enemyName}. Clearing intent display.", this);
+                Logger.LogWarning($"No current intent available for {enemyName}. Clearing intent display.", this);
             }
         }
         else if (enemyDisplay != null)
@@ -136,7 +119,6 @@ public class Enemy : CharacterStats
         }
     }
 
-
     public override int TakeDamage(int amount)
     {
         int realDamage = base.TakeDamage(amount);
@@ -144,32 +126,26 @@ public class Enemy : CharacterStats
         if (enemyDisplay != null)
             enemyDisplay.UpdateDisplay(CurrentHealth, MaxHealth);
 
-        Logger.Log($"🔥 {enemyName} took {realDamage} damage! New HP: {CurrentHealth}/{MaxHealth}", this);
-
+        Logger.Log($"{enemyName} took {realDamage} damage. HP: {CurrentHealth}/{MaxHealth}", this);
         return realDamage;
     }
 
     protected override void Die()
     {
         base.Die();
+
         if (enemyDisplay != null)
         {
-
             AudioManager.Instance?.PlaySFX("Enemy_Death");
             enemyDisplay.PlayDeathAnimation(() => EnemyManager.Instance?.RemoveEnemy(this));
-
-
         }
     }
 
-    /// <summary>
-    /// Sets the enraged state and updates visual effects.
-    /// </summary>
+    /// <summary>Sets the enraged state and updates visual effects.</summary>
     public void SetEnraged(bool value)
     {
         IsEnraged = value;
         if (enemyDisplay != null)
             enemyDisplay.SetEnragedVisual(value);
     }
-
 }

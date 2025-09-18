@@ -2,6 +2,7 @@
 using UnityEngine;
 using MyProjectF.Assets.Scripts.Effects;
 using MyProjectF.Assets.Scripts.Managers;
+
 /// <summary>
 /// Enemy AI logic specific to the Wolf enemy.
 /// </summary>
@@ -17,7 +18,7 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     [SerializeField] private int damageAmount = 12;
 
     private CharacterStats playerStats;
-    private EnemyDisplay enemyDisplay; // NEW: Reference to the EnemyDisplay
+    private EnemyDisplay enemyDisplay; // Reference to the EnemyDisplay
 
     private void Awake()
     {
@@ -40,7 +41,6 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
         buffIcon = buff;
     }
 
-    // NEW: Implement SetEnemyDisplay method
     public void SetEnemyDisplay(EnemyDisplay display)
     {
         enemyDisplay = display;
@@ -51,15 +51,13 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     /// </summary>
     public void ExecuteTurn()
     {
-
         if (BattleManager.Instance.State == BattleManager.BattleState.LOST) return;
 
         if (currentTurn == 2)
         {
             var rage = new RageEffect();
             rage.ApplyEffect(stats, stats);
-            Debug.Log($"{stats.enemyName} becomes enraged!");
-
+            Logger.Log($"{stats.enemyName} becomes enraged!", this);
         }
         else
         {
@@ -74,7 +72,7 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
             }
             else
             {
-                Debug.LogWarning("PlayerStats reference is missing in Wolf1AI.");
+                Logger.LogWarning("PlayerStats reference is missing in Wolf1AI.", this);
             }
         }
 
@@ -86,7 +84,7 @@ public class Wolf1AI : MonoBehaviour, IEnemyAI
     {
         if (attackIcon == null || buffIcon == null)
         {
-            Debug.LogWarning("Intent icons are not set for Wolf1AI. Intents might not display correctly.");
+            Logger.LogWarning("Intent icons are not set for Wolf1AI. Intents might not display correctly.", this);
         }
 
         if (currentTurn == 2)

@@ -27,7 +27,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         enemyStats = GetComponent<Enemy>();
         if (enemyStats == null)
         {
-            Debug.LogError("Wolf2AI requires an Enemy component!");
+            Logger.LogError("Wolf2AI requires an Enemy component!", this);
         }
     }
 
@@ -47,7 +47,6 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         buffIcon = buff;
     }
 
-    // Ensure SetEnemyDisplay method is correctly implemented from IEnemyAI
     public void SetEnemyDisplay(EnemyDisplay display)
     {
         enemyDisplay = display;
@@ -60,13 +59,12 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     {
         if (BattleManager.Instance.State == BattleManager.BattleState.LOST) return;
 
-        if (currentTurn == 4) // Wolf2AI's enrage turn
+        if (currentTurn == 4) // enrage turn
         {
             var rageEffect = new RageEffect();
             rageEffect.ApplyEffect(enemyStats, enemyStats);
 
-            Debug.Log($"{enemyStats.enemyName} becomes enraged!");
-
+            Logger.Log($"{enemyStats.enemyName} becomes enraged!", this);
         }
         else
         {
@@ -81,7 +79,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     {
         if (playerStats == null)
         {
-            Debug.LogWarning("PlayerStats reference is missing in Wolf2AI!");
+            Logger.LogWarning("PlayerStats reference is missing in Wolf2AI!", this);
             return;
         }
 
@@ -89,18 +87,16 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
         var damageEffect = new DamageEffect { damageAmount = finalDamage };
         damageEffect.ApplyEffect(enemyStats, playerStats);
 
-        Debug.Log($"{enemyStats.enemyName} attacks for {finalDamage} damage!");
+        Logger.Log($"{enemyStats.enemyName} attacks for {finalDamage} damage!", this);
     }
 
     private int CalculateDamage()
     {
         int damage = baseDamageAmount;
-
         if (enemyStats != null && enemyStats.IsEnraged)
         {
             damage *= 2;
         }
-
         return damage;
     }
 
@@ -108,7 +104,7 @@ public class Wolf2AI : MonoBehaviour, IEnemyAI
     {
         if (attackIcon == null || buffIcon == null)
         {
-            Debug.LogWarning("Intent icons are not set for Wolf2AI. Intents might not display correctly.");
+            Logger.LogWarning("Intent icons are not set for Wolf2AI. Intents might not display correctly.", this);
         }
 
         if (currentTurn == 4)

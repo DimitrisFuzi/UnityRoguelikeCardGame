@@ -19,7 +19,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
     [Header("Icons")]
     [SerializeField] private Sprite attackIcon;
-    [SerializeField] private Sprite healIcon;   // ✅ ξεκάθαρα heal (αντικαθιστά το specialIcon)
+    [SerializeField] private Sprite healIcon; // heal icon
 
     // Refs
     private Enemy self;
@@ -29,7 +29,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
     // Intent state
     private EnemyIntent nextIntent;
-    private bool doHealNext = true; // εναλλάξ Heal → Attack → Heal...
+    private bool doHealNext = true;   // alternate Heal → Attack → Heal...
     private bool plannedHealThisTurn = false;
 
     private void Awake()
@@ -39,9 +39,9 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
     // ===== IEnemyAI =====
     public void SetPlayerStats(CharacterStats p) => player = p;
-    public void SetEnemyDisplay(EnemyDisplay d) { /* display not needed here */ }
+    public void SetEnemyDisplay(EnemyDisplay d) { /* not used */ }
 
-    // Εξωτερικό wiring αν θέλεις (π.χ. από EnemyManager)
+    // Optional external wiring (e.g., from EnemyManager)
     public void SetIntentIcons(Sprite attack, Sprite heal)
     {
         attackIcon = attack;
@@ -50,7 +50,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
     public void InitializeAI()
     {
-        // Βρες το Boss (ForestGuardianAI)
+        // Find the boss (ForestGuardianAI)
         var all = EnemyManager.Instance.GetActiveEnemies();
         var bossEnemy = all.FirstOrDefault(e => e != null && e.EnemyAI is ForestGuardianAI);
         if (bossEnemy != null)
@@ -59,20 +59,19 @@ public class WispAI : MonoBehaviour, IEnemyAI
             bossAI = bossEnemy.EnemyAI as ForestGuardianAI;
         }
 
-        // Φόρτωσε icons από το ΔΙΚΟ του EnemyData (fallback αν δεν έχουν οριστεί από Inspector/wiring)
+        // Load icons from this enemy's EnemyData as fallback
         if (self != null && self.Data != null)
         {
             if (attackIcon == null) attackIcon = self.Data.attackIntentIcon;
             if (healIcon == null) healIcon = self.Data.healIntentIcon;
         }
 
-        // ΠΑΝΤΑ φόρτωσε από EnemyData αν υπάρχουν (override τυχόν prefab/wiring)
+        // Always prefer EnemyData icons if present (override any prefab wiring)
         if (self != null && self.Data != null)
         {
             if (self.Data.attackIntentIcon != null) attackIcon = self.Data.attackIntentIcon;
             if (self.Data.healIntentIcon != null) healIcon = self.Data.healIntentIcon;
         }
-
 
         PredictNextIntent();
     }
@@ -85,13 +84,13 @@ public class WispAI : MonoBehaviour, IEnemyAI
         int heal = awakened ? healAmountAwaken : healAmountP1;
         int atk = awakened ? attackAmountAwaken : attackAmountP1;
 
-        // ✅ ΜΗΝ ξαναποφασίζεις εδώ. Εκτέλεσε αυτό που είχε κλειδωθεί στο preview:
+        // Execute the locked previewed action
         if (plannedHealThisTurn)
         {
             var healFx = new HealEffect { healAmount = heal };
             healFx.ApplyEffect(self, boss);
 
-            // Μετά από Heal → επόμενος κύκλος θα πάει σε Attack
+            // Next cycle will attempt Attack
             doHealNext = false;
         }
         else
@@ -99,24 +98,21 @@ public class WispAI : MonoBehaviour, IEnemyAI
             var dmgFx = new DamageEffect { damageAmount = atk };
             dmgFx.ApplyEffect(self, player);
 
-            // Μετά από Attack → επόμενος κύκλος θα «προσπαθήσει» Heal
+            // Next cycle will attempt Heal
             doHealNext = true;
         }
 
-        // Υπολόγισε & κλείδωσε από τώρα το επόμενο intent (εκτός player turn)
+        // Compute & lock next intent now (outside player turn)
         PredictNextIntent();
     }
 
-
-
-
     public EnemyIntent PredictNextIntent()
     {
-        // Αν είμαστε στο player turn, ΜΗΝ αλλάζεις το σχέδιο/preview
+        // During player turn, keep the current preview locked
         if (TurnManager.Instance != null && TurnManager.Instance.IsPlayerTurn && nextIntent != null)
             return nextIntent;
 
-        // icons από EnemyData με fallback
+        // Icons from EnemyData with fallback
         Sprite atkIcon = (self != null ? self.Data?.attackIntentIcon : null) ?? attackIcon;
         Sprite healIco = (self != null ? self.Data?.healIntentIcon : null) ?? healIcon;
 
@@ -126,7 +122,7 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
         bool bossWounded = boss != null && boss.CurrentHealth < boss.MaxHealth;
 
-        // NEW: κλειδώνουμε το σχέδιο που θα εκτελεστεί στο enemy phase
+        // Lock plan to execute on the enemy phase
         plannedHealThisTurn = doHealNext && bossWounded;
 
         if (plannedHealThisTurn)
@@ -136,7 +132,6 @@ public class WispAI : MonoBehaviour, IEnemyAI
 
         return nextIntent;
     }
-
 
     public EnemyIntent GetCurrentIntent() => nextIntent;
 

@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MyProjectF.Assets.Scripts.Cards;
 
-[CreateAssetMenu(menuName = "Game/Card Database")]
+[CreateAssetMenu(menuName = "Cards/Card Database", fileName = "CardDatabase")]
 public class CardDatabase : ScriptableObject
 {
-    [Tooltip("Drag here all the cards")]
-    public List<ScriptableObject> allCards = new();
+    [Tooltip("All card assets included in this database.")]
+    public List<Card> allCards = new();
 }

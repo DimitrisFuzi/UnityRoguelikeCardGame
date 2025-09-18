@@ -2,10 +2,10 @@
 using UnityEngine.UI;
 using TMPro;
 using MyProjectF.Assets.Scripts.Cards;
-using MyProjectF.Assets.Scripts.Effects; // ✅ For accessing card effects like DamageEffect or ArmorEffect
+using MyProjectF.Assets.Scripts.Effects;
 
 /// <summary>
-/// Responsible for updating the visual representation of a card on the UI.
+/// Updates the visual representation of a card on UI (texts, sprites, placeholders).
 /// </summary>
 public class CardDisplay : MonoBehaviour
 {
@@ -17,8 +17,8 @@ public class CardDisplay : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text descriptionText;
     public TMP_Text manaCostText;
-    public Image CardCoverImage; // Image for card type (Attack, Guard, Tactic)
-    public Image RarityGemImage; // Image for rarity gem (Common, Uncommon, etc.)
+    public Image CardCoverImage;
+    public Image RarityGemImage;
 
     [Header("Dynamic Sprites")]
     public Sprite attackSprite;
@@ -30,95 +30,57 @@ public class CardDisplay : MonoBehaviour
     public Sprite rareGemSprite;
     public Sprite legendaryGemSprite;
 
-    void Start()
+    private void Start()
     {
-        // Show error if cardData is not assigned
         if (cardData == null)
         {
-            Debug.LogWarning($"⚠️ cardData is NULL on CardDisplay ({gameObject.name}) on start.");
+            Debug.LogWarning($"CardDisplay: 'cardData' is NULL on {gameObject.name}.");
         }
         else
         {
-            // Populate the UI with card information
             UpdateCardDisplay();
         }
     }
 
-    /// <summary>
-    /// Public API for external callers (e.g., RewardCardView) to set data and redraw.
-    /// </summary>
+    /// <summary>Set card data and refresh UI.</summary>
     public void SetData(Card card)
     {
         cardData = card;
         UpdateCardDisplay();
     }
 
-    /// <summary>
-    /// Alias for tools that expect a Refresh() call.
-    /// </summary>
-    public void Refresh()
-    {
-        UpdateCardDisplay();
-    }
+    /// <summary>Alias for tools that expect Refresh().</summary>
+    public void Refresh() => UpdateCardDisplay();
 
-    /// <summary>
-    /// Updates all card-related UI fields with current data from cardData.
-    /// </summary>
+    /// <summary>Fill text/sprites using current cardData (including placeholder values).</summary>
     public void UpdateCardDisplay()
     {
         if (cardData == null) return;
 
-        // Basic UI data
         if (nameText) nameText.text = cardData.cardName;
         if (manaCostText) manaCostText.text = cardData.energyCost.ToString();
 
-        // Prepare to fill placeholders like {damage} or {armor}
-        int damage = 0;
-        int armor = 0;
-        int cards = 0;
-        int energy = 0;
-        int hpLost = 0;
-        int aoeDamage = 0;
-        int healthSet = 0;
+        // Extract values from effects for placeholders
+        int damage = 0, armor = 0, cards = 0, energy = 0, hpLost = 0, aoeDamage = 0, healthSet = 0;
 
-        // ✅ Read and parse card effects to extract values
         var effects = cardData.GetCardEffects();
         if (effects != null)
         {
-            foreach (EffectData effect in effects)
+            foreach (var effect in effects)
             {
-                if (effect is DamageEffect damageEffect)
+                switch (effect)
                 {
-                    damage = damageEffect.damageAmount;
-                }
-                else if (effect is ArmorEffect armorEffect)
-                {
-                    armor = armorEffect.armorAmount;
-                }
-                else if (effect is DrawCardEffect drawCardEffect)
-                {
-                    cards = drawCardEffect.cardsToDraw;
-                }
-                else if (effect is GainEnergyEffect gainEnergyEffect)
-                {
-                    energy = gainEnergyEffect.energyAmount;
-                }
-                else if (effect is LoseHealthEffect loseHealthEffect)
-                {
-                    hpLost = loseHealthEffect.healthLoss;
-                }
-                else if (effect is AOEDamageEffect aoeDamageEffect)
-                {
-                    aoeDamage = aoeDamageEffect.damageAmount;
-                }
-                else if (effect is SetHealthEffect setHealthEffect)
-                {
-                    healthSet = setHealthEffect.newHealth;
+                    case DamageEffect e: damage = e.damageAmount; break;
+                    case ArmorEffect e: armor = e.armorAmount; break;
+                    case DrawCardEffect e: cards = e.cardsToDraw; break;
+                    case GainEnergyEffect e: energy = e.energyAmount; break;
+                    case LoseHealthEffect e: hpLost = e.healthLoss; break;
+                    case AOEDamageEffect e: aoeDamage = e.damageAmount; break;
+                    case SetHealthEffect e: healthSet = e.newHealth; break;
                 }
             }
         }
 
-        // ✅ Replace placeholders in the description with actual values
         string finalDescription = cardData.cardDescription ?? string.Empty;
         finalDescription = finalDescription.Replace("{damage}", damage > 0 ? damage.ToString() : "-");
         finalDescription = finalDescription.Replace("{armor}", armor > 0 ? armor.ToString() : "-");
@@ -131,70 +93,43 @@ public class CardDisplay : MonoBehaviour
         if (descriptionText) descriptionText.text = finalDescription;
         if (CardImage) CardImage.sprite = cardData.cardSprite;
 
-        // Dynamically assign the correct sprites for card type and rarity
         UpdateCardCoverImage();
         UpdateRarityGemImage();
     }
 
-    /// <summary>
-    /// Updates the card type image based on the card's type.
-    /// </summary>
     private void UpdateCardCoverImage()
     {
         if (CardCoverImage == null || cardData == null) return;
 
         switch (cardData.cardType)
         {
-            case Card.CardType.Attack:
-                CardCoverImage.sprite = attackSprite;
-                break;
-            case Card.CardType.Guard:
-                CardCoverImage.sprite = guardSprite;
-                break;
-            case Card.CardType.Tactic:
-                CardCoverImage.sprite = tacticSprite;
-                break;
-            default:
-                Debug.LogWarning($"❓ Unknown card type: {cardData.cardType}");
-                break;
+            case Card.CardType.Attack: CardCoverImage.sprite = attackSprite; break;
+            case Card.CardType.Guard: CardCoverImage.sprite = guardSprite; break;
+            case Card.CardType.Tactic: CardCoverImage.sprite = tacticSprite; break;
+            default: Debug.LogWarning($"CardDisplay: Unknown card type {cardData.cardType}"); break;
         }
     }
 
-    /// <summary>
-    /// Updates the rarity gem image based on the card's rarity.
-    /// </summary>
     private void UpdateRarityGemImage()
     {
         if (RarityGemImage == null || cardData == null) return;
 
         switch (cardData.cardRarity)
         {
-            case Card.CardRarity.Common:
-                RarityGemImage.sprite = commonGemSprite;
-                break;
-            case Card.CardRarity.Uncommon:
-                RarityGemImage.sprite = uncommonGemSprite;
-                break;
-            case Card.CardRarity.Rare:
-                RarityGemImage.sprite = rareGemSprite;
-                break;
-            case Card.CardRarity.Legendary:
-                RarityGemImage.sprite = legendaryGemSprite;
-                break;
-            default:
-                Debug.LogWarning($"❓ Unknown card rarity: {cardData.cardRarity}");
-                break;
+            case Card.CardRarity.Common: RarityGemImage.sprite = commonGemSprite; break;
+            case Card.CardRarity.Uncommon: RarityGemImage.sprite = uncommonGemSprite; break;
+            case Card.CardRarity.Rare: RarityGemImage.sprite = rareGemSprite; break;
+            case Card.CardRarity.Legendary: RarityGemImage.sprite = legendaryGemSprite; break;
+            default: Debug.LogWarning($"CardDisplay: Unknown rarity {cardData.cardRarity}"); break;
         }
     }
 
 #if UNITY_EDITOR
-    // Optional: ανανεώνει live στο Editor όταν αλλάζει το asset
+    // Optional: live-refresh in the Editor when the asset changes
     private void OnValidate()
     {
         if (!Application.isPlaying && cardData != null)
-        {
             UpdateCardDisplay();
-        }
     }
 #endif
 }

@@ -41,7 +41,7 @@ public class TurnManager : SceneSingleton<TurnManager>
     }
 
     /// <summary>
-    /// Starts the player's turn and unlocks input.
+    /// Starts the player's turn, resets player stats, unlocks input, draws cards.
     /// </summary>
     public void StartPlayerTurn()
     {

@@ -8,7 +8,7 @@ public class BattleHUDController : MonoBehaviour
     [SerializeField] private Button deckButton;
     [SerializeField] private Button menuButton;
     [SerializeField] private DeckViewerUI deckViewer;
-    [SerializeField] private GameObject pausePanel; // panel με Retry/Main Menu
+    [SerializeField] private GameObject pausePanel; // panel with Retry/Main Menu
 
     private void Awake()
     {
@@ -23,18 +23,16 @@ public class BattleHUDController : MonoBehaviour
         pausePanel.SetActive(!pausePanel.activeSelf);
     }
 
-    // Συνδέεις αυτό στο OnClick του "Retry"
     public void OnClickRetry()
     {
-        var sf = FindAnyObjectByType<SceneFlowManager>();
+        var sf = SceneFlowManager.Instance ?? FindAnyObjectByType<SceneFlowManager>();
         if (sf != null) sf.LoadRetry();
         else SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // Συνδέεις αυτό στο OnClick του "Main Menu"
     public void OnClickMainMenu()
     {
-        var sf = FindAnyObjectByType<SceneFlowManager>();
+        var sf = SceneFlowManager.Instance ?? FindAnyObjectByType<SceneFlowManager>();
         if (sf != null) sf.LoadMainMenu();
         else SceneManager.LoadScene("MainMenu");
     }

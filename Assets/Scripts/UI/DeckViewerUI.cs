@@ -52,7 +52,6 @@ public class DeckViewerUI : MonoBehaviour
             view.gameObject.SetActive(active);
             if (!active) continue;
 
-            // bind πάνω στα δικά σου components
             view.cardData = deck[i];
             view.UpdateCardDisplay();
         }
@@ -70,10 +69,9 @@ public class DeckViewerUI : MonoBehaviour
 
     private void MakeReadOnly(CardDisplay view)
     {
-        // Αν έχεις interactive components (drag/hover/movement), κάν’ τα disable εδώ.
-        // π.χ.:
-        // var mv = view.GetComponent<CardMovement>(); if (mv) mv.enabled = false;
-        // var hover = view.GetComponent<YourHoverScript>(); if (hover) hover.enabled = false;
+        // Disable interactive components on the thumbnail so it behaves as a static preview.
+        var mv = view.GetComponent<CardMovement>(); if (mv) mv.enabled = false;
+        var raycast = view.GetComponent<UnityEngine.UI.Image>(); if (raycast) raycast.raycastTarget = false;
     }
 
     // ---- Deck source ----
@@ -82,7 +80,6 @@ public class DeckViewerUI : MonoBehaviour
         var pdSingleton = Object.FindFirstObjectByType<PlayerDeck>();
         if (pdSingleton != null)
         {
-            // Αν έβαλες την property:
             var prop = pdSingleton.GetType().GetProperty("CurrentDeck");
             if (prop != null)
             {
@@ -90,7 +87,6 @@ public class DeckViewerUI : MonoBehaviour
                 if (list != null) return list.ToList();
             }
 
-            // αλλιώς δοκίμασε κοινά field names:
             var f = pdSingleton.GetType().GetField("playerDeck") ??
                     pdSingleton.GetType().GetField("cards") ??
                     pdSingleton.GetType().GetField("deck");
@@ -111,7 +107,6 @@ public class DeckViewerUI : MonoBehaviour
 
         if (!windowCanvas)
         {
-            // αν δεν έχεις CanvasGroup, απλώς κάνε toggle
             windowRoot.SetActive(active);
             return;
         }
@@ -120,10 +115,8 @@ public class DeckViewerUI : MonoBehaviour
 
         if (active)
         {
-            // ΠΡΩΤΑ ενεργοποιούμε το GO για να μπορεί να ξεκινήσει coroutine
             if (!windowRoot.activeSelf) windowRoot.SetActive(true);
 
-            // προετοιμασία για fade-in
             windowCanvas.blocksRaycasts = true;
             windowCanvas.interactable = true;
             if (windowCanvas.alpha <= 0f) windowCanvas.alpha = 0f;
@@ -142,7 +135,7 @@ public class DeckViewerUI : MonoBehaviour
 
         while (t < fadeSeconds)
         {
-            t += Time.unscaledDeltaTime; // λειτουργεί και σε pause
+            t += Time.unscaledDeltaTime; // works during pause
             windowCanvas.alpha = Mathf.Lerp(start, end, t / fadeSeconds);
             yield return null;
         }
@@ -152,7 +145,7 @@ public class DeckViewerUI : MonoBehaviour
         {
             windowCanvas.blocksRaycasts = false;
             windowCanvas.interactable = false;
-            windowRoot.SetActive(false); // απενεργοποίησέ το στο τέλος του fade-out
+            windowRoot.SetActive(false);
         }
 
         isAnimating = false;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Dynamically positions a UI object (RectTransform) within its parent canvas based on configurable grid-based anchor ratios.
+/// Dynamically positions a UI object (RectTransform) within its parent canvas based on grid-like anchor ratios.
 /// </summary>
 public class UIObjectPositioner : MonoBehaviour
 {
@@ -23,35 +23,17 @@ public class UIObjectPositioner : MonoBehaviour
     [Tooltip("If enabled, updates the object's position every frame.")]
     [SerializeField] private bool updatePosition = false;
 
-    /// <summary>
-    /// Sets the initial position of the UI object.
-    /// </summary>
-    private void Start()
-    {
-        SetUIObjectPosition();
-    }
+    private void Start() => SetUIObjectPosition();
 
-    /// <summary>
-    /// Updates the position each frame if enabled.
-    /// </summary>
     private void Update()
     {
-        if (updatePosition)
-        {
-            SetUIObjectPosition();
-        }
+        if (updatePosition) SetUIObjectPosition();
     }
 
-    /// <summary>
-    /// Positions the UI object by adjusting its anchors and position based on configured grid multipliers.
-    /// </summary>
+    /// <summary>Positions the UI object by adjusting its anchors based on configured grid multipliers.</summary>
     public void SetUIObjectPosition()
     {
-        if (objectToPosition == null)
-        {
-            return;
-        }
-
+        if (objectToPosition == null) return;
         if (widthDivider == 0 || heightDivider == 0)
         {
             Logger.LogError("UIObjectPositioner: widthDivider and heightDivider must not be zero.", this);
@@ -65,7 +47,5 @@ public class UIObjectPositioner : MonoBehaviour
         objectToPosition.anchorMax = new Vector2(anchorX, anchorY);
         objectToPosition.pivot = new Vector2(0.5f, 0.5f);
         objectToPosition.anchoredPosition = Vector2.zero;
-
-        Logger.Log($"UIObjectPositioner: UI object positioned at anchor ({anchorX}, {anchorY}).", this);
     }
 }

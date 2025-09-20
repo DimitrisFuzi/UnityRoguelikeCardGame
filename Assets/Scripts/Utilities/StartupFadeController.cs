@@ -2,48 +2,48 @@
 using UnityEngine.Video;
 using System.Collections;
 
+/// <summary>
+/// Ensures ScreenFader is in place, fades in the scene, and optionally preps/starts a background VideoPlayer.
+/// Put this on a bootstrap object in the first scene.
+/// </summary>
 public class StartupFadeController : MonoBehaviour
 {
     [Header("Optional")]
-    [SerializeField] private VideoPlayer backgroundVideo;   // τράβα το από Inspector
-    [SerializeField] private float fadeInDuration = 0.6f;   // το “ωραίο” σου time
+    [SerializeField] private VideoPlayer backgroundVideo;
+    [SerializeField] private float fadeInDuration = 0.6f;
 
     private IEnumerator Start()
     {
-        // βεβαιώσου ότι υπάρχει ScreenFader (singleton)
+        // Ensure a fader exists and is on top
         if (ScreenFader.Instance == null)
             new GameObject("ScreenFader").AddComponent<ScreenFader>();
 
-        // Κάνε τον fader opaque & πάνω από όλα
         ScreenFader.Instance.SetInstantOpaque();
         ScreenFader.Instance.BringToFront();
 
-        // --- PREPARE VIDEO (ώστε να μην “σκάει” καθυστερημένα)
+        // Prepare video so first frame is ready before fade
         if (backgroundVideo != null)
         {
-            // συνήθεις ασφαλείς ρυθμίσεις
             backgroundVideo.playOnAwake = false;
             backgroundVideo.waitForFirstFrame = true;
 
-            // Ξεκίνα prepare
             backgroundVideo.Prepare();
             while (!backgroundVideo.isPrepared)
-                yield return null; // περίμενε να buffer-αριστεί το πρώτο frame
+                yield return null;
 
-            // “θερμαίνουμε” το πρώτο frame: Play → 1 frame → Pause
+            // Warm the first frame: Play -> wait a frame -> Pause
             backgroundVideo.Play();
-            // περιμένουμε 1 frame για να γραφτεί σίγουρα το frame στο target (RenderTexture/Camera plane)
             yield return null;
             backgroundVideo.Pause();
         }
 
-        // Μικρό buffer frame να “κάτσει” ό,τι άλλο σηκώθηκε στη σκηνή
+        // Let any other startup work settle for one frame
         yield return null;
 
-        // ΤΩΡΑ κάνε fade‑in (χρησιμοποιεί το δικό σου duration εδώ)
+        // Fade the screen in
         yield return ScreenFader.Instance.FadeIn(fadeInDuration);
 
-        // Μόλις “ανοίξει η αυλαία”, ξεκίνα το βίντεο
+        // Start the video after we are visible
         if (backgroundVideo != null)
             backgroundVideo.Play();
     }

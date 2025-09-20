@@ -15,7 +15,8 @@ public class UIButtonPulse : MonoBehaviour
     public float pulsePeriod = 1.2f;
 
     [Header("Optional Glow")]
-    public Image glowImage;                 // εξωτερικό glow Image (π.χ. soft-round, πίσω από το button)
+    [Tooltip("External glow Image behind the button (e.g., soft-round sprite).")]
+    public Image glowImage;
     public float glowAlpha = 0.25f;
 
     CanvasGroup cg;
@@ -33,6 +34,7 @@ public class UIButtonPulse : MonoBehaviour
     void OnEnable()
     {
         StopAllCoroutines();
+
         if (fadeInOnEnable)
         {
             cg.alpha = 0f;
@@ -53,6 +55,14 @@ public class UIButtonPulse : MonoBehaviour
         {
             StartCoroutine(ScalePulse());
         }
+    }
+
+    void OnDisable()
+    {
+        StopAllCoroutines();
+        if (cg) cg.alpha = 1f;
+        if (rt) rt.localScale = baseScale;
+        if (glowImage) { var c = glowImage.color; c.a = 0f; glowImage.color = c; }
     }
 
     IEnumerator FadeIn()

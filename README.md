@@ -14,6 +14,20 @@ This prototype replicates core elements of *Slay the Spire* to help me learn:
 
 ---
 
+## 📸 Screenshots
+
+### Combat
+![Combat Screenshot](Docs/screenshots/BattleScreenshot.png)
+
+### Reward Screen
+![Reward Screenshot](Docs/screenshots/RewardScreenshot.png)
+
+### Gameplay GIF
+![Gameplay GIF](Docs/screenshots/gameplay_loop.gif)
+
+---
+
+
 ## ✨ Features
 - **Turn-based card combat** system  
 - **Player stats** (HP, armor, energy)  

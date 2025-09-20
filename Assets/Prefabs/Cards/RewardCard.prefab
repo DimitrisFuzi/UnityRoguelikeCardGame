@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 9135302536624534802}
   - component: {fileID: 2315400610553426613}
   - component: {fileID: 7118842220639728780}
+  - component: {fileID: 8873615895327183244}
   m_Layer: 0
   m_Name: RewardCard
   m_TagString: Untagged
@@ -172,6 +173,18 @@ MonoBehaviour:
   glowColor: {r: 1, g: 0.95, b: 0.6, a: 0.35}
   glowMaxAlpha: 0.35
   glowLerp: 0.12
+--- !u!225 &8873615895327183244
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3993484493677594604}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4818077733133823880
 GameObject:
   m_ObjectHideFlags: 0

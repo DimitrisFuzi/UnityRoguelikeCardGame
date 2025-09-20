@@ -48,7 +48,7 @@ This prototype replicates core elements of *Slay the Spire* to help me learn:
 
 ## ▶️ How to Play
 - **Play in browser**: [itch.io link here]  
-- **Download build**: [Windows build link here]  
+- **Download build**: https://github.com/DimitrisFuzi/UnityRoguelikeCardGame/releases/download/v0.1.0-learning-clone/CardBattler_LearningClone_v0.1.0_Windows.zip 
 
 **Controls**  
 - Hover a card to highlight it  

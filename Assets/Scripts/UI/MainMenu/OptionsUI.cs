@@ -5,12 +5,12 @@ using TMPro;
 
 public class OptionsUI : MonoBehaviour
 {
+    [Header("Defaults")]
+    [SerializeField] private float defaultMusicVolume = 0.5f;
+    [SerializeField] private float defaultGameplaySFXVolume = 0.5f;
+    [SerializeField] private float defaultMenuSFXVolume = 0.5f;
 
-    
-    private float defaultMusicVolume = 0.5f;
-    private float defaultGameplaySFXVolume = 0.5f;
-    private float defaultMenuSFXVolume = 0.5f;
-
+    [Header("UI")]
     [SerializeField] private Slider menuSFXSlider;
     [SerializeField] private Slider gameplaySFXSlider;
     [SerializeField] private Slider musicSlider;
@@ -23,7 +23,6 @@ public class OptionsUI : MonoBehaviour
 
     [SerializeField] private Button backButton;
 
-
     [Header("SFX")]
     [Tooltip("Name of the SFX clip to play on hover (must match AudioManager entry).")]
     public string hoverSFX = "MainMenuHover";
@@ -33,23 +32,28 @@ public class OptionsUI : MonoBehaviour
 
     private void Awake()
     {
-        canvasGroup = panel.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
+        if (panel == null)
         {
-            canvasGroup = panel.AddComponent<CanvasGroup>();
+            Logger.LogError("OptionsUI: Panel is not assigned.", this);
+            return;
         }
 
+        canvasGroup = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
         panel.SetActive(false);
         canvasGroup.alpha = 0f;
     }
 
     private void Start()
     {
+        if (menuSFXSlider == null || gameplaySFXSlider == null || musicSlider == null)
+        {
+            Logger.LogError("OptionsUI: One or more sliders are not assigned.", this);
+            return;
+        }
 
         float savedMenuSFX = defaultMenuSFXVolume;
         float savedGameplaySFX = defaultGameplaySFXVolume;
         float savedMusicVolume = defaultMusicVolume;
-
 
         menuSFXSlider.value = savedMenuSFX;
         gameplaySFXSlider.value = savedGameplaySFX;
@@ -61,11 +65,19 @@ public class OptionsUI : MonoBehaviour
 
         SetMenuSFXVolume(savedMenuSFX);
         SetGameplaySFXVolume(savedGameplaySFX);
-        SetMusicVolume(savedMusicVolume); 
+        SetMusicVolume(savedMusicVolume);
+
+        if (backButton != null)
+        {
+            backButton.onClick.RemoveAllListeners();
+            backButton.onClick.AddListener(CloseOptions);
+        }
     }
 
     public void OpenOptions()
     {
+        if (panel == null || canvasGroup == null) return;
+
         panel.SetActive(true);
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = true;
@@ -75,6 +87,8 @@ public class OptionsUI : MonoBehaviour
 
     public void CloseOptions()
     {
+        if (canvasGroup == null || panel == null) return;
+
         canvasGroup.DOFade(0f, 0.3f).OnComplete(() =>
         {
             canvasGroup.interactable = false;
@@ -97,7 +111,6 @@ public class OptionsUI : MonoBehaviour
         AudioManager.Instance?.SetCategoryVolume("Gameplay", volume);
         PlayerPrefs.SetFloat("GameplaySFXVolume", volume);
         UpdateVolumeLabel(gameplaySFXVolumeText, volume);
-
     }
 
     public void SetMusicVolume(float volume)
@@ -109,6 +122,7 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVolumeLabel(TMP_Text label, float value)
     {
+        if (label == null) return;
         int percent = Mathf.RoundToInt(value * 100f);
         label.text = percent.ToString();
     }

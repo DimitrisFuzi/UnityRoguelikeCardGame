@@ -8,15 +8,15 @@ public class MainMenuUI : MonoBehaviour
 
     private void Start()
     {
-        // Dynamically bind the Options button to the OptionsUI.OpenOptions method
+        // Dynamically bind the Options button to OptionsUI.OpenOptions
         var optionsUI = FindFirstObjectByType<OptionsUI>();
         if (optionsUI != null && optionsButton != null)
         {
-            optionsButton.onClick.AddListener(() => optionsUI.OpenOptions());
+            optionsButton.onClick.AddListener(optionsUI.OpenOptions);
         }
         else
         {
-            Debug.LogError("❌ MainMenuUI: Failed to bind Options button. Check if OptionsUI or Button is missing.");
+            Logger.LogError("MainMenuUI: Failed to bind Options button. Check if OptionsUI or Button is missing.", this);
         }
     }
 
@@ -24,7 +24,6 @@ public class MainMenuUI : MonoBehaviour
     {
         GameSession.Instance?.ResetStats();
         SceneFlowManager.Instance.LoadScene(SceneType.Battle1);
-        
     }
 
     public void QuitGame()

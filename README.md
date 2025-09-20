@@ -78,7 +78,7 @@ All assets are placeholders or sourced for educational purposes only.
 ---
 
 ## 👤 Credits
-- Developed by **[Foutzitzakis Dimitris]**  
+- Developed by **Foutzitzakis Dimitris**  
 - Code, gameplay systems & UI: self-developed for learning purposes  
 - Music & SFX: royalty-free assets (opengameart.org, pixabay.com, soundimage.org)  
 

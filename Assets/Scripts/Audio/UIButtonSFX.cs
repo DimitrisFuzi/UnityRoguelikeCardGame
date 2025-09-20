@@ -1,6 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using MyProjectF.Assets.Scripts.Managers;
 
+[DisallowMultipleComponent]
+[AddComponentMenu("UI/UIButton SFX")]
+/// <summary>
+/// Simple hover/click SFX for UI buttons using AudioManager.
+/// </summary>
 public class UIButtonSFX : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
 {
     [SerializeField] private string clickSFX = "MainMenuClick";

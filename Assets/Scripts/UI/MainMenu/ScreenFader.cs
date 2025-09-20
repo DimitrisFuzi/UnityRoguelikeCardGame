@@ -10,34 +10,32 @@ public class ScreenFader : MonoBehaviour
     private Canvas canvas;
     private Image overlay;
 
-    void Awake()
+    private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Canvas
+        // Canvas setup (overlay UI on top)
         canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        // ✅ για να δουλέψει το sortingOrder στο Overlay:
-        canvas.overrideSorting = true;
+        canvas.overrideSorting = true;       // allow custom sorting order
+        canvas.sortingOrder = 32760;         // high but safe order
 
-        // ✅ ασφαλές υψηλό order (όχι 50000)
-        canvas.sortingOrder = 32760;
-
-        // Raycaster (για να μπλοκάρει input όταν είναι μαύρο)
+        // Raycaster blocks input while fading
         gameObject.AddComponent<GraphicRaycaster>();
 
-        // Μαύρο overlay
+        // Black overlay
         var go = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
         go.transform.SetParent(transform, false);
         overlay = go.GetComponent<Image>();
-        overlay.color = new Color(0, 0, 0, 0f); // ξεκινάμε διάφανοι
+        overlay.color = new Color(0, 0, 0, 0f);
         overlay.raycastTarget = true;
 
         var rt = go.GetComponent<RectTransform>();
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+
         SetInstantClear();
         BringToFront();
     }
@@ -45,10 +43,11 @@ public class ScreenFader : MonoBehaviour
     public void SetInstantOpaque() { SetAlpha(1f); }
     public void SetInstantClear() { SetAlpha(0f); }
 
-    void SetAlpha(float a)
+    private void SetAlpha(float a)
     {
         var c = overlay.color; c.a = a; overlay.color = c;
-        overlay.raycastTarget = a > 0.001f; // μπλοκάρει input όταν “βλέπεις” μαύρο
+        // Block input when the overlay is visible
+        overlay.raycastTarget = a > 0.001f;
     }
 
     public IEnumerator FadeOut(float duration = -1f)

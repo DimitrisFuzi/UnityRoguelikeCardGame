@@ -23,15 +23,15 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeManagers();
-            Logger.Log("✅ GameManager initialized.", this);
+            Logger.Log("GameManager initialized.", this);
         }
         else if (Instance != this)
         {
-            Logger.LogWarning("⚠️ Duplicate GameManager found. Destroying extra instance.", this);
+            Logger.LogWarning("Duplicate GameManager found. Destroying extra instance.", this);
             Destroy(gameObject);
         }
-        // Set custom cursor
 
+        // Set custom cursor
         if (cursorTexture != null)
         {
             Cursor.SetCursor(cursorTexture, hotspot, cursorMode);
@@ -40,36 +40,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Initializes all core managers (Options, Audio, Deck).
-    /// Tries to find them as children, or instantiate prefabs if missing.
-    /// </summary>
+    /// <summary>Initializes core managers (Options, Audio).</summary>
     private void InitializeManagers()
     {
         OptionsManager = LoadOrInstantiateManager<OptionsManager>("Prefabs/Managers/OptionsManager");
         AudioManager = LoadOrInstantiateManager<AudioManager>("Prefabs/Managers/AudioManager");
-        //DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/Managers/DeckManager");
+        // DeckManager = LoadOrInstantiateManager<DeckManager>("Prefabs/Managers/DeckManager");
     }
-
 
     /// <summary>
     /// Generic helper for loading or instantiating manager prefabs.
     /// </summary>
-    /// <typeparam name="T">Type of the manager (must be a Component).</typeparam>
-    /// <param name="prefabPath">Resources path to the manager prefab.</param>
-    /// <returns>The found or newly instantiated manager component.</returns>
     private T LoadOrInstantiateManager<T>(string prefabPath) where T : Component
     {
         T manager = GetComponentInChildren<T>();
         if (manager != null)
-        {
             return manager;
-        }
 
         GameObject prefab = Resources.Load<GameObject>(prefabPath);
         if (prefab == null)
         {
-            Logger.LogError($"❌ {typeof(T).Name} prefab not found at: {prefabPath}", this);
+            Logger.LogError($"{typeof(T).Name} prefab not found at: {prefabPath}", this);
             return null;
         }
 
@@ -78,11 +69,11 @@ public class GameManager : MonoBehaviour
 
         if (manager == null)
         {
-            Logger.LogError($"❌ Instantiated prefab does not contain component: {typeof(T).Name}", this);
+            Logger.LogError($"Instantiated prefab does not contain component: {typeof(T).Name}", this);
         }
         else
         {
-            Logger.Log($"✅ Instantiated {typeof(T).Name} from prefab.", this);
+            Logger.Log($"Instantiated {typeof(T).Name} from prefab.", this);
         }
 
         return manager;

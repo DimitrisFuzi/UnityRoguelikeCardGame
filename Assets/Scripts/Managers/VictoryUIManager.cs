@@ -34,7 +34,7 @@ public class VictoryUIManager : MonoBehaviour
     {
         Application.Quit();
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // για να δουλεύει στο editor
+        UnityEditor.EditorApplication.isPlaying = false; // ensure it works in the Editor
 #endif
     }
 }

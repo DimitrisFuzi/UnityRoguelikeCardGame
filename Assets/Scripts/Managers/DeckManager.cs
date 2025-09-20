@@ -5,13 +5,11 @@ using MyProjectF.Assets.Scripts.Cards;
 using DG.Tweening;
 using System.Threading.Tasks;
 
-
 /// <summary>
 /// Handles the draw and discard piles, deck shuffling, and card drawing logic.
 /// </summary>
 public class DeckManager : SceneSingleton<DeckManager>
 {
-
     [Header("Deck Settings")]
     [Tooltip("Cards available to draw.")]
     [SerializeField] private List<Card> drawPile = new List<Card>();
@@ -28,21 +26,15 @@ public class DeckManager : SceneSingleton<DeckManager>
     public static event Action OnDrawPileChanged;
     public static event Action OnDiscardPileChanged;
 
-
-    /// <summary>
-    /// Loads the player's deck into the draw pile and clears the discard pile.
-    /// </summary>
+    /// <summary>Loads the player's deck into the draw pile and clears the discard pile.</summary>
     public void InitializeDeck()
     {
         drawPile = new List<Card>(PlayerDeck.Instance.GetDeck());
         discardPile.Clear();
-        Logger.Log($"🗂️ InitializeDeck: drawPile={drawPile.Count}, discard={discardPile.Count}", this);
+        Logger.Log($"InitializeDeck: drawPile={drawPile.Count}, discard={discardPile.Count}", this);
     }
 
-
-    /// <summary>
-    /// Randomly shuffles the draw pile.
-    /// </summary>
+    /// <summary>Randomly shuffles the draw pile.</summary>
     public void ShuffleDeck()
     {
         System.Random rng = new System.Random();
@@ -55,12 +47,10 @@ public class DeckManager : SceneSingleton<DeckManager>
             (drawPile[k], drawPile[n]) = (drawPile[n], drawPile[k]);
         }
 
-        Logger.Log("🔀 Deck shuffled: " + string.Join(", ", drawPile.ConvertAll(c => c.cardName)), this);
+        Logger.Log("Deck shuffled: " + string.Join(", ", drawPile.ConvertAll(c => c.cardName)), this);
     }
 
-    /// <summary>
-    /// Draws a card from the draw pile and adds it to the player's hand.
-    /// </summary>
+    /// <summary>Draws a card from the draw pile and adds it to the player's hand.</summary>
     public async Task DrawCardAsync()
     {
         if (drawPile.Count == 0)
@@ -82,7 +72,7 @@ public class DeckManager : SceneSingleton<DeckManager>
                 null,
                 out uiStartPos
             );
-            // Play sound effect
+
             AudioManager.Instance?.PlaySFX("Card_Draw");
 
             cardRect.anchoredPosition = uiStartPos;
@@ -98,10 +88,9 @@ public class DeckManager : SceneSingleton<DeckManager>
             Vector2 midPoint = (cardRect.anchoredPosition + slotRect.anchoredPosition) / 2f + Vector2.up * 100f;
 
             TaskCompletionSource<bool> tcs = new();
-            
+
             Sequence drawSeq = DOTween.Sequence();
             drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.20f).SetEase(Ease.OutCubic));
-            //drawSeq.Append(cardRect.DOAnchorPos(midPoint, 0.20f).SetEase(Ease.OutQuad));
             drawSeq.Append(cardRect.DOAnchorPos(slotRect.anchoredPosition, 0.20f).SetEase(Ease.InCubic));
             drawSeq.Join(cardRect.DOScale(1f, 0.25f));
             drawSeq.OnComplete(() =>
@@ -116,23 +105,14 @@ public class DeckManager : SceneSingleton<DeckManager>
         }
     }
 
-
-
-
-
-    /// <summary>
-    /// Moves the specified card to the discard pile.
-    /// </summary>
-    /// <param name="card">The card to discard.</param>
+    /// <summary>Moves the specified card to the discard pile.</summary>
     public void DiscardCard(Card card)
     {
         discardPile.Add(card);
         NotifyDiscardPileUI();
     }
 
-    /// <summary>
-    /// Reshuffles the discard pile into the draw pile.
-    /// </summary>
+    /// <summary>Reshuffles the discard pile into the draw pile.</summary>
     private void ReshuffleDiscardPile()
     {
         if (discardPile.Count == 0) return;
@@ -143,14 +123,10 @@ public class DeckManager : SceneSingleton<DeckManager>
         NotifyDiscardPileUI();
     }
 
-    /// <summary>
-    /// Returns the number of cards left in the draw pile.
-    /// </summary>
+    /// <summary>Returns the number of cards left in the draw pile.</summary>
     public int GetDrawPileCount() => drawPile.Count;
 
-    /// <summary>
-    /// Returns the number of cards in the discard pile.
-    /// </summary>
+    /// <summary>Returns the number of cards in the discard pile.</summary>
     public int GetDiscardPileCount() => discardPile.Count;
 
     private void NotifyDrawPileUI() => OnDrawPileChanged?.Invoke();

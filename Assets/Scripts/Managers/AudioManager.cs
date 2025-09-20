@@ -10,18 +10,16 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance;
 
     [SerializeField] private AudioMixer audioMixer;
-    //[SerializeField] private AudioSource sfxSource;
 
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource uiSFXSource;
     [SerializeField] private AudioSource gameplaySFXSource;
 
-
     [SerializeField] private List<SFXEntry> sfxList = new List<SFXEntry>();
-    private Dictionary<string, AudioClip> sfxDictionary = new Dictionary<string, AudioClip>();
+    private readonly Dictionary<string, AudioClip> sfxDictionary = new();
 
     // Volume overrides per SFX name (0.0 to 1.0)
-    private Dictionary<string, float> sfxVolumeOverrides = new()
+    private readonly Dictionary<string, float> sfxVolumeOverrides = new()
     {
         { "Card_Hover", 0.05f },
         { "Card_Select", 0.1f },
@@ -54,77 +52,54 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Plays an SFX by name with optional volume scaling.
-    /// </summary>
+    /// <summary>Plays an SFX by name with optional volume scaling.</summary>
     public void PlaySFX(string name)
     {
         if (sfxDictionary.TryGetValue(name, out var clip))
         {
             float volume = GetVolumeForSFX(name);
 
-            // Επιλογή κατάλληλης πηγής
+            // Route UI sounds to UI source, everything else to gameplay
             if (name.StartsWith("MainMenu"))
-            {
                 uiSFXSource?.PlayOneShot(clip, volume);
-            }
             else
-            {
                 gameplaySFXSource?.PlayOneShot(clip, volume);
-            }
         }
         else
         {
-            Debug.LogWarning($"[AudioManager] SFX '{name}' not found.");
+            Logger.LogWarning($"[AudioManager] SFX '{name}' not found.", this);
         }
     }
 
-
-    /// <summary>
-    /// Gets custom volume scale for a given SFX name.
-    /// </summary>
+    /// <summary>Gets custom volume scale for a given SFX name.</summary>
     private float GetVolumeForSFX(string name)
     {
-        if (sfxVolumeOverrides.TryGetValue(name, out float volume))
-            return volume;
-
-        return 1f;
+        return sfxVolumeOverrides.TryGetValue(name, out float volume) ? volume : 1f;
     }
 
-    /// <summary>
-    /// Updates the volume of a specific audio category via AudioMixer.
-    /// Supported categories: "Menu", "Gameplay", "Music"
-    /// </summary>
+    /// <summary>Updates the volume of a specific audio category via AudioMixer ("Menu", "Gameplay", "Music").</summary>
     public void SetCategoryVolume(string category, float volume)
     {
-
         float dbVolume = Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f;
 
         switch (category)
         {
             case "Music":
-                audioMixer.SetFloat("MusicVolume", dbVolume);
+                audioMixer?.SetFloat("MusicVolume", dbVolume);
                 break;
             case "Gameplay":
-                audioMixer.SetFloat("SFXVolume", dbVolume);
+                audioMixer?.SetFloat("SFXVolume", dbVolume);
                 break;
             case "Menu":
-                audioMixer.SetFloat("MenuSFXVolume", dbVolume);
+                audioMixer?.SetFloat("MenuSFXVolume", dbVolume);
                 break;
         }
     }
 
-    /// <summary>
-    /// Legacy support - sets general SFX volume (mapped to Gameplay).
-    /// </summary>
-    public void SetSFXVolume(float volume)
-    {
-        SetCategoryVolume("Gameplay", volume);
-    }
+    /// <summary>Legacy support – sets general SFX volume (mapped to Gameplay).</summary>
+    public void SetSFXVolume(float volume) => SetCategoryVolume("Gameplay", volume);
 
-    /// <summary>
-    /// Plays background music with optional looping.
-    /// </summary>
+    /// <summary>Plays background music with optional looping.</summary>
     public void PlayMusic(AudioClip clip, bool loop = true, float volume = 1f)
     {
         if (musicSource == null || clip == null) return;
@@ -134,23 +109,18 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-    /// <summary>
-    /// Stops background music playback (if any).
-    /// </summary>
+    /// <summary>Stops background music playback (if any).</summary>
     public void StopMusic()
     {
-            if (musicSource != null) musicSource.Stop();
+        if (musicSource != null) musicSource.Stop();
     }
 
-    /// <summary>
-    /// Plays a short, non-looping music jingle (e.g., defeat/victory) on the music channel.
-    /// It force-stops any currently playing music before starting the jingle.
-    /// </summary>
+    /// <summary>Plays a short, non-looping jingle on the music channel (stops current music first).</summary>
     public void PlayJingle(AudioClip clip, float volume = 1f)
     {
         if (musicSource == null || clip == null) return;
-        musicSource.Stop();                 // hard cut battle music immediately
-        musicSource.loop = false;           // jingle should not loop
+        musicSource.Stop();
+        musicSource.loop = false;
         musicSource.clip = clip;
         musicSource.volume = Mathf.Clamp01(volume);
         musicSource.Play();

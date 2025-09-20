@@ -23,10 +23,7 @@ public class UIButtonPulseScaleOnly : MonoBehaviour
         btn = GetComponent<Button>();
     }
 
-    void OnEnable()
-    {
-        StartPulse();
-    }
+    void OnEnable() => StartPulse();
 
     void OnDisable()
     {
@@ -52,7 +49,6 @@ public class UIButtonPulseScaleOnly : MonoBehaviour
         float t = 0f;
         while (true)
         {
-            // Προαιρετικά σταμάτα το pulse όταν το κουμπί δεν είναι interactable
             if (respectInteractable && btn && !btn.interactable)
             {
                 rt.localScale = baseScale;

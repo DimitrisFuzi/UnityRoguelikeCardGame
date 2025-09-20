@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 using MyProjectF.Assets.Scripts.Cards;
 
 [CreateAssetMenu(menuName = "Game/Reward Pool")]
 public class RewardPool : ScriptableObject
 {
-    // Τελικές επιλογές (serializable class, όχι ScriptableObjects)
     public List<RewardDefinition> candidates = new();
 
     [Header("Rarity weights (relative)")]
@@ -15,32 +15,30 @@ public class RewardPool : ScriptableObject
     public float legendaryWeight = 0.03f;
 
     [Header("Database (optional)")]
-    public ScriptableObject database;                // ΔΕΝ αλλάζω τον τύπο σου — κρατάμε ό,τι έχεις
+    public ScriptableObject database;                // expects a field or property named "allCards"
     public bool autoPopulateFromDatabaseOnPlay = true;
 
-    void OnEnable()
+    private void OnEnable()
     {
         if (autoPopulateFromDatabaseOnPlay && database != null)
             PopulateFromDatabase();
     }
 
     /// <summary>
-    /// Γεμίζει το pool από το database.allCards.
-    /// Κάνει cast σε Card και αγνοεί οτιδήποτε δεν είναι Card.
+    /// Fills the pool from database.allCards (casts entries to Card and ignores non-Card items).
     /// </summary>
     public void PopulateFromDatabase()
     {
         if (database == null) return;
 
-        // Περιμένουμε ότι το database έχει ένα public πεδίο/ιδιότητα "allCards" που είναι IEnumerable
         var allCardsField = database.GetType().GetField("allCards");
         var allCardsProp = database.GetType().GetProperty("allCards");
-        IEnumerable<Object> source = null;
 
+        IEnumerable<UnityEngine.Object> source = null;
         if (allCardsField != null)
-            source = allCardsField.GetValue(database) as IEnumerable<Object>;
+            source = allCardsField.GetValue(database) as IEnumerable<UnityEngine.Object>;
         else if (allCardsProp != null)
-            source = allCardsProp.GetValue(database) as IEnumerable<Object>;
+            source = allCardsProp.GetValue(database) as IEnumerable<UnityEngine.Object>;
 
         candidates = new List<RewardDefinition>();
 
@@ -48,25 +46,19 @@ public class RewardPool : ScriptableObject
         {
             foreach (var so in source)
             {
-                if (so == null) continue;
-                var card = so as Card;                 // 🔑 εδώ γίνεται το cast
-                if (card == null) continue;            // αγνόησε οτιδήποτε δεν είναι Card
+                var card = so as Card;
+                if (card == null) continue;
 
-                candidates.Add(new RewardDefinition
-                {
-                    cardData = card,
-                    weight = 1
-                });
+                candidates.Add(new RewardDefinition { cardData = card, weight = 1 });
             }
         }
 
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(this);
 #endif
-
     }
 
-    // Επιλογή 3 καρτών με βάρη βάσει rarity, χωρίς επανάληψη
+    /// <summary>Selects distinct card definitions with weighted rarity.</summary>
     public List<RewardDefinition> RollCardChoices(int count, int seed)
         => RollCardChoicesFromSource(candidates, count, new System.Random(seed));
 
@@ -78,7 +70,7 @@ public class RewardPool : ScriptableObject
         for (int i = 0; i < count && pool.Count > 0; i++)
         {
             float total = 0f;
-            foreach (var c in pool) total += Mathf.Max(0.0001f, EffectiveWeight(c));
+            for (int j = 0; j < pool.Count; j++) total += Mathf.Max(0.0001f, EffectiveWeight(pool[j]));
 
             double roll = rng.NextDouble() * total;
             float acc = 0f;
@@ -95,13 +87,12 @@ public class RewardPool : ScriptableObject
         }
 
         if (picked.Count < count)
-            Debug.LogWarning("[Reward] Το pool δεν είχε αρκετές μοναδικές επιλογές.");
+            Logger.LogWarning("[Reward] Pool had fewer unique choices than requested.");
 
         return picked;
     }
 
-    // Βάρος με βάση το rarity του Card
-    float EffectiveWeight(RewardDefinition def)
+    private float EffectiveWeight(RewardDefinition def)
     {
         if (def == null || def.cardData == null) return commonWeight;
 

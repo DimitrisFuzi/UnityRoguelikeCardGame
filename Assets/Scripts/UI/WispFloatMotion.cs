@@ -4,9 +4,9 @@ using UnityEngine;
 public class WispFloatMotion : MonoBehaviour
 {
     [Header("Floating")]
-    public float amplitude = 12f;   // πόσα canvas units πάνω–κάτω
-    public float speed = 2f;        // ταχύτητα ταλάντωσης
-    public float randomPhase = 0f;  // για να μην κουνιούνται όλα ίδια
+    public float amplitude = 12f;   // vertical offset in canvas units
+    public float speed = 2f;        // oscillation speed
+    public float randomPhase = 0f;  // phase offset so wisps do not sync
 
     RectTransform rt;
     Vector2 startAnchored;
@@ -15,7 +15,6 @@ public class WispFloatMotion : MonoBehaviour
     {
         rt = GetComponent<RectTransform>();
         startAnchored = rt.anchoredPosition;
-        // δώσε ένα τυχαίο phase για να μη συγχρονίζονται τα Wisps
         randomPhase = Random.Range(0f, Mathf.PI * 2f);
     }
 

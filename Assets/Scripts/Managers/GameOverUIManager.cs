@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+
 public class GameOverUIManager : MonoBehaviour
 {
     public static GameOverUIManager Instance { get; private set; }
@@ -32,13 +33,13 @@ public class GameOverUIManager : MonoBehaviour
     public void ShowGameOver()
     {
         Time.timeScale = 0f;
-        gameOverPanel.SetActive(true);
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
     }
 
     public void HideGameOver()
     {
         Time.timeScale = 1f;
-        gameOverPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
     public void OnRetryClicked()

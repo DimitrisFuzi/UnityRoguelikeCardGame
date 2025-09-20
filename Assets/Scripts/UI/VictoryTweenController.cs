@@ -16,9 +16,9 @@ public class VictoryTweenController : MonoBehaviour
     [Header("Stats")]
     public RectTransform statsRT;
     public CanvasGroup statsCG;
-    public TMP_Text turnsValue;   // μόνο τα νούμερα (π.χ. το "9")
-    public TMP_Text dealtValue;   // "1000"
-    public TMP_Text takenValue;   // "50"
+    public TMP_Text turnsValue;   // numeric only
+    public TMP_Text dealtValue;   // numeric only
+    public TMP_Text takenValue;   // numeric only
 
     [Header("Buttons")]
     public RectTransform mainMenuRT;
@@ -40,69 +40,67 @@ public class VictoryTweenController : MonoBehaviour
     [Header("CountUp (optional)")]
     public bool doCountUp = true;
 
-    // Σώζουμε αρχικές θέσεις για reset
     Vector2 statsTarget, mmTarget, quitTarget;
 
     void Awake()
     {
-        // αρχικές τιμές
-        vignette.alpha = 0f;
+        // Initialize base state
+        if (vignette) vignette.alpha = 0f;
         if (moonlightTint) moonlightTint.alpha = 0f;
 
-        victoryTextCG.alpha = 0f;
-        victoryTextRT.localScale = Vector3.one * 0.85f;
+        if (victoryTextCG) victoryTextCG.alpha = 0f;
+        if (victoryTextRT) victoryTextRT.localScale = Vector3.one * 0.85f;
 
-        statsTarget = statsRT.anchoredPosition;
-        statsRT.anchoredPosition = statsTarget + new Vector2(0, 30f);
-        statsCG.alpha = 0f;
+        if (statsRT) { statsTarget = statsRT.anchoredPosition; statsRT.anchoredPosition = statsTarget + new Vector2(0, 30f); }
+        if (statsCG) statsCG.alpha = 0f;
 
-        mmTarget = mainMenuRT.anchoredPosition;
-        mainMenuRT.anchoredPosition = mmTarget - new Vector2(0, 20f);
-        mainMenuCG.alpha = 0f;
+        if (mainMenuRT) { mmTarget = mainMenuRT.anchoredPosition; mainMenuRT.anchoredPosition = mmTarget - new Vector2(0, 20f); }
+        if (mainMenuCG) mainMenuCG.alpha = 0f;
 
-        quitTarget = quitRT.anchoredPosition;
-        quitRT.anchoredPosition = quitTarget - new Vector2(0, 20f);
-        quitCG.alpha = 0f;
+        if (quitRT) { quitTarget = quitRT.anchoredPosition; quitRT.anchoredPosition = quitTarget - new Vector2(0, 20f); }
+        if (quitCG) quitCG.alpha = 0f;
 
         if (mainMenuEffect) SetAlpha(mainMenuEffect, 0f);
         if (quitEffect) SetAlpha(quitEffect, 0f);
 
-        // παίζουμε στο Start
         PlaySequence();
     }
 
     void PlaySequence()
     {
-        var seq = DOTween.Sequence().SetUpdate(true); // unscaled (σε περίπτωση που παγώνεις timeScale)
+        var seq = DOTween.Sequence().SetUpdate(true); // unscaled
 
-        // 1) BG fade
-        seq.Append(vignette.DOFade(1f, fadeBg));
+        // 1) Background fade
+        if (vignette) seq.Append(vignette.DOFade(1f, fadeBg));
         if (moonlightTint) seq.Join(moonlightTint.DOFade(1f, fadeBg * 0.7f));
 
-        // 2) Victory pop (overshoot 1.06 ? settle 1.0)
-        seq.Append(victoryTextCG.DOFade(1f, popVictory));
-        seq.Join(victoryTextRT.DOScale(1.06f, popVictory).SetEase(Ease.OutCubic));
-        seq.Append(victoryTextRT.DOScale(1.0f, 0.12f).SetEase(Ease.InCubic));
+        // 2) Victory pop
+        if (victoryTextCG) seq.Append(victoryTextCG.DOFade(1f, popVictory));
+        if (victoryTextRT)
+        {
+            seq.Join(victoryTextRT.DOScale(1.06f, popVictory).SetEase(Ease.OutCubic));
+            seq.Append(victoryTextRT.DOScale(1.0f, 0.12f).SetEase(Ease.InCubic));
+        }
 
         // 3) Stats slide + fade
         seq.AppendInterval(statsDelay);
-        seq.Append(statsCG.DOFade(1f, statsDur));
-        seq.Join(statsRT.DOAnchorPos(statsTarget, statsDur).SetEase(Ease.OutCubic));
+        if (statsCG) seq.Append(statsCG.DOFade(1f, statsDur));
+        if (statsRT) seq.Join(statsRT.DOAnchorPos(statsTarget, statsDur).SetEase(Ease.OutCubic));
         seq.OnStepComplete(() =>
         {
             if (doCountUp) StartCountUps();
         });
 
-        // 4) Buttons με μικρό stagger
+        // 4) Buttons with small stagger
         seq.AppendInterval(buttonsDelay);
-        seq.Append(mainMenuCG.DOFade(1f, buttonDur));
-        seq.Join(mainMenuRT.DOAnchorPos(mmTarget, buttonDur).SetEase(Ease.OutCubic));
+        if (mainMenuCG) seq.Append(mainMenuCG.DOFade(1f, buttonDur));
+        if (mainMenuRT) seq.Join(mainMenuRT.DOAnchorPos(mmTarget, buttonDur).SetEase(Ease.OutCubic));
 
         seq.AppendInterval(stagger);
-        seq.Append(quitCG.DOFade(1f, buttonDur));
-        seq.Join(quitRT.DOAnchorPos(quitTarget, buttonDur).SetEase(Ease.OutCubic));
+        if (quitCG) seq.Append(quitCG.DOFade(1f, buttonDur));
+        if (quitRT) seq.Join(quitRT.DOAnchorPos(quitTarget, buttonDur).SetEase(Ease.OutCubic));
 
-        // 5) Subtle loop “breath” στο effect κάθε button
+        // 5) Subtle loop on button effects
         seq.OnComplete(() =>
         {
             PulseEffect(mainMenuEffect);
@@ -112,11 +110,10 @@ public class VictoryTweenController : MonoBehaviour
 
     void StartCountUps()
     {
-        int tv = ParseInt(turnsValue.text);
-        int dv = ParseInt(dealtValue.text);
-        int kv = ParseInt(takenValue.text);
+        int tv = ParseInt(turnsValue ? turnsValue.text : "0");
+        int dv = ParseInt(dealtValue ? dealtValue.text : "0");
+        int kv = ParseInt(takenValue ? takenValue.text : "0");
 
-        // ξεκινάμε από 0 μέχρι το τελικό
         if (turnsValue) DOTween.To(() => 0, v => turnsValue.text = v.ToString(), tv, 0.45f).SetEase(Ease.OutCubic).SetUpdate(true);
         if (dealtValue) DOTween.To(() => 0, v => dealtValue.text = v.ToString(), dv, 0.55f).SetEase(Ease.OutCubic).SetUpdate(true);
         if (takenValue) DOTween.To(() => 0, v => takenValue.text = v.ToString(), kv, 0.55f).SetEase(Ease.OutCubic).SetUpdate(true);
@@ -125,7 +122,6 @@ public class VictoryTweenController : MonoBehaviour
     void PulseEffect(Image img)
     {
         if (!img) return;
-        // πολύ διακριτικό yoyo στο alpha
         img.DOFade(0.16f, 1.2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).SetUpdate(true);
     }
 

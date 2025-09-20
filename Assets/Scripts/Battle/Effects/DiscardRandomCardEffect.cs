@@ -1,0 +1,28 @@
+using System;
+using UnityEngine;
+using System.Collections;
+using MyProjectF.Assets.Scripts.Effects;
+using MyProjectF.Assets.Scripts.Managers;
+
+public class DiscardRandomCardEffect : EffectData, ICoroutineEffect
+{
+    public override void ApplyEffect(CharacterStats source, CharacterStats target) { }
+
+    public IEnumerator ApplyEffectRoutine(CharacterStats source, CharacterStats target)
+    {
+        var hand = HandManager.Instance;
+        var cards = hand.CardsInHand;
+
+        if (cards.Count == 0)
+            yield break;
+
+        // Small delay for pacing
+        yield return new WaitForSeconds(0.3f);
+
+        int index = UnityEngine.Random.Range(0, cards.Count);
+        GameObject randomCard = cards[index];
+
+        AudioManager.Instance?.PlaySFX("Discard_Card");
+        yield return hand.AnimateDiscardAndRemoveCard(randomCard);
+    }
+}

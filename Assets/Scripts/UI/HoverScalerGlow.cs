@@ -11,7 +11,8 @@ public class HoverScalerGlow : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public float scaleDuration = 0.12f;
 
     [Header("Glow (optional)")]
-    public Image glowImage;                // ένα child Image με soft-round sprite (additive look)
+    [Tooltip("Child Image with a soft-round sprite (additive look).")]
+    public Image glowImage;
     public Color glowColor = new Color(1f, 0.95f, 0.6f, 0.35f);
     public float glowMaxAlpha = 0.35f;
     public float glowLerp = 0.12f;
@@ -27,8 +28,7 @@ public class HoverScalerGlow : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (glowImage)
         {
-            var c = glowImage.color;
-            c.a = 0f;
+            var c = glowImage.color; c.a = 0f;
             glowImage.color = c;
             glowImage.raycastTarget = false;
         }

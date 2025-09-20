@@ -1,22 +1,27 @@
 using UnityEngine;
 
+/// <summary>
+/// Simple per-scene singleton base. Clears Instance on destroy to allow scene reloads.
+/// </summary>
 public abstract class SceneSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     public static T Instance { get; private set; }
 
     protected virtual void Awake()
     {
-        if (Instance != null && Instance != (T)(object)this)
+        var self = this as T;
+        if (Instance != null && Instance != self)
         {
-            Debug.LogWarning($"Duplicate {typeof(T).Name} in scene. Destroying duplicate.", this);
+            Logger.LogWarning($"Duplicate {typeof(T).Name} found. Destroying duplicate.", this);
             Destroy(gameObject);
             return;
         }
-        Instance = (T)(object)this;
+        Instance = self;
     }
 
     protected virtual void OnDestroy()
     {
-        if (Instance == (T)(object)this) Instance = null;
+        if (Instance == (this as T))
+            Instance = null;
     }
 }

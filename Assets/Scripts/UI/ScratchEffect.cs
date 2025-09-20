@@ -23,7 +23,7 @@ public class ScratchEffect : MonoBehaviour
     {
         if (rectTransform == null || canvasGroup == null)
         {
-            Debug.LogError("[ScratchEffect] Missing RectTransform or CanvasGroup!");
+            Logger.LogError("[ScratchEffect] Missing RectTransform or CanvasGroup!", this);
             return;
         }
 
@@ -32,16 +32,18 @@ public class ScratchEffect : MonoBehaviour
         rectTransform.localRotation = Quaternion.identity;
         canvasGroup.alpha = 1f;
 
-        // Προαιρετικά: ελαφριά μεγέθυνση
-        rectTransform.DOPunchScale(Vector3.one * punchScale, 0.2f, 6, 0.8f)
-            .SetEase(Ease.OutQuad);
+        // Subtle punch
+        rectTransform
+            .DOPunchScale(Vector3.one * punchScale, 0.2f, 6, 0.8f)
+            .SetEase(Ease.OutQuad)
+            .SetUpdate(true);
 
-        // Πιο σταδιακό και “ομαλό” fade-out
-        canvasGroup.DOFade(0f, showDuration)
+        // Smooth fade-out
+        canvasGroup
+            .DOFade(0f, showDuration)
             .SetDelay(fadeDelay)
-            .SetEase(Ease.InOutQuad) // <— smooth in/out
+            .SetEase(Ease.InOutQuad)
+            .SetUpdate(true)
             .OnComplete(() => Destroy(gameObject));
-
     }
-
 }

@@ -8,7 +8,7 @@ public class RewardSceneController : MonoBehaviour
 {
     [Header("Setup")]
     public RewardPool pool;
-    public Transform cardParent;      // container με Horizontal/Grid Layout
+    public Transform cardParent;      // container with Horizontal/Grid Layout
     public RewardCardView cardPrefab;
     public Button continueButton;
     public TMP_Text headerText;
@@ -21,27 +21,28 @@ public class RewardSceneController : MonoBehaviour
     [SerializeField] private float moveDuration = 0.35f;
     [SerializeField] private float zoomScale = 1.15f;
 
-    void Start()
+    private void Start()
     {
         Time.timeScale = 1f;
 
         if (continueButton) continueButton.gameObject.SetActive(false);
         if (cardParent) cardParent.gameObject.SetActive(true);
 
-        // αν το pool είναι άδειο, γέμισέ το από DB
+        // Auto-populate from DB if empty
         if (pool != null && (pool.candidates == null || pool.candidates.Count == 0))
         {
-            var before = pool.candidates == null ? 0 : pool.candidates.Count;
+            int before = pool.candidates == null ? 0 : pool.candidates.Count;
             pool.PopulateFromDatabase();
-            Debug.Log($"[Reward] Pool was empty ({before}); populated from DB -> {pool.candidates?.Count ?? 0}");
+            Logger.Log($"[Reward] Pool was empty ({before}); populated from DB → {pool.candidates?.Count ?? 0}");
         }
 
         SpawnCards();
     }
 
-    void SpawnCards()
+    private void SpawnCards()
     {
         ClearSpawned();
+
         int seed = System.Environment.TickCount;
         var defs = pool.RollCardChoices(3, seed);
         foreach (var d in defs)
@@ -51,37 +52,39 @@ public class RewardSceneController : MonoBehaviour
             spawned.Add(card);
         }
 
-        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)cardParent);
+        var parentRT = cardParent as RectTransform;
+        if (parentRT != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(parentRT);
         Canvas.ForceUpdateCanvases();
 
-        Debug.Log($"[Reward] candidates: {pool.candidates?.Count}");
+        Logger.Log($"[Reward] candidates: {pool.candidates?.Count}");
     }
 
-    void ClearSpawned()
+    private void ClearSpawned()
     {
         foreach (var c in spawned) if (c) Destroy(c.gameObject);
         spawned.Clear();
         choiceMade = false;
     }
 
-    void OnCardChosen(RewardCardView chosen)
+    private void OnCardChosen(RewardCardView chosen)
     {
         if (choiceMade) return;
         choiceMade = true;
 
         foreach (var c in spawned) c.Interactable(false);
 
-        // ➜ κάνε fade-out/καταστροφή στις υπόλοιπες
+        // Fade out others
         foreach (var c in spawned)
         {
             if (c != chosen && c != null)
                 StartCoroutine(FadeAndDestroy(c.gameObject, disappearDuration));
         }
 
-        // ➜ animate την επιλεγμένη προς κέντρο + zoom-in
+        // Animate chosen
         StartCoroutine(AnimateChosenToCenter(chosen));
 
-        // business logic ως έχει
+        // Business logic
         string cardName = chosen?.def?.cardData ? chosen.def.cardData.cardName : null;
         ApplyCard(cardName);
 
@@ -94,7 +97,7 @@ public class RewardSceneController : MonoBehaviour
         }
     }
 
-    System.Collections.IEnumerator FadeAndDestroy(GameObject go, float duration)
+    private System.Collections.IEnumerator FadeAndDestroy(GameObject go, float duration)
     {
         if (!go) yield break;
         var cg = go.GetComponent<CanvasGroup>();
@@ -102,7 +105,6 @@ public class RewardSceneController : MonoBehaviour
         float t = 0f;
         float start = cg.alpha;
 
-        // προαιρετικά: κλείσε raycasts
         cg.blocksRaycasts = false;
         cg.interactable = false;
 
@@ -116,13 +118,13 @@ public class RewardSceneController : MonoBehaviour
         Destroy(go);
     }
 
-    System.Collections.IEnumerator AnimateChosenToCenter(RewardCardView chosen)
+    private System.Collections.IEnumerator AnimateChosenToCenter(RewardCardView chosen)
     {
         if (chosen == null) yield break;
 
-        // 1) Απενεργοποίησε προσωρινά το layout του container
-        var h = cardParent.GetComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-        var g = cardParent.GetComponent<UnityEngine.UI.GridLayoutGroup>();
+        // Temporarily disable layout
+        var h = cardParent.GetComponent<HorizontalLayoutGroup>();
+        var g = cardParent.GetComponent<GridLayoutGroup>();
         bool hadH = h && h.enabled;
         bool hadG = g && g.enabled;
         if (h) h.enabled = false;
@@ -130,43 +132,35 @@ public class RewardSceneController : MonoBehaviour
 
         var rt = chosen.transform as RectTransform;
 
-        // 2) Βεβαιώσου ότι έχουμε CanvasGroup για smooth fade/hold
-        var cg = chosen.GetComponent<CanvasGroup>();
-        if (!cg) cg = chosen.gameObject.AddComponent<CanvasGroup>();
-        cg.blocksRaycasts = false; // ήδη μη-interactive
+        // Ensure CanvasGroup for smooth fade/hold
+        var cg = chosen.GetComponent<CanvasGroup>() ?? chosen.gameObject.AddComponent<CanvasGroup>();
+        cg.blocksRaycasts = false;
 
-        // 3) Υπολόγισε στόχο (anchor αν δώσεις, αλλιώς κέντρο root canvas)
+        // Compute target
         RectTransform rootCanvasRt = null;
         var canvas = GetComponentInParent<Canvas>();
         if (!canvas) canvas = FindAnyObjectByType<Canvas>();
         if (canvas) rootCanvasRt = canvas.transform as RectTransform;
 
-        // Κρατάμε αρχικές τιμές για smooth lerp
         Vector3 startPos = rt.position;
         Vector3 startScale = rt.localScale;
 
         Vector3 targetPos;
-        Transform originalParent = rt.parent;
-
         if (selectedAnchor != null)
         {
-            // Βάλε το chosen στον ίδιο parent με το anchor για απλό position tween στο ίδιο space
             rt.SetParent(selectedAnchor.parent, worldPositionStays: true);
             targetPos = selectedAnchor.position;
         }
         else if (rootCanvasRt != null)
         {
-            // Χωρίς anchor: στόχος το κέντρο του καμβά
             rt.SetParent(rootCanvasRt, worldPositionStays: true);
             targetPos = rootCanvasRt.TransformPoint(rootCanvasRt.rect.center);
         }
         else
         {
-            // Fallback: μικρό κέντρο οθόνης
             targetPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
         }
 
-        // 4) Tween θέση/κλίμακα
         float t = 0f;
         while (t < moveDuration)
         {
@@ -179,44 +173,39 @@ public class RewardSceneController : MonoBehaviour
         rt.position = targetPos;
         rt.localScale = Vector3.one * zoomScale;
 
-        // 5) (προαιρετικό) Αν θες να μείνει στο anchor layout-free, μην το επιστρέψεις στον αρχικό parent.
-        // Αν θέλεις να ξαναενεργοποιηθεί το layout για τα υπόλοιπα UI, μπορείς τώρα:
         if (h && hadH) h.enabled = true;
         if (g && hadG) g.enabled = true;
     }
 
-    void ApplyCard(string cardName)
+    private void ApplyCard(string cardName)
     {
         if (string.IsNullOrEmpty(cardName))
         {
-            Debug.LogWarning("[Reward] Άκυρο cardName.");
+            Logger.LogWarning("[Reward] Invalid cardName.");
             return;
         }
 
         var deck = PlayerDeck.Instance ?? FindAnyObjectByType<PlayerDeck>();
         if (deck == null)
         {
-            Debug.LogError("[Reward] PlayerDeck λείπει. Κάνε το persistent (DontDestroyOnLoad) ή βάλε ένα PlayerDeck στη Reward1 για testing.");
+            Logger.LogError("[Reward] PlayerDeck not found. Make it persistent or place one in the Reward scene.");
             return;
         }
 
-        deck.AddCardToDeck(cardName);  // ✅ ταιριάζει με την υπάρχουσα υπογραφή
+        deck.AddCardToDeck(cardName);
     }
 
-
-
-    void GoNext()
+    private void GoNext()
     {
         var sf = FindAnyObjectByType<SceneFlowManager>();
         if (sf != null)
         {
-            sf.LoadNextAfterBattle();   // χρησιμοποίησε το flow map
+            sf.LoadNextAfterBattle();
         }
         else
         {
-            Debug.LogWarning("[Reward] SceneFlowManager not found, loading Victory as fallback.");
+            Logger.LogWarning("[Reward] SceneFlowManager not found, loading Victory as fallback.");
             UnityEngine.SceneManagement.SceneManager.LoadScene(SceneType.Victory.ToString());
         }
     }
-
 }

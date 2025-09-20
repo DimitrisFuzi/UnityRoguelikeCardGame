@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// Runtime counters and selected encounter. Minimal now; extended in later milestones.
@@ -34,7 +33,7 @@ public class GameSession : MonoBehaviour
     public void RegisterDeck(PlayerDeck deck)
     {
         playerDeck = deck;
-        Debug.Log("[GameSession] PlayerDeck registered.");
+        Logger.Log("[GameSession] PlayerDeck registered.", this);
     }
 
     public void ResetStats()
@@ -42,16 +41,15 @@ public class GameSession : MonoBehaviour
         turnsTaken = 0;
         totalDamageDealt = 0;
         totalDamageTaken = 0;
+
         if (playerDeck != null)
         {
             playerDeck.InitializeStartingDeck();
-            Debug.Log("[GameSession] Deck reset.");
+            Logger.Log("[GameSession] Deck reset.", this);
         }
         else
         {
-            Debug.Log("[GameSession] No PlayerDeck yet. Deck will be reset when battle starts.");
+            Logger.Log("[GameSession] No PlayerDeck yet. Deck will be reset when battle starts.", this);
         }
-
     }
-
 }

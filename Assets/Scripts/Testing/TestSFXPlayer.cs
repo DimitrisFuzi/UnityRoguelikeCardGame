@@ -7,6 +7,6 @@ public class TestSFXPlayer : MonoBehaviour
     [ContextMenu("Play Test SFX")]
     public void PlayTestSFX()
     {
-        AudioManager.Instance.PlaySFX(sfxName);
+        AudioManager.Instance?.PlaySFX(sfxName);
     }
 }

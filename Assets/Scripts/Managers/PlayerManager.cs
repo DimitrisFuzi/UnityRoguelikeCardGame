@@ -7,35 +7,31 @@ using MyProjectF.Assets.Scripts.Managers;
 
 /// <summary>
 /// Manages player initialization, energy usage, and application of card effects.
-/// Singleton for handling player-related actions in the game.
 /// </summary>
 public class PlayerManager : SceneSingleton<PlayerManager>
 {
-
     [SerializeField] private GameObject playerPrefab;
 
-    /// <summary>
-    /// Initializes the player by instantiating the playerPrefab under PlayerCanvas.
-    /// </summary>
+    /// <summary>Instantiates the player under PlayerCanvas and registers events.</summary>
     public void InitializePlayer()
     {
         if (playerPrefab == null)
         {
-            Logger.LogError("PlayerManager: playerPrefab is null! Please assign it in the Inspector.", this);
+            Logger.LogError("PlayerManager: playerPrefab is null. Assign it in the Inspector.", this);
             return;
         }
 
         GameObject playerCanvas = GameObject.Find("PlayerCanvas");
         if (playerCanvas == null)
         {
-            Logger.LogError("PlayerCanvas GameObject not found in scene!", this);
+            Logger.LogError("PlayerCanvas GameObject not found in scene.", this);
             return;
         }
 
         GameObject playerObject = Instantiate(playerPrefab, playerCanvas.transform, false);
         if (playerObject == null)
         {
-            Logger.LogError("Failed to instantiate playerPrefab!", this);
+            Logger.LogError("Failed to instantiate playerPrefab.", this);
             return;
         }
 
@@ -50,42 +46,34 @@ public class PlayerManager : SceneSingleton<PlayerManager>
 
         playerStats.ResetEnergy();
         playerStats.ResetArmor();
-
     }
 
-    /// <summary>
-    /// Checks if the player has enough energy to play the specified card.
-    /// </summary>
+    /// <summary>Returns true if the player has enough energy to play the card.</summary>
     public bool CanPlayCard(Card card)
     {
+        if (card == null) return false;
         int playerEnergy = PlayerStats.Instance.energy;
-        bool canPlay = playerEnergy >= card.energyCost;
-
-        return canPlay;
+        return playerEnergy >= card.energyCost;
     }
 
-    /// <summary>
-    /// Uses energy when a card is played.
-    /// </summary>
+    /// <summary>Consumes energy when the card is played (if affordable).</summary>
     public void UseCard(Card card)
     {
         if (!CanPlayCard(card))
         {
-            Logger.LogWarning("⚠️ Not enough energy to play this card.", this);
+            Logger.LogWarning("Not enough energy to play this card.", this);
             return;
         }
 
-        PlayerStats.Instance.UseEnergy(card.energyCost);;
+        PlayerStats.Instance.UseEnergy(card.energyCost);
     }
 
-    /// <summary>
-    /// Applies the effect of a card to a target (enemy, self, or allies).
-    /// </summary>
+    /// <summary>Applies the effect of a card to its target(s).</summary>
     public void ApplyCardEffect(Enemy targetEnemy, EffectData effect, Card card)
     {
         if (effect == null)
         {
-            Logger.LogError("❌ EffectData is null.", this);
+            Logger.LogError("EffectData is null.", this);
             return;
         }
 
@@ -97,7 +85,7 @@ public class PlayerManager : SceneSingleton<PlayerManager>
                 if (targetEnemy != null)
                 {
                     effect.ApplyEffect(caster, targetEnemy);
-                    Logger.Log($"🎯 Applied '{card.cardName}' to enemy '{targetEnemy.name}'.", this);
+                    Logger.Log($"Applied '{card.cardName}' to enemy '{targetEnemy.name}'.", this);
                 }
                 else
                 {
@@ -110,12 +98,12 @@ public class PlayerManager : SceneSingleton<PlayerManager>
                 {
                     effect.ApplyEffect(caster, enemy);
                 }
-                Logger.Log($"🌪️ Applied '{card.cardName}' to all enemies.", this);
+                Logger.Log($"Applied '{card.cardName}' to all enemies.", this);
                 break;
 
             case Card.TargetType.Self:
                 effect.ApplyEffect(caster, caster);
-                Logger.Log($"🧘 Applied '{card.cardName}' to self.", this);
+                Logger.Log($"Applied '{card.cardName}' to self.", this);
                 break;
 
             case Card.TargetType.AllAllies:
@@ -123,29 +111,23 @@ public class PlayerManager : SceneSingleton<PlayerManager>
                 {
                     effect.ApplyEffect(caster, ally);
                 }
-                Logger.Log($"🤝 Applied '{card.cardName}' to all allies.", this);
+                Logger.Log($"Applied '{card.cardName}' to all allies.", this);
                 break;
 
             default:
-                Logger.LogWarning("❓ Unknown card target type.", this);
+                Logger.LogWarning("Unknown card target type.", this);
                 break;
         }
     }
 
-    /// <summary>
-    /// Returns a list of all ally PlayerStats. Currently includes only the main player.
-    /// </summary>
+    /// <summary>Returns all ally PlayerStats (currently only the main player).</summary>
     public List<PlayerStats> GetAllies()
     {
         List<PlayerStats> allies = new();
-
         if (PlayerStats.Instance != null)
         {
             allies.Add(PlayerStats.Instance);
         }
-
-        // Add more allies here if applicable in the future
-
         return allies;
     }
 }

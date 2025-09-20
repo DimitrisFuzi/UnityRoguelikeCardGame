@@ -4,13 +4,11 @@ using UnityEngine;
 using MyProjectF.Assets.Scripts.Managers;
 using MyProjectF.Assets.Scripts.Player;
 
-
 /// <summary>
 /// Manages the turn flow between player and enemies.
 /// </summary>
 public class TurnManager : SceneSingleton<TurnManager>
 {
-
     public event Action OnPlayerTurnStart;
     public event Action OnPlayerTurnEnd;
     public event Action OnEnemyTurnStart;
@@ -21,12 +19,9 @@ public class TurnManager : SceneSingleton<TurnManager>
     [SerializeField] private PlayerManager playerManager;
 
     private bool _endingTurn;
-
     public bool IsEndingTurn => _endingTurn;
 
-    /// <summary>
-    /// Returns true if it's currently the player's turn.
-    /// </summary>
+    /// <summary>Returns true if it's currently the player's turn.</summary>
     public bool IsPlayerTurn { get; private set; }
 
     void Start()
@@ -37,18 +32,16 @@ public class TurnManager : SceneSingleton<TurnManager>
         if (playerManager == null)
             playerManager = FindFirstObjectByType<PlayerManager>();
 
-        //StartPlayerTurn();
+        // StartPlayerTurn(); // if needed
     }
 
-    /// <summary>
-    /// Starts the player's turn, resets player stats, unlocks input, draws cards.
-    /// </summary>
+    /// <summary>Starts the player's turn, resets player stats, unlocks input, draws cards.</summary>
     public void StartPlayerTurn()
     {
-        Debug.Log("🎮 Player Turn Started!");
+        Logger.Log("Player turn started.", this);
         IsPlayerTurn = true;
 
-        // ✅ Reset player energy & armor στην αρχή κάθε γύρου
+        // Reset player energy & armor at the start of each round
         if (PlayerStats.Instance != null)
         {
             PlayerStats.Instance.ResetEnergy();
@@ -61,75 +54,66 @@ public class TurnManager : SceneSingleton<TurnManager>
         HandManager.Instance.DrawCardsForTurn();
     }
 
-    /// <summary>
-    /// Ends the player's turn and locks input, then triggers enemy turn.
-    /// </summary>
+    /// <summary>Ends the player's turn and locks input, then triggers enemy turn.</summary>
     public void EndPlayerTurn()
     {
-        // Μη ξεκινάς δεύτερο end-turn αν ήδη τρέχει
-        if (_endingTurn) return;
+        if (_endingTurn) return; // prevent re-entry
         StartCoroutine(EndPlayerTurnRoutine());
     }
 
-
-    /// <summary>
-    /// Ends the player's turn with a coroutine, ensuring all actions are complete.
-    /// </summary>
+    /// <summary>Ends the player's turn with a coroutine, ensuring all actions are complete.</summary>
     private IEnumerator EndPlayerTurnRoutine()
     {
         _endingTurn = true;
 
-        // Κλείδωσε input αμέσως για να μη γίνουν άλλα clicks/plays
+        // Lock input immediately to prevent extra interactions
         BattleManager.Instance.LockPlayerInput();
 
-        // Αν τραβάμε κάρτες (start-of-turn ή mid-turn effect), περίμενε να τελειώσει
+        // If drawing cards, wait for it to finish
         if (HandManager.Instance != null)
         {
             while (HandManager.Instance.IsDrawing)
-                yield return null; // 1 frame
+                yield return null;
         }
 
-        Debug.Log("🎮 Player Turn Ended!");
+        Logger.Log("Player turn ended.", this);
         IsPlayerTurn = false;
 
-        // Περίμενε να αδειάσει το χέρι (ώστε να μην πέσουν animations πάνω στον enemy γύρο)
+        // Discard hand before enemy turn for clean state
         yield return StartCoroutine(HandManager.Instance.DiscardHandRoutine(animated: true));
 
         OnPlayerTurnEnd?.Invoke();
 
-        // Τώρα ξεκινά ο enemy γύρος
+        // Enemy turn
         yield return StartCoroutine(EnemyTurn());
 
         _endingTurn = false;
     }
 
-    /// <summary>
-    /// Handles enemy turn with delays and notifies listeners.
-    /// </summary>
-    /// <returns>Coroutine enumerator.</returns>
+    /// <summary>Handles enemy turn with delays and notifies listeners.</summary>
     private IEnumerator EnemyTurn()
     {
-        Debug.Log("👿 Enemy Turn Started!");
+        Logger.Log("Enemy turn started.", this);
         OnEnemyTurnStart?.Invoke();
 
         yield return new WaitForSeconds(0.5f);
 
-        // Check if the battle has already ended
+        // Early exit if battle already ended
         if (BattleManager.Instance.State == BattleManager.BattleState.LOST ||
-        BattleManager.Instance.State == BattleManager.BattleState.WON)
+            BattleManager.Instance.State == BattleManager.BattleState.WON)
         {
-            Debug.LogWarning("⚠️ EnemyTurn cancelled: Battle already ended.");
+            Logger.LogWarning("EnemyTurn cancelled: battle already ended.", this);
             yield break;
         }
 
-        // Step 1: Perform enemy actions (wait until ALL finish)
+        // Perform enemy actions (wait until all finish)
         yield return StartCoroutine(enemyManager.PerformEnemyActionsCoroutine());
 
-        yield return new WaitForSeconds(1f); // Small delay before next intent setup
+        yield return new WaitForSeconds(1f); // small delay before intent setup
 
         if (BattleManager.Instance.IsBattleOver())
         {
-            Logger.Log("⚠️ EnemyTurn aborted (battle ended during enemy actions).", this);
+            Logger.Log("EnemyTurn aborted: battle ended during enemy actions.", this);
             yield break;
         }
 
@@ -137,29 +121,28 @@ public class TurnManager : SceneSingleton<TurnManager>
         foreach (Enemy enemy in enemyManager.Enemies)
         {
             if (enemy == null) continue;
-            // Ensure enemyDisplay is available before trying to set intent
+
             EnemyDisplay enemyDisplay = enemy.GetComponent<EnemyDisplay>();
             if (enemy.EnemyAI != null && enemyDisplay != null)
             {
                 EnemyIntent nextIntent = enemy.EnemyAI.PredictNextIntent();
-                enemyDisplay.SetIntent(nextIntent); // Pass the intent to the display
+                enemyDisplay.SetIntent(nextIntent);
             }
         }
 
         if (BattleManager.Instance.IsBattleOver())
-
         {
-            Logger.Log("⚠️ EnemyTurn aborted (battle ended during enemy actions).", this);
+            Logger.Log("EnemyTurn aborted: battle ended during enemy actions.", this);
             yield break;
         }
 
-        Debug.Log("👿 Enemy Turn Ended!");
+        Logger.Log("Enemy turn ended.", this);
         OnEnemyTurnEnd?.Invoke();
 
         if (GameSession.Instance != null)
             GameSession.Instance.turnsTaken++;
 
-        // Step 3: Start player's turn
+        // Back to player
         StartPlayerTurn();
     }
 }

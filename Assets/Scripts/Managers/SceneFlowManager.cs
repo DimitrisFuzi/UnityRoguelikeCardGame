@@ -60,18 +60,18 @@ public class SceneFlowManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"⚠️ No next scene defined for '{currentScene}'.");
+                Logger.LogWarning($"No next scene defined for '{currentScene}'.", this);
             }
         }
         else
         {
-            Debug.LogError($"❌ Current scene '{SceneManager.GetActiveScene().name}' is not mapped in SceneType enum.");
+            Logger.LogError($"Current scene '{SceneManager.GetActiveScene().name}' is not mapped in SceneType enum.", this);
         }
     }
 
     private IEnumerator LoadSceneWithFade(string sceneName)
     {
-        // φτιάξε (αν λείπει) τον fader
+        // Ensure fader exists
         if (ScreenFader.Instance == null)
             new GameObject("ScreenFader").AddComponent<ScreenFader>();
 
@@ -81,24 +81,24 @@ public class SceneFlowManager : MonoBehaviour
         var am = AudioManager.Instance;
         if (am != null) am.StopMusic();
 
-        // Async φόρτωμα χωρίς άμεση ενεργοποίηση
+        // Async load without immediate activation
         var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         op.allowSceneActivation = false;
 
         while (op.progress < 0.9f)
             yield return null;
 
-        // Προαιρετικό: 1 frame για να “κάτσουν” τα αντικείμενα
+        // Let one frame pass before activation
         yield return null;
 
-        // Ενεργοποίησε τη σκηνή
+        // Activate scene
         op.allowSceneActivation = true;
         while (!op.isDone) yield return null;
 
-        // ✅ φέρε σίγουρα μπροστά το overlay στη ΝΕΑ σκηνή
+        // Bring overlay to front in the new scene
         ScreenFader.Instance?.BringToFront();
 
-        // ✅ δώσε ένα frame να “κάτσει” το UI της μάχης
+        // Give one frame for UI to settle
         yield return null;
 
         // Fade in
@@ -109,14 +109,14 @@ public class SceneFlowManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         var active = SceneManager.GetActiveScene();
-        // Αν το όνομα της σκηνής αντιστοιχεί στο enum σου, μπορείς να μείνεις συνεπής:
+
         if (System.Enum.TryParse(active.name, out SceneType current))
         {
-            LoadScene(current); // διατηρεί το flow API σου
+            LoadScene(current);
         }
         else
         {
-            // fallback: φόρτωσε με όνομα
+            // Fallback: load by name
             SceneManager.LoadScene(active.name);
         }
     }

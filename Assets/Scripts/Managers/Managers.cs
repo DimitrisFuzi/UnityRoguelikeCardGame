@@ -1,9 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Legacy holder for manager references. Intentionally empty.
+/// </summary>
 public class Managers : MonoBehaviour
 {
-    private void Awake()
-    {
-          
-    }
+    // Intentionally left blank.
 }

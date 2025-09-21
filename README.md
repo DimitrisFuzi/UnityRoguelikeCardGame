@@ -60,7 +60,9 @@ This prototype replicates core elements of *Slay the Spire* to help me learn:
 ## 🛠️ Tech Stack
 - Unity 6 (Editor version: 6000.2.0b7 at time of development) 
 - C#  
-- GitHub Desktop  
+- GitHub Desktop
+- GIMP  2.1
+- Audacity
 
 ---
 

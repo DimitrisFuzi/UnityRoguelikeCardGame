@@ -73,6 +73,12 @@ All assets are placeholders or sourced for educational purposes only.
 
 ---
 
+### 🗂 Project Management & Workflow
+This project was organized and tracked using **Trello** with a simple Kanban workflow (To Do → Doing → Done → Finalizing).  
+The board helped structure development into smaller milestones and ensured progress tracking for features, bug fixes, and polish.  
+
+![Trello Board](Assets/Trello_Project_Management.png)
+
 ## 🚀 Next Steps
 - Apply learnings to an **original roguelike card game project**  
 - Expand with new enemy types & events  

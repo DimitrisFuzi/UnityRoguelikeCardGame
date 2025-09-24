@@ -63,7 +63,7 @@ This prototype replicates core elements of *Slay the Spire* to help me learn:
 - GitHub Desktop
 - GIMP  2.1
 - Audacity
-- Trello (https://github.com/DimitrisFuzi/UnityRoguelikeCardGame/blob/main/Docs/Trello_Project_Management.png?raw=true)
+- Trello
 
 ---
 

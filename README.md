@@ -1,4 +1,4 @@
-# Card Battler – Unity Learning Clone (Inspired by Slay the Spire)
+# Turn-Based Deckbuilder Prototype (Unity)
 
 A prototype built in **Unity (C#)** to practice roguelike deck-builder mechanics.  
 This project was developed purely as a **learning exercise** and is not intended as a commercial release.

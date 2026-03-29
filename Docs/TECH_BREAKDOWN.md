@@ -1,153 +1,146 @@
 # TECH BREAKDOWN — Turn-Based Deckbuilder Prototype (Unity)
 
-This document summarizes the gameplay architecture and implementation decisions for this prototype.  
+This document summarizes the gameplay architecture and implementation for this prototype.
 Focus: **turn flow**, **data-driven cards/effects**, **enemy intent telegraphing**, and **reward selection**.
 
 ---
 
 ## Project entry points (scenes)
 - `Assets/Scenes/BattleBoss1`
-  - Used to showcase enemy intent variety + boss behavior.
-  - Note: boss victory leads to the Victory scene (no reward in this flow).
+  - Boss fight used to showcase intent variety.
+  - Victory leads to the Victory scene (no reward in this boss flow).
 - `Assets/Scenes/Battle1`
   - Battle flow that transitions into the Reward scene.
 
 ---
 
-## High-level architecture (folders)
+## Architecture overview (folders)
 Primary code lives under `Assets/Scripts/`:
 
 - `Assets/Scripts/Managers/`
-  - Orchestrates battle state, turns, deck/hand, enemy actions, and scene flow.
+  - Battle state + turn sequencing + hand/deck flow.
 - `Assets/Scripts/Battle/`
-  - Gameplay domain code: cards, effects, enemies, player stats.
+  - Cards, effects, enemies, player stats.
 - `Assets/Scripts/Reward/`
-  - Post-battle reward scene: roll card choices, display, select, add to deck.
+  - Reward choice generation + UI + “add to deck”.
+
+Pattern notes:
+- Scene-level singletons are used for orchestration (`SceneSingleton<T>`).
+- Content is data-driven via ScriptableObjects for cards and enemies.
 
 ---
 
-## Turn flow & input gating
-### Battle state ownership
+## Battle flow & input gating
+### Battle state
 - `Assets/Scripts/Managers/BattleManager.cs`
-  - Tracks battle state (`START`, `PLAYER_TURN`, `ENEMY_TURN`, `WON`, `LOST`)
-  - Locks/unlocks player input through `IsPlayerInputLocked`
-  - On victory: calls `SceneFlowManager.Instance.LoadNextAfterBattle()`
+  - Owns battle state (`START`, `PLAYER_TURN`, `ENEMY_TURN`, `WON`, `LOST`)
+  - Locks/unlocks input (`IsPlayerInputLocked`)
+  - Victory triggers `SceneFlowManager.Instance.LoadNextAfterBattle()`
 
 ### Turn sequencing
 - `Assets/Scripts/Managers/TurnManager.cs`
   - `StartPlayerTurn()`
-    - Resets player energy/armor
+    - Resets energy/armor
     - Unlocks input
-    - Triggers draw via `HandManager.Instance.DrawCardsForTurn()`
-  - `EndPlayerTurn() → EndPlayerTurnRoutine()`
+    - Starts draw (`HandManager.DrawCardsForTurn()`)
+  - `EndPlayerTurnRoutine()`
     - Locks input immediately
-    - Waits for drawing to finish (`HandManager.IsDrawing`)
-    - Discards the hand (`HandManager.DiscardHandRoutine(animated: true)`)
-    - Runs enemy actions (`EnemyManager.PerformEnemyActionsCoroutine()`)
-    - Predicts and displays next intents for enemies (`PredictNextIntent()`)
+    - Waits for draw to finish (`HandManager.IsDrawing`)
+    - Discards hand (`HandManager.DiscardHandRoutine(animated: true)`)
+    - Runs enemy actions coroutine (`EnemyManager.PerformEnemyActionsCoroutine()`)
+    - Predicts and displays next intents (`PredictNextIntent()`)
 
-### Hand draw/discard
+### Hand layout + draw/discard
 - `Assets/Scripts/Managers/HandManager.cs`
-  - Draws cards asynchronously, sets `IsDrawing` during operations
-  - Maintains hand layout (fan) and discards with animation
-  - Discard behavior:
-    - End turn discards unplayed cards (even if they are normally “exhaust after use”)
+  - Tracks `IsDrawing` during draw animations
+  - Updates a fan layout and saves original transforms (`CardMovement.SaveOriginalTransform()`)
+  - End-turn discards unplayed cards with animation
 
 ---
 
-## Card system (data → interaction → resolution)
-### Card data
+## Cards: data → interaction → resolution
+### Card data (ScriptableObject)
 - `Assets/Scripts/Battle/Cards/Card.cs`
-  - Cards are `ScriptableObject` assets:
-    - cost (`energyCost`), rarity, sprite, target type, exhaust flag
-  - Effects are stored as:
+  - Stores cost/rarity/sprite/targeting
+  - Polymorphic effects list:
     - `[SerializeReference] List<EffectData> effects`
-  - This supports a data-driven pipeline with multiple effect types per card.
 
-### Card interaction + targeting (UI)
+### Card interaction + targeting
 - `Assets/Scripts/Battle/Cards/CardMovement.cs`
-  - Responsible for card hover, drag, and “play zone” logic
-  - Validates input through `Blocked()`:
-    - `BattleManager.IsPlayerInputLocked`
-    - `TurnManager.IsPlayerTurn`
-    - `HandManager.IsDrawing`
-    - `isInHand`
-  - For `SingleEnemy` targeting:
-    - Uses UI raycast to detect `Enemy` under cursor (`GetEnemyUnderCursor()`)
+  - Hover/drag/play-zone logic + DOTween feedback
+  - Blocks interaction if:
+    - input locked (`BattleManager.IsPlayerInputLocked`)
+    - not player turn (`TurnManager.IsPlayerTurn == false`)
+    - drawing (`HandManager.IsDrawing`)
+    - card not in hand (`isInHand == false`)
+  - For single-enemy targeting:
+    - UI raycast under cursor (`GetEnemyUnderCursor()`)
 
-### Card play + effect execution
-- `CardMovement.ApplyEffectsInSequence()` performs:
-  1) Spend energy (`PlayerManager.UseCard(cardData)`)
+### Resolution order (when a card is played)
+- `CardMovement.ApplyEffectsInSequence()`
+  1) Spend energy via `PlayerManager.UseCard(cardData)`
   2) Remove card from hand (`HandManager.RemoveCardFromHand(...)`)
-  3) Resolve each `EffectData` in order
-     - If effect implements `ICoroutineEffect`, it runs as a coroutine
+  3) Apply each `EffectData` in order
+     - If effect implements `ICoroutineEffect`, runs a coroutine effect routine
 
-### Energy usage + target routing
+### Energy + target routing
 - `Assets/Scripts/Managers/PlayerManager.cs`
-  - `CanPlayCard(Card)` checks current energy
-  - `UseCard(Card)` consumes energy
-  - `ApplyCardEffect(...)` contains routing logic for targets:
+  - `CanPlayCard()` / `UseCard()` for energy validation and spending
+  - `ApplyCardEffect(...)` contains routing for:
     - `SingleEnemy`, `AllEnemies`, `Self`, `AllAllies`
 
 ---
 
 ## Effects pipeline
 - `Assets/Scripts/Battle/Effects/EffectData.cs`
-  - Base type for effects used in cards (polymorphic via `SerializeReference`)
+  - Base class for effect implementations used in `Card.effects`
 - `Assets/Scripts/Battle/Effects/ICoroutineEffect.cs`
-  - Optional coroutine contract for effects that need sequencing / timing
+  - Optional interface for effects that need timed sequencing
 
 ---
 
-## Enemy AI & intent telegraphing
-### Enemy initialization + AI attachment
+## Enemies: AI + intent telegraphing
+### Enemy data
+- `Assets/Scripts/Battle/Enemies/EnemyData.cs`
+  - ScriptableObject holding stats, visuals, AI type (`EnemyAIType`), and intent icons
+
+### Runtime enemy + AI attachment
 - `Assets/Scripts/Battle/Enemies/Enemy.cs`
-  - `InitializeEnemy(EnemyData, EnemyDisplay)`:
-    - initializes stats + UI
-    - attaches AI component based on `EnemyAIType` enum (`AttachAI(...)`)
-    - wires intent icon sprites into AI via `SetIntentIcons(...)`
-    - calls `InitializeAI()` and `UpdateIntentDisplay()`
+  - `InitializeEnemy(...)` sets stats/UI and attaches AI based on `EnemyAIType`
+  - AI is attached as a component and exposed via `IEnemyAI EnemyAI`
+  - Intent update points:
+    - On initialization (`UpdateIntentDisplay()`)
+    - After executing an enemy action (`PerformAction()` calls `ExecuteTurn()` then `UpdateIntentDisplay()`)
 
-### AI contract + intent types
-- `Assets/Scripts/Battle/Enemies/EnemyAI/IEnemyAI.cs`
-  - `ExecuteTurn()`, `PredictNextIntent()`, `GetCurrentIntent()`
-- `Assets/Scripts/Battle/Enemies/EnemyAI/EnemyIntent.cs`
-  - intent payload shown to the player (type, description, value, icon)
-
-### Intent UI
-- `Assets/Scripts/Battle/Enemies/EnemyAI/IntentDisplay.cs`
-  - updates icon + text based on `EnemyIntent`
-
-### When intents update
-- On enemy action:
-  - `Enemy.PerformAction()` executes AI, then updates the displayed next intent.
-- At end of enemy turn:
-  - `TurnManager` iterates enemies and sets next intent display using `PredictNextIntent()`.
+### Intent UI update
+- `EnemyDisplay.SetIntent(EnemyIntent ...)` (called from `Enemy.cs` and `TurnManager`)
 
 ---
 
 ## Reward flow (Battle1 → Reward scene)
 - `Assets/Scripts/Reward/RewardSceneController.cs`
-  - Ensures reward pool is populated (`RewardPool.PopulateFromDatabase()`)
-  - Rolls 3 card choices (`pool.RollCardChoices(3, seed)`)
+  - Populates reward pool if empty (`RewardPool.PopulateFromDatabase()`)
+  - Rolls 3 choices (`pool.RollCardChoices(3, seed)`)
   - Spawns `RewardCardView` entries
   - On selection:
-    - disables other options
+    - disables other choices
     - animates selected card
-    - adds card to deck (`PlayerDeck.AddCardToDeck(cardName)`)
+    - adds card to deck via `PlayerDeck.AddCardToDeck(cardName)`
+    - continues via `SceneFlowManager.LoadNextAfterBattle()` (fallback to Victory)
+
 - `Assets/Scripts/Reward/RewardCardView.cs`
-  - Builds a clickable reward card UI using an existing `CardDisplay` thumbnail prefab
+  - Builds a clickable card choice and binds data into an existing `CardDisplay` thumbnail
 
 ---
 
 ## Known limitations (prototype tradeoffs)
-- Card interaction and card resolution are currently coupled:
-  - `CardMovement` handles both UI interaction and effect resolution orchestration.
-  - This made iteration faster, but a next step would be extracting a dedicated “card resolver” service to decouple UI from rules.
+- Card UI + card-resolution orchestration are currently coupled:
+  - `CardMovement` handles both interaction and sequencing (`ApplyEffectsInSequence()`).
+  - This reduced moving parts during iteration, but a scalable next step would be moving resolution into a dedicated gameplay service (e.g., a `CardPlayResolver`).
 
 ---
 
 ## If I continued (next refactor targets)
-- Separate card-resolution logic from UI (`CardMovement`) into a gameplay service (e.g., `CardPlayResolver`)
-- Add a lightweight debug menu to spawn specific cards/enemies for quick validation
-- Add small automated validation hooks (e.g., sanity checks for EffectData configuration)
+- Decouple card UI from rules: move effect application out of `CardMovement`
+- Add debug hooks to spawn specific cards/enemies for quick verification
+- Add simple validation checks for `EffectData` configs (nulls, missing targets, etc.)

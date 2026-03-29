@@ -9,7 +9,7 @@ A playable Unity (C#) prototype focused on **gameplay systems**: turn flow, card
 ## Quick links
 - **Play (WebGL):** https://fouzis.itch.io/card-battler-unity-learning-clone-inspired-by-slay-the-spire
 - **Download (Windows build):** https://github.com/DimitrisFuzi/UnityRoguelikeCardGame/releases/download/v0.1.0-learning-clone/CardBattler_LearningClone_v0.1.0_Windows.zip
-- **Technical breakdown:** `TECH_BREAKDOWN.md`
+- **Technical breakdown:** [Docs/TECH_BREAKDOWN.md](Docs/TECH_BREAKDOWN.md)
 
 ---
 
